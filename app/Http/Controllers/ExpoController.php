@@ -94,8 +94,8 @@ class ExpoController extends Controller
             'tagline' => $validated['tagline'] ?? null,
             'allow_spins' => $plan->has_ruleta,
             'spin_policy' => 'once_per_day',
-            'status' => 'active',
-            'is_active' => true,
+            'status' => 'pending',
+            'is_active' => false,
         ]);
 
         // Provisionar premios base si el plan contratado incluye ruleta
@@ -122,7 +122,7 @@ class ExpoController extends Controller
             ]);
         }
 
-        return redirect()->route('expo.panel', $stand->slug)->with('success', "¡Stand '{$stand->name}' activado con éxito con el Plan {$plan->name}!");
+        return redirect()->route('expo.panel', $stand->slug)->with('success', "¡Stand '{$stand->name}' registrado con éxito con el Plan {$plan->name}! Se encuentra en revisión para su habilitación oficial.");
     }
 
     /**
@@ -130,7 +130,12 @@ class ExpoController extends Controller
      */
     public function stand(Request $request, string $slug): View
     {
-        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+
+        if (! $stand->is_active) {
+            return view('expo.inactive', compact('stand'));
+        }
+
         $isTotem = $request->boolean('totem');
 
         return view('expo.registro', compact('stand', 'isTotem'));
@@ -671,5 +676,31 @@ class ExpoController extends Controller
         }
 
         return redirect()->route('expo.admin')->with('success', "¡Stand '{$stand->name}' creado exitosamente con sus módulos activos!");
+    }
+
+    /**
+     * Actualizar Estado del Stand desde SuperAdmin (Aprobar, Suspender, Reactivar)
+     */
+    public function updateStandStatus(Request $request, Stand $stand): RedirectResponse
+    {
+        $validated = $request->validate([
+            'status' => 'required|in:active,pending,suspended',
+        ]);
+
+        $status = $validated['status'];
+        $isActive = ($status === 'active');
+
+        $stand->update([
+            'status' => $status,
+            'is_active' => $isActive,
+        ]);
+
+        $messages = [
+            'active' => "¡Stand '{$stand->name}' APROBADO y ACTIVO para operar en la feria!",
+            'suspended' => "El Stand '{$stand->name}' ha sido SUSPENDIDO temporalmente.",
+            'pending' => "El Stand '{$stand->name}' fue marcado como PENDIENTE de revisión.",
+        ];
+
+        return back()->with('success', $messages[$status] ?? 'Estado actualizado correctamente.');
     }
 }

@@ -77,6 +77,29 @@
             </div>
         @endif
 
+        @if($stand->status === 'pending' || ! $stand->is_active)
+            <div class="p-5 rounded-3xl bg-amber-50 border-2 border-amber-300 text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-sm">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-10 h-10 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-black text-lg shrink-0">
+                        ⏳
+                    </div>
+                    <div>
+                        <div class="text-xs font-black uppercase tracking-wider text-amber-900">
+                            {{ $stand->status === 'suspended' ? 'Stand Suspendido Temporalmente' : 'Stand en Revisión / Pendiente de Aprobación' }}
+                        </div>
+                        <div class="text-xs text-amber-800 mt-0.5 leading-relaxed">
+                            {{ $stand->status === 'suspended' 
+                                ? 'La captación pública de este stand está pausada. Comunícate con Soteweb para reactivarla.' 
+                                : 'Tu stand fue registrado con éxito. El equipo de Soteweb activará la captación de leads y ruleta tras verificar tu solicitud. Mientras tanto, puedes configurar tus premios y ajustar tus datos.' }}
+                        </div>
+                    </div>
+                </div>
+                <a href="https://wa.me/595981123456" target="_blank" class="shrink-0 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all">
+                    WhatsApp Soporte &rarr;
+                </a>
+            </div>
+        @endif
+
         <!-- TARJETAS DE MÉTRICAS EN VIVO -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <!-- Leads -->

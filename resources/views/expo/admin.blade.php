@@ -111,6 +111,28 @@
             @endforeach
         </div>
 
+        @php
+            $pendingStands = $stands->where('status', 'pending');
+        @endphp
+        @if($pendingStands->isNotEmpty())
+            <!-- Alerta de Stands Pendientes de Aprobación -->
+            <div class="bg-amber-50 border-2 border-amber-300 rounded-3xl p-5 flex flex-col sm:flex-row items-center justify-between gap-4 shadow-sm">
+                <div class="flex items-center gap-3.5">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 text-amber-800 flex items-center justify-center font-black text-xl shrink-0">
+                        ⏳
+                    </div>
+                    <div>
+                        <h4 class="text-sm font-black text-amber-950">
+                            {{ $pendingStands->count() }} empresa(s) registrada(s) pendiente(s) de aprobación
+                        </h4>
+                        <p class="text-xs text-amber-800 mt-0.5">
+                            Revisa el listado abajo y presiona el botón verde <strong>"Aprobar Stand"</strong> para habilitar su ruleta y captación de leads en la feria.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Tabla de Empresas Expositoras (Estilo SotePass Table) -->
         <div class="bg-white rounded-[2rem] shadow-sm border border-slate-100 overflow-hidden">
             <div class="p-6 border-b border-slate-100 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
@@ -131,6 +153,7 @@
                         <tr class="bg-slate-50/70">
                             <th class="px-6 py-3.5 text-left text-[11px] font-black text-slate-400 uppercase tracking-wider rounded-l-xl">Empresa / Stand</th>
                             <th class="px-6 py-3.5 text-left text-[11px] font-black text-slate-400 uppercase tracking-wider">Plan Contratado</th>
+                            <th class="px-6 py-3.5 text-left text-[11px] font-black text-slate-400 uppercase tracking-wider">Estado</th>
                             <th class="px-6 py-3.5 text-left text-[11px] font-black text-slate-400 uppercase tracking-wider">Titular / Empresa</th>
                             <th class="px-6 py-3.5 text-left text-[11px] font-black text-slate-400 uppercase tracking-wider">Sector</th>
                             <th class="px-6 py-3.5 text-center text-[11px] font-black text-slate-400 uppercase tracking-wider">Leads</th>
@@ -171,6 +194,26 @@
                                     @else
                                         <span class="inline-flex items-center px-2.5 py-1 rounded-xl text-xs font-medium bg-slate-100 text-slate-500">
                                             Sin Plan
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <!-- Estado -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($stand->status === 'active' || ($stand->is_active && $stand->status !== 'suspended' && $stand->status !== 'pending'))
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                                            Activo
+                                        </span>
+                                    @elseif($stand->status === 'pending' || (! $stand->is_active && $stand->status !== 'suspended'))
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                                            <span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
+                                            Pendiente
+                                        </span>
+                                    @else
+                                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200">
+                                            <span class="w-2 h-2 rounded-full bg-rose-500"></span>
+                                            Suspendido
                                         </span>
                                     @endif
                                 </td>
@@ -220,12 +263,37 @@
                                 </td>
 
                                 <!-- Acciones Rápidas -->
-                                <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold space-x-1">
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-xs font-bold space-x-1.5">
+                                    @if($stand->status === 'pending' || ! $stand->is_active)
+                                        <!-- Botón Aprobar -->
+                                        <form method="POST" action="{{ route('expo.admin.stand.status', $stand->id) }}" class="inline">
+                                            @csrf
+                                            <input type="hidden" name="status" value="active">
+                                            <button type="submit" 
+                                                    class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs shadow-xs transition-all cursor-pointer"
+                                                    title="Aprobar y habilitar este stand para la feria">
+                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                                <span>Aprobar Stand</span>
+                                            </button>
+                                        </form>
+                                    @else
+                                        <!-- Botón Suspender -->
+                                        <form method="POST" action="{{ route('expo.admin.stand.status', $stand->id) }}" class="inline" onsubmit="return confirm('¿Deseas suspender temporalmente este stand?');">
+                                            @csrf
+                                            <input type="hidden" name="status" value="suspended">
+                                            <button type="submit" 
+                                                    class="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-xl text-slate-500 hover:text-rose-600 hover:bg-rose-50 border border-slate-200 hover:border-rose-200 text-xs font-bold transition-all cursor-pointer"
+                                                    title="Suspender temporalmente stand">
+                                                <span>⏸ Suspender</span>
+                                            </button>
+                                        </form>
+                                    @endif
+
                                     <!-- Abrir Panel del Stand -->
                                     <a href="{{ route('expo.panel', $stand->slug) }}" 
                                        class="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-gold-50 text-gold-800 hover:bg-gold-100 border border-gold-200/80 transition-colors shadow-2xs"
                                        title="Ver Panel CRM del Stand">
-                                        <span>Panel Stand &rarr;</span>
+                                        <span>Panel &rarr;</span>
                                     </a>
 
                                     <!-- Abrir Ruleta -->
@@ -245,7 +313,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="8" class="px-6 py-12 text-sm text-slate-400 text-center font-medium">
+                                <td colspan="9" class="px-6 py-12 text-sm text-slate-400 text-center font-medium">
                                     No hay stands registrados todavía. Comienza creando el primero con el botón superior.
                                 </td>
                             </tr>

@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [ExpoController::class, 'admin'])->name('expo.admin');
     Route::post('/stands', [ExpoController::class, 'createStand'])->name('expo.admin.create');
+    Route::post('/stands/{stand}/status', [ExpoController::class, 'updateStandStatus'])->name('expo.admin.stand.status');
 });
 
 // ==========================================

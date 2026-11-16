@@ -60,6 +60,8 @@ class SaaSSystemTest extends TestCase
         $stand = Stand::where('slug', $slug)->firstOrFail();
         $this->assertEquals($user->id, $stand->user_id);
         $this->assertEquals($plan->id, $stand->plan_id);
+        $this->assertEquals('pending', $stand->status);
+        $this->assertFalse($stand->is_active);
         $this->assertTrue($stand->allow_spins);
         $this->assertGreaterThan(0, $stand->prizes()->count());
 
@@ -141,5 +143,57 @@ class SaaSSystemTest extends TestCase
         if ($stand) {
             $this->get(route('expo.panel', $stand->slug))->assertRedirect(route('login'));
         }
+    }
+
+    public function test_superadmin_can_approve_and_suspend_stand(): void
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::create([
+            'name' => 'Admin Test',
+            'email' => 'admin_status_'.rand(100, 999).'@soteweb.com',
+            'role' => 'admin',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $stand = Stand::create([
+            'name' => 'Stand Pendiente Test',
+            'slug' => 'stand-pending-'.rand(100, 999),
+            'stand_number' => 'P-01',
+            'sector' => 'Test',
+            'primary_color' => '#16a34a',
+            'secondary_color' => '#0f172a',
+            'access_pin' => '9999',
+            'status' => 'pending',
+            'is_active' => false,
+        ]);
+
+        // 1. SuperAdmin aprueba el stand
+        $approveResponse = $this->actingAs($admin)->post(route('expo.admin.stand.status', $stand), [
+            'status' => 'active',
+        ]);
+        $approveResponse->assertRedirect();
+        $stand->refresh();
+        $this->assertEquals('active', $stand->status);
+        $this->assertTrue($stand->is_active);
+
+        // 2. SuperAdmin suspende el stand
+        $suspendResponse = $this->actingAs($admin)->post(route('expo.admin.stand.status', $stand), [
+            'status' => 'suspended',
+        ]);
+        $suspendResponse->assertRedirect();
+        $stand->refresh();
+        $this->assertEquals('suspended', $stand->status);
+        $this->assertFalse($stand->is_active);
+
+        // 3. Un usuario no admin es redirigido con acceso denegado
+        $normalUser = User::create([
+            'name' => 'Normal User',
+            'email' => 'normal_status_'.rand(100, 999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+        $unauthResponse = $this->actingAs($normalUser)->post(route('expo.admin.stand.status', $stand), [
+            'status' => 'active',
+        ]);
+        $unauthResponse->assertRedirect(route('dashboard'));
     }
 }
