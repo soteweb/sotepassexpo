@@ -911,4 +911,26 @@ class SaaSSystemTest extends TestCase
         $ownerPanel->assertSee('Modo Sandbox / Demo Activo');
         $ownerPanel->assertSee('10/10 Leads de Prueba Usados');
     }
+
+    public function test_seo_meta_tags_open_graph_and_dynamic_sitemap(): void
+    {
+        // 1. Landing principal contiene metas completos para Google y redes
+        $landing = $this->get('/');
+        $landing->assertOk();
+        $landing->assertSee('<title>SotePass Expo | Captación Digital de Leads y Ruleta para Stands en Ferias y Eventos</title>', false);
+        $landing->assertSee('name="description"', false);
+        $landing->assertSee('property="og:title"', false);
+        $landing->assertSee('property="og:image"', false);
+        $landing->assertSee('name="twitter:card"', false);
+        $landing->assertSee('application/ld+json', false);
+        $landing->assertSee('"@type": "SoftwareApplication"', false);
+
+        // 2. Sitemap XML dinámico responde correctamente
+        $sitemap = $this->get('/sitemap.xml');
+        $sitemap->assertOk();
+        $sitemap->assertHeader('Content-Type', 'application/xml');
+        $sitemap->assertSee('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">', false);
+        $sitemap->assertSee(url('/'), false);
+        $sitemap->assertSee(route('register'), false);
+    }
 }

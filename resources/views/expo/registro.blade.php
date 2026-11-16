@@ -1,5 +1,6 @@
-<x-guest-layout>
-    <x-slot:title>{{ $stand->name }} | Acreditación Digital</x-slot>
+<x-guest-layout :stand="$stand">
+    <x-slot:title>{{ $stand->name }} | Registro y Acreditación de Visitantes - {{ $stand->event_name ?? 'Expo Paraguay' }}</x-slot>
+    <x-slot:description>Acreditación digital de visitantes para el stand de {{ $stand->name }} ({{ $stand->stand_number }}). Registrate en segundos, validá tu WhatsApp y participá por premios exclusivos en {{ $stand->event_name ?? 'la expo' }}.</x-slot>
 
     <div class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 bg-[#f8f9fa] antialiased font-sans text-slate-800">
 

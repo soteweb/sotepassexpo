@@ -2,12 +2,51 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ExpoController;
+use App\Models\Stand;
 use Illuminate\Support\Facades\Route;
 
 // ==========================================
 // 1. RUTAS PÚBLICAS & LANDING DE PRESENTACIÓN
 // ==========================================
 Route::get('/', [ExpoController::class, 'index'])->name('expo.index');
+
+// Sitemap XML dinámico para Google Search Console y motores de búsqueda
+Route::get('/sitemap.xml', function () {
+    $stands = Stand::where('is_active', true)->where('status', 'active')->get();
+
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>';
+    $xml .= '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
+
+    // Homepage
+    $xml .= '<url>';
+    $xml .= '<loc>'.url('/').'</loc>';
+    $xml .= '<lastmod>'.now()->toAtomString().'</lastmod>';
+    $xml .= '<changefreq>daily</changefreq>';
+    $xml .= '<priority>1.0</priority>';
+    $xml .= '</url>';
+
+    // Registro
+    $xml .= '<url>';
+    $xml .= '<loc>'.route('register').'</loc>';
+    $xml .= '<lastmod>'.now()->toAtomString().'</lastmod>';
+    $xml .= '<changefreq>weekly</changefreq>';
+    $xml .= '<priority>0.8</priority>';
+    $xml .= '</url>';
+
+    // Stands activos
+    foreach ($stands as $stand) {
+        $xml .= '<url>';
+        $xml .= '<loc>'.route('expo.stand', $stand->slug).'</loc>';
+        $xml .= '<lastmod>'.$stand->updated_at->toAtomString().'</lastmod>';
+        $xml .= '<changefreq>hourly</changefreq>';
+        $xml .= '<priority>0.9</priority>';
+        $xml .= '</url>';
+    }
+
+    $xml .= '</urlset>';
+
+    return response($xml, 200)->header('Content-Type', 'application/xml');
+})->name('sitemap');
 
 // ==========================================
 // 2. AUTENTICACIÓN (LOGIN, REGISTRO, LOGOUT)

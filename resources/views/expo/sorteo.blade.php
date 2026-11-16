@@ -1,5 +1,6 @@
-<x-guest-layout>
-    <x-slot:title>Gran Sorteo Final | {{ $stand->name }}</x-slot>
+<x-guest-layout :stand="$stand">
+    <x-slot:title>Sorteo Oficial TV 4K | {{ $stand->name }} - {{ $stand->event_name ?? 'Expo Paraguay' }}</x-slot>
+    <x-slot:description>Pantalla interactiva de sorteo en vivo para los visitantes del stand de {{ $stand->name }} en {{ $stand->event_name ?? 'la expo' }}.</x-slot>
 
     <style>
         .glow-text { text-shadow: 0 0 25px {{ $stand->primary_color }}, 0 0 50px rgba(255, 255, 255, 0.4); }

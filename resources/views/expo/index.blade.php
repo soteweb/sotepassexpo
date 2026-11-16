@@ -1,5 +1,7 @@
 <x-guest-layout>
-    <x-slot:title>SotePass Expo | Captación Digital de Leads y Ruleta para Stands</x-slot>
+    <x-slot:title>SotePass Expo | Captación Digital de Leads y Ruleta para Stands en Ferias y Eventos</x-slot>
+    <x-slot:description>Plataforma B2B para empresas y stands en ferias y exposiciones en Paraguay. Captá contactos calificados con WhatsApp verificado, ruleta digital interactiva y sorteos en vivo para pantalla TV.</x-slot>
+    <x-slot:keywords>captacion de leads, ruleta para stands, ruleta interactiva, exposiciones paraguay, ferias comerciales, sorteo tv, marketing ferial b2b, acreditacion digital qr, expo paraguay, agrodinamica, innovar, sotepass expo, soteweb</x-slot>
 
     <div class="min-h-screen bg-[#fcfbfa] text-slate-800 flex flex-col antialiased selection:bg-emerald-600 selection:text-white">
 

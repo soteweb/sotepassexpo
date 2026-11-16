@@ -1,5 +1,6 @@
 <x-guest-layout>
-    <x-slot:title>Configurar Mi Stand & Elegir Plan | SotePass Expo</x-slot>
+    <x-slot:title>Configurar Stand y Elegir Plan B2B | SotePass Expo</x-slot>
+    <x-slot:robots>noindex, nofollow</x-slot>
 
     <div class="min-h-screen bg-[#f8f9fa] py-10 px-4 sm:px-6 lg:px-8 antialiased font-sans text-slate-800">
         

@@ -5,7 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>{{ $title ?? 'SotePass Expo | Captación y Ruleta B2B para Stands' }}</title>
+    <title>{{ $title ?? 'Panel de Gestión | SotePass Expo' }}</title>
+
+    <!-- Protección de Privacidad para Paneles Privados (No indexar en Google) -->
+    <meta name="robots" content="noindex, nofollow, noarchive, nosnippet">
+    <meta name="googlebot" content="noindex, nofollow">
+    <meta name="theme-color" content="{{ isset($stand) && $stand->primary_color ? $stand->primary_color : '#059669' }}">
 
     <!-- Favicon Oficial SotePass Expo -->
     <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">

@@ -1,5 +1,7 @@
 <x-guest-layout>
-    <x-slot:title>Registro de Empresa Expositora | SotePass Expo</x-slot>
+    <x-slot:title>Crear Cuenta de Expositor | Registrar Stand B2B - SotePass Expo</x-slot>
+    <x-slot:description>Registrá tu empresa expositora en SotePass Expo. Habilitá captación digital de leads con WhatsApp, ruleta gamificada de premios y sorteos en TV para tu stand.</x-slot>
+    <x-slot:keywords>registro expositor, crear stand digital, ferias paraguay, expo paraguay, captacion leads stand, sotepass expo</x-slot>
 
     <div class="min-h-screen flex flex-col justify-center items-center py-10 px-4 sm:px-6 bg-[#f8f9fa] antialiased font-sans text-slate-800">
         <!-- Brand Logo SotePass Expo -->

@@ -1,5 +1,5 @@
 <x-app-layout :stand="$stand">
-    <x-slot:title>Personalizar Landing del Visitante | {{ $stand->name }}</x-slot>
+    <x-slot:title>Personalizar Marca y Landing | {{ $stand->name }} - SotePass Expo</x-slot>
 
     <div class="space-y-6"
          x-data="{ 

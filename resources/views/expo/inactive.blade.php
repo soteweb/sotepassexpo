@@ -1,5 +1,6 @@
-<x-guest-layout>
-    <x-slot:title>{{ $stand->name }} | Stand en Preparación</x-slot>
+<x-guest-layout :stand="$stand">
+    <x-slot:title>{{ $stand->name }} | Stand en Preparación - {{ $stand->event_name ?? 'Expo Paraguay' }}</x-slot>
+    <x-slot:robots>noindex, follow</x-slot>
 
     <div class="min-h-screen bg-[#f8f7f5] flex items-center justify-center p-4 antialiased">
         <div class="max-w-md w-full bg-white rounded-lg p-6 sm:p-8 border border-slate-200 shadow-sm text-center space-y-6">

@@ -1,5 +1,5 @@
 <x-app-layout :stand="$stand">
-    <x-slot:title>Panel de Expositor | {{ $stand->name }}</x-slot>
+    <x-slot:title>Panel de Expositor | {{ $stand->name }} - SotePass Expo</x-slot>
 
     <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false }">
 

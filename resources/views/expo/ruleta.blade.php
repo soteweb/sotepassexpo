@@ -1,5 +1,6 @@
-<x-guest-layout>
-    <x-slot:title>Ruleta de Premios | {{ $stand->name }}</x-slot>
+<x-guest-layout :stand="$stand">
+    <x-slot:title>Ruleta de Premios | {{ $stand->name }} - {{ $stand->event_name ?? 'Expo Paraguay' }}</x-slot>
+    <x-slot:description>Giró la ruleta interactiva de {{ $stand->name }} en {{ $stand->event_name ?? 'la feria' }}. Ganá premios instantáneos y cupones de descuento exclusivos.</x-slot>
 
     <style>
         .ruleta-pointer-wrap {
