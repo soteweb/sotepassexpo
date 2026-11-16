@@ -107,7 +107,7 @@ DB_PASSWORD=TuPasswordSeguro123
 Copia y pega este bloque completo en la terminal:
 
 ```bash
-# 1. Instalar dependencias de producción
+# 1. Instalar dependencias de PHP para producción
 composer install --no-dev --optimize-autoloader
 
 # 2. Generar clave criptográfica
@@ -122,11 +122,17 @@ php artisan migrate:fresh --seed --force
 # 5. Enlace simbólico de storage
 php artisan storage:link
 
-# 6. Permisos de aaPanel (Crucial para evitar Error 500)
+# 6. Compilar assets de frontend y publicar Livewire (Vital para menús y reactividad)
+npm install
+npm run build
+php artisan livewire:publish --assets
+
+# 7. Permisos de aaPanel (Crucial para evitar Error 500)
 chown -R www:www /www/wwwroot/expo.sotepass.com
 chmod -R 775 storage bootstrap/cache
 
-# 7. Cachear para máximo rendimiento
+# 8. Limpiar y cachear vistas para máximo rendimiento
+php artisan view:clear
 php artisan config:cache
 php artisan route:cache
 php artisan view:cache
@@ -150,10 +156,13 @@ Cada vez que subas cambios a GitHub (`git push origin main`), entra a tu VPS y e
 cd /www/wwwroot/expo.sotepass.com
 git pull origin main
 composer install --no-dev --optimize-autoloader
+npm run build
+php artisan livewire:publish --assets
 php artisan migrate --force
+php artisan optimize:clear
+php artisan view:cache
 php artisan config:cache
 php artisan route:cache
-php artisan view:cache
 chown -R www:www /www/wwwroot/expo.sotepass.com
 ```
 
@@ -174,9 +183,11 @@ Para que los sorteos, expiraciones y colas funcionen automáticamente:
 
 ## 5. Solución a Problemas Comunes
 
-| Error | Causa | Solución |
+| Error / Síntoma | Causa | Solución Definitiva |
 | :--- | :--- | :--- |
+| **Los menús no reaccionan, el sidebar no colapsa o el diseño se ve detrás** | Assets de Livewire y frontend no publicados o compilados en producción. | 1. Verificar `APP_URL=https://...` en `.env`<br>2. `php artisan config:clear`<br>3. `npm install && npm run build`<br>4. `php artisan livewire:publish --assets`<br>5. `php artisan view:clear` |
 | **`file_get_contents(.env): Failed to open stream`** | No existe el archivo `.env`. | Ejecutar `cp .env.example .env` antes de `key:generate`. |
 | **`FATAL: role "x" does not exist`** | El usuario no existe en el PostgreSQL del puerto 5432. | Crear el usuario conectándose con `-h 127.0.0.1 -p 5432`. |
 | **`Error 500` tras desplegar** | Permisos incorrectos en carpetas de escritura. | Ejecutar `chown -R www:www /www/wwwroot/dominio` y `chmod -R 775 storage bootstrap/cache`. |
 | **Los cambios de `.env` no surten efecto** | La configuración está cacheada en memoria. | Ejecutar `php artisan config:clear` y luego `php artisan config:cache`. |
+
