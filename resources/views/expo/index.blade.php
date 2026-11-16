@@ -3,16 +3,8 @@
 
     <div class="min-h-screen bg-[#fcfbfa] text-slate-800 flex flex-col antialiased selection:bg-emerald-600 selection:text-white">
 
-        <!-- Top Announcement Bar -->
-        <div class="bg-slate-900 text-slate-200 text-xs font-semibold py-2 px-4 text-center border-b border-slate-800">
-            <span class="inline-flex items-center gap-1.5">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                <span>Plataforma Oficial B2B de Soteweb: <strong>SotePass Expo</strong> — Captá contactos calificados con WhatsApp y prospección en tu stand.</span>
-            </span>
-        </div>
-
-        <!-- Header / Navbar Propio de la Landing (Tono Claro y Nítido) -->
-        <header class="border-b border-slate-200/80 bg-white/90 backdrop-blur-md sticky top-0 z-50">
+        <!-- Header / Navbar Propio de la Landing (Estilo SoteGym Dark SaaS) -->
+        <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-50 text-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
                 
                 <!-- Brand Logo SotePass Expo -->
@@ -23,39 +15,39 @@
                         </svg>
                     </div>
                     <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-slate-900 text-lg tracking-tight">Sote<span class="text-emerald-600">Pass</span></span>
-                        <span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-800 border border-emerald-200">Expo</span>
+                        <span class="font-bold text-white text-lg tracking-tight">Sote<span class="text-emerald-400">Pass</span></span>
+                        <span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[4px] bg-emerald-950/90 text-emerald-300 border border-emerald-800">Expo</span>
                     </div>
                 </a>
 
                 <!-- Enlaces y Acciones -->
                 <div class="flex items-center gap-3 sm:gap-4">
-                    <a href="#solucion" class="hidden md:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
+                    <a href="#solucion" class="hidden md:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white transition">
                         ¿Cómo Funciona?
                     </a>
-                    <a href="#demo" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
+                    <a href="#demo" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white transition">
                         Demos en Vivo
                     </a>
-                    <a href="#planes" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
+                    <a href="#planes" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-300 hover:text-white transition">
                         Planes B2B
                     </a>
 
                     @auth
                         @if(auth()->user()->isAdmin())
-                            <a href="{{ route('expo.admin') }}" class="px-3.5 py-2 rounded-md bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs">
-                                <svg class="w-3.5 h-3.5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                            <a href="{{ route('expo.admin') }}" class="px-3.5 py-2 rounded-md bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs border border-slate-700">
+                                <svg class="w-3.5 h-3.5 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
                                 <span>Panel SuperAdmin</span>
                             </a>
                         @else
-                            <a href="{{ route('dashboard') }}" class="px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs">
+                            <a href="{{ route('dashboard') }}" class="px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs">
                                 <span>Mi Panel Expositor &rarr;</span>
                             </a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-600 transition">
+                        <a href="{{ route('login') }}" class="px-3 py-2 text-xs font-semibold text-slate-300 hover:text-white transition">
                             Iniciar Sesión
                         </a>
-                        <a href="{{ route('register') }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-md transition shadow-xs flex items-center gap-1.5">
+                        <a href="{{ route('register') }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs rounded-md transition shadow-xs flex items-center gap-1.5 border border-emerald-500">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                             <span>Registrar Empresa</span>
                         </a>
@@ -64,87 +56,125 @@
             </div>
         </header>
 
-        <!-- HERO SECTION ESTILO SOTEGYM (TONO CLARO, 2 COLUMNAS CON FOTO DE TÓTEM TOUCH VERTICAL) -->
-        <section class="relative pt-12 pb-20 sm:pt-16 sm:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
+        <!-- HERO SECTION ESTILO SOTEGYM (FULL WIDTH, FONDO PANORÁMICO EXPO PARAGUAY CON OVERLAY OSCURO) -->
+        <section class="relative w-full overflow-hidden bg-slate-950 text-white py-20 sm:py-28 lg:py-32 flex items-center justify-center border-b border-slate-800">
             
-            <!-- Fondos y resplandores suaves de tono claro -->
-            <div class="absolute -top-24 right-10 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none"></div>
-            <div class="absolute top-1/2 left-0 w-80 h-80 bg-amber-100/40 rounded-full blur-3xl pointer-events-none"></div>
+            <!-- Imagen de Fondo Full-Width con Overlay Gradiente Cinemático -->
+            <div class="absolute inset-0 z-0">
+                <img src="{{ asset('images/hero-expo-paraguay.jpg') }}" 
+                     alt="Expo Paraguay - Captación y Ruleta para Stands" 
+                     class="w-full h-full object-cover object-center filter brightness-[0.32] contrast-[1.08]">
+                <div class="absolute inset-0 bg-gradient-to-b from-slate-950/90 via-slate-950/75 to-slate-950"></div>
+                <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[350px] bg-emerald-500/10 rounded-full blur-[140px] pointer-events-none"></div>
+            </div>
 
-            <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
+            <!-- Contenido Centrado de Gran Impacto -->
+            <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-7">
                 
-                <!-- COLUMNA IZQUIERDA: PROPUESTA DE VALOR Y CONVERSIÓN -->
-                <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
-                    
-                    <!-- Badge de Feria / Novedad -->
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 shadow-xs">
-                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                        <span>Para Empresas en Agrodinámica, Innovar y Ferias Comerciales</span>
-                    </div>
-
-                    <!-- Titular de Gran Impacto -->
-                    <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.12]">
-                        Dejá de regalar merchandising sin retorno.<br class="hidden sm:inline">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-emerald-700 to-slate-900">
-                            Captá clientes reales con Ruleta y Sorteo Final.
-                        </span>
-                    </h1>
-
-                    <!-- Bajada Comercial Clara -->
-                    <p class="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto lg:mx-0 leading-relaxed font-normal">
-                        Cada visitante escanea el código QR de tu stand o interactúa con tu pantalla vertical, completa sus datos en 20 segundos para girar la ruleta y recibís al instante su <strong>WhatsApp verificado, ciudad y perfil de productor</strong> directo en tu CRM y Excel.
-                    </p>
-
-                    <!-- Botones de Acción (CTAs B2B Rectangulares) -->
-                    <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
-                        <a href="{{ route('register') }}" 
-                           class="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-md shadow-xs transition flex items-center gap-2 cursor-pointer border border-emerald-500">
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                            <span>Registrar Mi Empresa / Stand</span>
-                        </a>
-
-                        <a href="#demo" 
-                           class="px-5 py-3.5 bg-white hover:bg-slate-50 text-slate-800 font-semibold text-xs sm:text-sm rounded-md border border-slate-200 shadow-xs transition flex items-center gap-2">
-                            <span>Ver Demo en Vivo 🎡</span>
-                        </a>
-
-                        <a href="#planes" class="px-3 py-3.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 transition flex items-center gap-1">
-                            <span>Ver Planes B2B &darr;</span>
-                        </a>
-                    </div>
-
-                    <!-- Indicadores de Confianza / Puntos Fuertes -->
-                    <div class="pt-6 border-t border-slate-200/80 grid grid-cols-2 sm:grid-cols-3 gap-4 text-left">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                                ✓
-                            </div>
-                            <span class="text-xs font-semibold text-slate-700">+95% Conversión</span>
-                        </div>
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
-                                ✓
-                            </div>
-                            <span class="text-xs font-semibold text-slate-700">Sin papel ni planillas</span>
-                        </div>
-                        <div class="flex items-center gap-2.5 col-span-2 sm:col-span-1">
-                            <div class="w-6 h-6 rounded-md bg-amber-50 text-amber-600 flex items-center justify-center text-xs font-bold">
-                                ✓
-                            </div>
-                            <span class="text-xs font-semibold text-slate-700">Sorteo Final en Vivo</span>
-                        </div>
-                    </div>
-
+                <!-- Badge de Feria / Novedad (Petición 3: Para Empresas en Exposiciones y Eventos) -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-emerald-300 shadow-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span>Para Empresas en Exposiciones y Eventos • SotePass Expo</span>
                 </div>
 
-                <!-- COLUMNA DERECHA: FOTO REAL DE PERSONA USANDO RULETA EN TÓTEM TOUCH VERTICAL -->
+                <!-- Titular de Gran Impacto -->
+                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12]">
+                    Dejá de regalar merchandising sin retorno.<br class="hidden sm:inline">
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
+                        Captá clientes reales con Ruleta y Sorteo Final.
+                    </span>
+                </h1>
+
+                <!-- Bajada Comercial Clara (Petición 2: perfil del visitante) -->
+                <p class="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+                    Cada visitante escanea el código QR de tu stand o interactúa con tu pantalla vertical, completa sus datos en 20 segundos para girar la ruleta y recibís al instante su <strong class="text-white">WhatsApp verificado, ciudad y perfil del visitante</strong> directo en tu CRM y Excel.
+                </p>
+
+                <!-- Botones de Acción (CTAs B2B Rectangulares) -->
+                <div class="pt-2 flex flex-wrap items-center justify-center gap-3.5">
+                    <a href="{{ route('register') }}" 
+                       class="px-7 py-3.5 bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-md shadow-lg shadow-emerald-950/60 transition-all duration-150 active:scale-[0.99] flex items-center gap-2 cursor-pointer border border-emerald-500">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span>Registrar Mi Empresa / Stand</span>
+                    </a>
+
+                    <a href="#demo" 
+                       class="px-6 py-3.5 bg-white/10 hover:bg-white/15 backdrop-blur-md text-white font-semibold text-xs sm:text-sm rounded-md border border-white/20 shadow-xs transition-all flex items-center gap-2">
+                        <span>Ver Demos en Vivo 🎡</span>
+                    </a>
+
+                    <a href="#planes" class="px-3 py-3.5 text-xs font-semibold text-slate-400 hover:text-white transition flex items-center gap-1">
+                        <span>Ver Planes B2B &darr;</span>
+                    </a>
+                </div>
+
+                <!-- Indicadores de Confianza / Puntos Fuertes -->
+                <div class="pt-6 border-t border-white/10 flex flex-wrap items-center justify-center gap-x-8 gap-y-2.5 text-xs text-slate-300 font-medium">
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <span>+95% Conversión en Stand</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <span>Sin papel ni planillas</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <span>WhatsApp 100% Verificado</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <span class="w-4 h-4 rounded-full bg-amber-500/20 text-amber-400 flex items-center justify-center text-[10px] font-bold">✓</span>
+                        <span>Sorteo Final en Pantalla</span>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- HIGHLIGHT DE EXPERIENCIA EN STAND: TÓTEM TOUCH VERTICAL O QR EN CELULAR -->
+        <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="bg-white rounded-xl border border-slate-200 p-8 sm:p-12 shadow-xs grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                
+                <div class="lg:col-span-7 space-y-5 text-left">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 shadow-xs">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>Tecnología Híbrida para Stands B2B</span>
+                    </div>
+
+                    <h2 class="text-2xl sm:text-4xl font-bold text-slate-900 tracking-tight leading-snug">
+                        Funciona en el celular del visitante o en una pantalla táctil vertical
+                    </h2>
+
+                    <p class="text-sm sm:text-base text-slate-600 leading-relaxed font-normal">
+                        Instalá un <strong>tótem vertical touch</strong> en tu stand para atraer al público del pasillo con la ruleta interactiva, o colocá códigos QR en tus mostradores para que cada visitante se registre desde su propio teléfono en 20 segundos sin formar filas.
+                    </p>
+
+                    <div class="pt-2 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold shrink-0">✓</div>
+                            <span class="font-semibold">Código QR autogestionable listo para imprimir</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold shrink-0">✓</div>
+                            <span class="font-semibold">Modo Tótem Touch a pantalla completa</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold shrink-0">✓</div>
+                            <span class="font-semibold">Cupones antifraude con control de stock</span>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold shrink-0">✓</div>
+                            <span class="font-semibold">Registro por promotor/a o autoregistro</span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="lg:col-span-5 relative flex justify-center">
-                    
                     <!-- Marco Dispositivo / Escaparate Tecnológico Limpio B2B -->
-                    <div class="relative w-full max-w-md bg-white p-2.5 rounded-lg shadow-sm border border-slate-200 transition duration-300">
+                    <div class="relative w-full max-w-md bg-slate-50 p-3 rounded-lg shadow-sm border border-slate-200 transition duration-300">
                         
                         <!-- Imagen del Tótem con Persona Interactuando -->
-                        <div class="relative rounded-md overflow-hidden aspect-[4/5] bg-slate-100 border border-slate-100">
+                        <div class="relative rounded-md overflow-hidden aspect-[4/5] bg-slate-100 border border-slate-200">
                             <img src="{{ asset('images/hero-totem-ruleta.jpg') }}" 
                                  alt="Persona interactuando con ruleta touch vertical en stand de expo" 
                                  class="w-full h-full object-cover">
@@ -190,11 +220,9 @@
                         </div>
 
                     </div>
-
                 </div>
 
             </div>
-
         </section>
 
         <!-- HUB DE DEMOSTRACIÓN INTERACTIVA (4 MÓDULOS DEL SISTEMA) -->
@@ -220,7 +248,7 @@
                             <span class="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Módulo 1</span>
                             <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Landing Mobile del Stand</h3>
                             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
-                                Formulario ultra-rápido en celular con el logo y colores del stand. Pide Nombre, WhatsApp, Ciudad y Perfil productivo.
+                                Formulario ultra-rápido en celular con el logo y colores del stand. Pide Nombre, WhatsApp, Ciudad y Perfil del visitante.
                             </p>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-100">
@@ -358,7 +386,7 @@
                         Elegí el Plan Ideal para tu Stand
                     </h2>
                     <p class="text-sm sm:text-base text-slate-500 mt-4 leading-relaxed">
-                        Tarifa plana por toda la duración de la feria (Agrodinámica, Expo Santa Rita, Innovar). Sin comisiones por contacto ni costos ocultos.
+                        Tarifa plana por toda la duración de la feria (Expo Paraguay, ferias y eventos comerciales). Sin comisiones por contacto ni costos ocultos.
                     </p>
                 </div>
 

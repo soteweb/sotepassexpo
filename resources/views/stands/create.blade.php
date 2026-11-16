@@ -160,7 +160,7 @@
 
                     <div>
                         <x-input-label value="Eslogan o Mensaje de Bienvenida (Opcional)" />
-                        <x-text-input type="text" name="tagline" :value="old('tagline')" placeholder="Ej. Innovación y tecnología para el productor del campo paraguayo." class="w-full" />
+                        <x-text-input type="text" name="tagline" :value="old('tagline')" placeholder="Ej. Innovación y tecnología para los visitantes de la Expo." class="w-full" />
                     </div>
 
                     <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
