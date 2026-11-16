@@ -29,6 +29,7 @@
 
             <form method="POST" action="{{ route('register') }}" class="space-y-4 text-xs">
                 @csrf
+                <input type="hidden" name="plan" value="{{ request('plan') }}">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- Nombre del Responsable -->

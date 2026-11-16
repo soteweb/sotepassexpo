@@ -53,12 +53,17 @@ class ExpoController extends Controller
     /**
      * Asistente Onboarding para Configurar Stand y Elegir Plan B2B
      */
-    public function createStandWizard(): View
+    public function createStandWizard(Request $request): View
     {
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
         $user = Auth::user();
+        $selectedPlanSlug = $request->query('plan');
+        $initialPlan = $plans->firstWhere('slug', $selectedPlanSlug)
+            ?? $plans->firstWhere('slug', 'stand-pro-ruleta-touch')
+            ?? $plans->first();
+        $initialPlanId = $initialPlan?->id ?? 1;
 
-        return view('stands.create', compact('plans', 'user'));
+        return view('stands.create', compact('plans', 'user', 'initialPlanId'));
     }
 
     /**

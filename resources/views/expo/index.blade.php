@@ -11,24 +11,44 @@
         <!-- Header / Navbar Propio de la Landing (Sin sidebar de backend) -->
         <header class="border-b border-slate-800 bg-slate-900/60 backdrop-blur-md sticky top-0 z-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/30">
+                <a href="{{ route('expo.index') }}" class="flex items-center gap-3 group">
+                    <div class="w-10 h-10 rounded-xl bg-emerald-500 flex items-center justify-center font-black text-slate-950 text-xl shadow-lg shadow-emerald-500/30 group-hover:scale-105 transition-transform">
                         S
                     </div>
                     <div>
                         <span class="font-extrabold text-white text-lg tracking-tight">SotePass <span class="text-emerald-400">Expo</span></span>
-                        <span class="block text-[10px] text-slate-400 -mt-1 font-semibold uppercase tracking-wider">División Empresas & Stands (TALL Stack + PostgreSQL)</span>
+                        <span class="block text-[10px] text-slate-400 -mt-1 font-semibold uppercase tracking-wider">Captación Digital de Leads para Stands</span>
                     </div>
-                </div>
+                </a>
 
-                <div class="flex items-center gap-3">
-                    <a href="{{ route('expo.admin') }}" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700">
-                        <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
-                        <span>Panel SuperAdmin</span>
+                <div class="flex items-center gap-2 sm:gap-3">
+                    <a href="#planes" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">
+                        Planes B2B
                     </a>
-                    <a href="#demo" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl transition shadow-sm">
-                        Probar Demo Interactiva
+                    <a href="#demo" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">
+                        Demos en Vivo
                     </a>
+
+                    @auth
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('expo.admin') }}" class="px-3.5 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center gap-1.5 border border-slate-700">
+                                <svg class="w-3.5 h-3.5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"/></svg>
+                                <span>Panel SuperAdmin</span>
+                            </a>
+                        @else
+                            <a href="{{ route('dashboard') }}" class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold transition flex items-center gap-1.5 shadow-sm">
+                                <span>Mi Panel Expositor &rarr;</span>
+                            </a>
+                        @endif
+                    @else
+                        <a href="{{ route('login') }}" class="px-3 py-1.5 text-xs font-bold text-slate-300 hover:text-white transition">
+                            Iniciar Sesión
+                        </a>
+                        <a href="{{ route('register') }}" class="px-4 py-2 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-xs rounded-xl transition shadow-md shadow-emerald-500/25 flex items-center gap-1.5">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                            <span>Registrar Mi Empresa</span>
+                        </a>
+                    @endauth
                 </div>
             </div>
         </header>
@@ -56,13 +76,16 @@
 
             <!-- CTA Buttons -->
             <div class="mt-10 flex flex-wrap items-center justify-center gap-4">
-                <a href="{{ route('expo.stand', 'kurosu') }}" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl shadow-xl shadow-emerald-500/20 transform transition hover:scale-105 flex items-center gap-2">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
-                    <span>Probar como Visitante del Stand (Kurosu)</span>
+                <a href="{{ route('register') }}" class="px-8 py-4 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-black text-sm rounded-2xl shadow-xl shadow-emerald-500/25 transform transition hover:scale-105 flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                    <span>Registrar Mi Empresa / Stand</span>
                 </a>
-                <a href="{{ route('expo.panel', 'kurosu') }}" class="px-8 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-2xl border border-slate-700 transition flex items-center gap-2">
-                    <svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
-                    <span>Ver Panel en Vivo (Livewire 3)</span>
+                <a href="#planes" class="px-7 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-sm rounded-2xl border border-slate-700 transition flex items-center gap-2">
+                    <span>Ver Planes B2B</span>
+                    <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/></svg>
+                </a>
+                <a href="#demo" class="px-6 py-4 text-slate-400 hover:text-white font-bold text-sm transition flex items-center gap-1.5">
+                    <span>Probar Demo Kurosu &rarr;</span>
                 </a>
             </div>
 
@@ -162,6 +185,81 @@
 
                 </div>
 
+            </div>
+        </section>
+
+        <!-- Planes B2B Oficiales para Empresas Expositoras -->
+        <section id="planes" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div class="text-center max-w-3xl mx-auto mb-16">
+                <div class="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-xs font-bold text-emerald-400 mb-3">
+                    <span>💼 Planes Oficiales B2B Soteweb</span>
+                </div>
+                <h2 class="text-3xl sm:text-5xl font-black text-white tracking-tight">
+                    Elegí el Plan Ideal para tu Stand
+                </h2>
+                <p class="text-sm sm:text-base text-slate-400 mt-4 leading-relaxed">
+                    Tarifa única y plana para toda la duración de la feria (Agrodinámica, Expo Santa Rita, Innovar). Sin costos ocultos.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                @foreach($plans as $plan)
+                    <div class="bg-slate-900/90 border {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'border-emerald-500 shadow-2xl shadow-emerald-500/15 ring-2 ring-emerald-500/30' : 'border-slate-800' }} rounded-3xl p-7 sm:p-8 flex flex-col justify-between relative hover:border-slate-700 transition-all group">
+                        @if($plan->badge_text)
+                            <span class="absolute top-5 right-5 text-[10px] font-black uppercase tracking-wider px-3 py-1 rounded-full bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                                {{ $plan->badge_text }}
+                            </span>
+                        @endif
+
+                        <div>
+                            <span class="text-[11px] font-black uppercase tracking-wider text-slate-400">Plan B2B</span>
+                            <h3 class="text-xl font-black text-white mt-1">{{ $plan->name }}</h3>
+                            <div class="mt-4 mb-3">
+                                <div class="text-3xl sm:text-4xl font-black text-white tracking-tight">{{ $plan->formatted_price }}</div>
+                                <span class="text-[11px] text-slate-400 font-medium">Tarifa plana por toda la expo</span>
+                            </div>
+                            <p class="text-xs text-slate-400 leading-relaxed mb-6">{{ $plan->description }}</p>
+
+                            <div class="space-y-3 pt-6 border-t border-slate-800">
+                                @foreach($plan->features as $feat)
+                                    <div class="flex items-start gap-2.5 text-xs text-slate-300">
+                                        <svg class="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                        <span>{{ $feat }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+
+                        <div class="mt-8 pt-6 border-t border-slate-800">
+                            <a href="{{ route('register', ['plan' => $plan->slug]) }}" 
+                               class="w-full py-3.5 px-4 rounded-2xl text-center font-black text-xs uppercase tracking-wider transition-all block {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'bg-emerald-500 hover:bg-emerald-400 text-slate-950 shadow-lg shadow-emerald-500/25 hover:scale-[1.02]' : 'bg-slate-800 hover:bg-slate-700 text-white hover:border-slate-600 border border-slate-700' }}">
+                                Registrar Empresa con este Plan &rarr;
+                            </a>
+                        </div>
+                    </div>
+                @endforeach
+            </div>
+        </section>
+
+        <!-- Banner CTA de Conversión -->
+        <section class="py-12 sm:py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
+            <div class="bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 rounded-3xl p-8 sm:p-12 text-center text-white relative overflow-hidden shadow-2xl">
+                <div class="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
+                <h3 class="text-2xl sm:text-4xl font-black tracking-tight relative z-10">
+                    ¿Tu empresa va a estar presente en la Expo?
+                </h3>
+                <p class="text-emerald-100 text-xs sm:text-sm max-w-xl mx-auto mt-3 leading-relaxed relative z-10">
+                    Registrate ahora en 2 minutos, cargá tus premios y comenzá a captar clientes con ruleta interactiva desde el primer día de la feria.
+                </p>
+                <div class="mt-8 flex flex-wrap items-center justify-center gap-4 relative z-10">
+                    <a href="{{ route('register') }}" class="px-8 py-4 bg-slate-950 hover:bg-slate-900 text-white font-black text-xs uppercase tracking-widest rounded-2xl shadow-xl transition-all hover:scale-105 flex items-center gap-2">
+                        <span>Registrar Mi Empresa Ahora</span>
+                        <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                    </a>
+                    <a href="https://wa.me/595981123456" target="_blank" class="px-6 py-4 bg-white/15 hover:bg-white/25 text-white font-bold text-xs uppercase tracking-wider rounded-2xl transition-all border border-white/20">
+                        Hablar por WhatsApp &rarr;
+                    </a>
+                </div>
             </div>
         </section>
 

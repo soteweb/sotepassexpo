@@ -3,7 +3,7 @@
 
     <div class="min-h-screen bg-[#f8f7f5] py-10 px-4 sm:px-6 lg:px-8 antialiased">
         
-        <div class="max-w-5xl mx-auto space-y-8" x-data="{ selectedPlan: {{ $plans->firstWhere('slug', 'stand-pro-ruleta-touch')?->id ?? $plans->first()?->id }} }">
+        <div class="max-w-5xl mx-auto space-y-8" x-data="{ selectedPlan: {{ $initialPlanId ?? ($plans->firstWhere('slug', 'stand-pro-ruleta-touch')?->id ?? $plans->first()?->id) }} }">
             
             <!-- Header Onboarding -->
             <div class="text-center max-w-2xl mx-auto">

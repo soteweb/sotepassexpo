@@ -104,7 +104,10 @@ class AuthController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('stands.create')->with('success', '¡Cuenta creada con éxito! Ahora configuremos tu stand y plan.');
+        $planSlug = $request->input('plan', $request->query('plan'));
+
+        return redirect()->route('stands.create', $planSlug ? ['plan' => $planSlug] : [])
+            ->with('success', '¡Cuenta creada con éxito! Ahora configuremos tu stand y plan.');
     }
 
     /**
