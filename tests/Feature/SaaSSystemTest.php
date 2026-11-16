@@ -746,4 +746,169 @@ class SaaSSystemTest extends TestCase
         $this->assertEquals('Interesada en software de trazabilidad para silos', $lead->observation);
         $this->assertNull($lead->hectares);
     }
+
+    public function test_trial_sandbox_demo_and_payment_notification_flow(): void
+    {
+        $user = User::create([
+            'name' => 'Demo User',
+            'company_name' => 'Tractores del Sur S.A.',
+            'email' => 'demo_'.uniqid().'@test.com',
+            'phone' => '0981777222',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $plan = Plan::firstOrFail();
+        $slug = 'tractores-sur-'.uniqid();
+
+        // 1. Onboarding crea stand en modo Demo / Trial
+        $this->actingAs($user)->post('/stands', [
+            'plan_id' => $plan->id,
+            'name' => 'Tractores del Sur S.A.',
+            'slug' => $slug,
+            'stand_number' => 'SUR-05',
+            'sector' => 'Maquinarias',
+            'primary_color' => '#0284c7',
+            'access_pin' => '9988',
+            'event_name' => 'Expo Santa Rita 2026',
+            'event_start_date' => now()->toDateString(),
+            'event_end_date' => now()->addDays(5)->toDateString(),
+        ])->assertRedirect(route('expo.panel', $slug));
+
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->assertTrue($stand->is_trial);
+        $this->assertEquals('pending', $stand->payment_status);
+        $this->assertEquals('Expo Santa Rita 2026', $stand->event_name);
+        $this->assertFalse($stand->isExpired());
+        $this->assertGreaterThan(0, $stand->daysRemaining());
+
+        // 2. Expositor notifica comprobante de transferencia
+        $notifyResponse = $this->actingAs($user)->post(route('expo.stand.notify-payment', $slug), [
+            'payment_reference' => 'SIPAP-TRANSF-98124',
+        ]);
+        $notifyResponse->assertRedirect();
+        $notifyResponse->assertSessionHas('success');
+
+        $stand->refresh();
+        $this->assertEquals('submitted', $stand->payment_status);
+        $this->assertEquals('SIPAP-TRANSF-98124', $stand->payment_reference);
+
+        // 3. SuperAdmin aprueba y activa stand
+        $admin = User::where('role', 'admin')->first() ?? User::create([
+            'name' => 'Super Admin',
+            'email' => 'admin_'.uniqid().'@test.com',
+            'role' => 'admin',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $adminResponse = $this->actingAs($admin)->post(route('expo.admin.stand.status', $stand->id), [
+            'status' => 'active',
+        ]);
+        $adminResponse->assertRedirect();
+
+        $stand->refresh();
+        $this->assertEquals('active', $stand->status);
+        $this->assertTrue($stand->is_active);
+        $this->assertFalse($stand->is_trial);
+        $this->assertEquals('paid', $stand->payment_status);
+    }
+
+    public function test_stand_expiration_by_event_end_date(): void
+    {
+        $user = User::create([
+            'name' => 'Expired User',
+            'email' => 'expired_'.uniqid().'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-expired-'.uniqid();
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Pasado',
+            'slug' => $slug,
+            'stand_number' => 'OLD-01',
+            'sector' => 'Ganadería',
+            'primary_color' => '#0f172a',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'is_active' => true,
+            'is_trial' => false,
+            'payment_status' => 'paid',
+            'event_name' => 'Expo Pasada',
+            'event_start_date' => now()->subDays(10)->toDateString(),
+            'event_end_date' => now()->subDays(2)->toDateString(),
+        ]);
+
+        $this->assertTrue($stand->isExpired());
+        $this->assertEquals(0, $stand->daysRemaining());
+
+        // Visitante intenta acceder al stand expirado
+        $response = $this->get(route('expo.stand', $slug));
+        $response->assertOk();
+        $response->assertSee('Feria / Evento Finalizado');
+        $response->assertSee('ha concluido con el cierre oficial de la feria');
+
+        // Registro rechazado
+        $regResponse = $this->post(route('expo.register', $slug), [
+            'full_name' => 'Juan Visitante',
+            'phone' => '0981999111',
+            'city' => 'Asunción',
+        ]);
+        $regResponse->assertRedirect();
+        $regResponse->assertSessionHas('error');
+    }
+
+    public function test_trial_lead_limits_block_public_visitors_after_max_leads(): void
+    {
+        $user = User::create([
+            'name' => 'Trial Stand Owner',
+            'email' => 'owner_trial_'.uniqid().'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-trial-limit-'.uniqid();
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Demo Limit',
+            'slug' => $slug,
+            'stand_number' => 'DEMO-01',
+            'sector' => 'Semillas',
+            'primary_color' => '#16a34a',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'is_active' => false,
+            'is_trial' => true,
+            'payment_status' => 'pending',
+            'event_name' => 'Expo Demo',
+            'event_start_date' => now()->toDateString(),
+            'event_end_date' => now()->addDays(3)->toDateString(),
+        ]);
+
+        // Crear 10 leads (límite del trial)
+        for ($i = 1; $i <= 10; $i++) {
+            $stand->leads()->create([
+                'full_name' => "Lead $i",
+                'phone' => "098111100$i",
+                'clean_phone' => "098111100$i",
+                'city' => 'Santa Rita',
+                'profile' => 'Productor / Agricultor',
+            ]);
+        }
+
+        $this->assertEquals(10, $stand->leads()->count());
+
+        // Visitante público que no es el dueño intenta entrar
+        $visitorResponse = $this->get(route('expo.stand', $slug));
+        $visitorResponse->assertOk();
+        $visitorResponse->assertSee('Stand en Preparación');
+        $visitorResponse->assertSee('en proceso de habilitación');
+
+        // Dueño sí puede acceder a su propio panel y ver sus métricas de test
+        $ownerPanel = $this->actingAs($user)->get(route('expo.panel', $slug));
+        $ownerPanel->assertOk();
+        $ownerPanel->assertSee('Modo Sandbox / Demo Activo');
+        $ownerPanel->assertSee('10/10 Leads de Prueba Usados');
+    }
 }

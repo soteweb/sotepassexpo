@@ -17,8 +17,53 @@ class Stand extends Model
     protected $casts = [
         'allow_spins' => 'boolean',
         'is_active' => 'boolean',
+        'is_trial' => 'boolean',
+        'event_start_date' => 'date',
+        'event_end_date' => 'date',
         'custom_questions' => 'array',
     ];
+
+    /**
+     * Verifica si el evento del stand ya finalizó por fecha.
+     */
+    public function isExpired(): bool
+    {
+        if (! $this->event_end_date) {
+            return false;
+        }
+
+        return now()->startOfDay()->gt($this->event_end_date->endOfDay());
+    }
+
+    /**
+     * Retorna los días restantes del evento, o null si no tiene fecha límite.
+     */
+    public function daysRemaining(): ?int
+    {
+        if (! $this->event_end_date) {
+            return null;
+        }
+
+        $diff = (int) now()->startOfDay()->diffInDays($this->event_end_date->endOfDay(), false);
+
+        return max(0, $diff);
+    }
+
+    /**
+     * Formato legible del rango de fechas del evento.
+     */
+    public function formattedEventDates(): string
+    {
+        if (! $this->event_start_date && ! $this->event_end_date) {
+            return 'Edición Actual';
+        }
+
+        if ($this->event_start_date && $this->event_end_date) {
+            return $this->event_start_date->format('d/m/Y').' al '.$this->event_end_date->format('d/m/Y');
+        }
+
+        return $this->event_end_date ? 'Hasta el '.$this->event_end_date->format('d/m/Y') : 'Desde el '.$this->event_start_date->format('d/m/Y');
+    }
 
     public function user(): BelongsTo
     {

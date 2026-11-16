@@ -130,6 +130,9 @@ class ExpoController extends Controller
             'primary_color' => 'required|string|max:20',
             'access_pin' => 'required|string|max:20',
             'tagline' => 'nullable|string|max:255',
+            'event_name' => 'nullable|string|max:120',
+            'event_start_date' => 'nullable|date',
+            'event_end_date' => 'nullable|date',
         ]);
 
         $plan = Plan::findOrFail($validated['plan_id']);
@@ -141,6 +144,9 @@ class ExpoController extends Controller
             'slug' => strtolower($validated['slug']),
             'stand_number' => $validated['stand_number'],
             'sector' => $validated['sector'],
+            'event_name' => $validated['event_name'] ?? 'Expo Paraguay 2026',
+            'event_start_date' => $validated['event_start_date'] ?? null,
+            'event_end_date' => $validated['event_end_date'] ?? null,
             'primary_color' => $validated['primary_color'],
             'secondary_color' => '#0f172a',
             'access_pin' => $validated['access_pin'],
@@ -148,6 +154,8 @@ class ExpoController extends Controller
             'allow_spins' => $plan->has_ruleta,
             'spin_policy' => 'once_per_day',
             'status' => 'pending',
+            'payment_status' => 'pending',
+            'is_trial' => true,
             'is_active' => false,
         ]);
 
@@ -185,8 +193,21 @@ class ExpoController extends Controller
     {
         $stand = Stand::where('slug', $slug)->firstOrFail();
 
+        // 1. Control de Evento Finalizado por Fecha
+        if ($stand->isExpired()) {
+            return view('expo.closed', compact('stand'));
+        }
+
+        // 2. Control de Stand Inactivo o Modo Prueba (Trial)
         if (! $stand->is_active) {
-            return view('expo.inactive', compact('stand'));
+            $isOwner = Auth::check() && ($stand->user_id === Auth::id() || Auth::user()->isAdmin());
+            $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
+            $leadsCount = $stand->leads()->count();
+
+            // Si no es el dueño y se superó el límite de prueba, mostrar pantalla de preparación
+            if (! $isOwner && $leadsCount >= $maxTrialLeads) {
+                return view('expo.inactive', compact('stand'));
+            }
         }
 
         $isTotem = $request->boolean('totem');
@@ -199,7 +220,27 @@ class ExpoController extends Controller
      */
     public function registerLead(Request $request, string $slug): RedirectResponse|JsonResponse
     {
-        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+
+        if ($stand->isExpired()) {
+            if ($request->wantsJson()) {
+                return response()->json(['success' => false, 'error' => 'La participación de este stand en la feria ha finalizado.'], 403);
+            }
+
+            return back()->with('error', 'La participación de este stand en la feria ha finalizado.');
+        }
+
+        if (! $stand->is_active) {
+            $isOwner = Auth::check() && ($stand->user_id === Auth::id() || Auth::user()->isAdmin());
+            $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
+            if (! $isOwner && $stand->leads()->count() >= $maxTrialLeads) {
+                if ($request->wantsJson()) {
+                    return response()->json(['success' => false, 'error' => 'Este stand se encuentra en proceso de habilitación oficial.'], 403);
+                }
+
+                return back()->with('error', 'Este stand se encuentra en proceso de habilitación oficial.');
+            }
+        }
 
         $validated = $request->validate([
             'full_name' => 'required|string|max:150',
@@ -708,8 +749,23 @@ class ExpoController extends Controller
         $redeemedSpins = $stand->spins()->where('is_redeemed', true)->count();
         $draws = $stand->draws()->with('winner')->orderBy('id', 'asc')->get();
         $latestDraw = $draws->last();
+        $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
+        $bankConfig = config('expo.bank', []);
+        $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
 
-        return view('expo.panel', compact('stand', 'prizes', 'leads', 'totalLeads', 'totalSpins', 'redeemedSpins', 'latestDraw', 'draws'));
+        return view('expo.panel', compact(
+            'stand',
+            'prizes',
+            'leads',
+            'totalLeads',
+            'totalSpins',
+            'redeemedSpins',
+            'latestDraw',
+            'draws',
+            'plans',
+            'bankConfig',
+            'maxTrialLeads'
+        ));
     }
 
     /**
@@ -1106,21 +1162,73 @@ class ExpoController extends Controller
     }
 
     /**
+     * Notificar Pago por Transferencia Bancaria y Subir Comprobante (Expositor)
+     */
+    public function notifyPayment(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $validated = $request->validate([
+            'plan_id' => 'nullable|exists:plans,id',
+            'payment_reference' => 'nullable|string|max:100',
+            'payment_proof' => 'nullable|file|mimes:jpeg,png,jpg,pdf|max:5120',
+        ]);
+
+        if (! empty($validated['plan_id'])) {
+            $plan = Plan::findOrFail($validated['plan_id']);
+            $stand->plan_id = $plan->id;
+            $stand->allow_spins = $plan->has_ruleta;
+        }
+
+        if ($request->hasFile('payment_proof')) {
+            $path = $request->file('payment_proof')->store('payment_proofs', 'public');
+            $stand->payment_proof_path = $path;
+        }
+
+        if (! empty($validated['payment_reference'])) {
+            $stand->payment_reference = trim($validated['payment_reference']);
+        }
+
+        $stand->payment_status = 'submitted';
+        $stand->save();
+
+        return back()->with('success', '¡Comprobante de transferencia registrado con éxito! Nuestro equipo validará el pago para activar tu stand de forma oficial.');
+    }
+
+    /**
      * Actualizar Estado del Stand desde SuperAdmin (Aprobar, Suspender, Reactivar)
      */
     public function updateStandStatus(Request $request, Stand $stand): RedirectResponse
     {
         $validated = $request->validate([
             'status' => 'required|in:active,pending,suspended',
+            'event_end_date' => 'nullable|date',
+            'payment_status' => 'nullable|in:pending,submitted,paid,exempt',
         ]);
 
         $status = $validated['status'];
         $isActive = ($status === 'active');
 
-        $stand->update([
+        $updateData = [
             'status' => $status,
             'is_active' => $isActive,
-        ]);
+        ];
+
+        if ($status === 'active') {
+            $updateData['is_trial'] = false;
+            $updateData['payment_status'] = 'paid';
+        }
+
+        if (! empty($validated['event_end_date'])) {
+            $updateData['event_end_date'] = $validated['event_end_date'];
+        }
+
+        if (! empty($validated['payment_status'])) {
+            $updateData['payment_status'] = $validated['payment_status'];
+        }
+
+        $stand->update($updateData);
 
         $messages = [
             'active' => "¡Stand '{$stand->name}' APROBADO y ACTIVO para operar en la feria!",

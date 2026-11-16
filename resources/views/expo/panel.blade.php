@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }}</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -10,7 +10,7 @@
                     {{ strtoupper(substr($stand->slug, 0, 2)) }}
                 </div>
                 <div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-2">
                         <h1 class="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">{{ $stand->name }}</h1>
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 border border-slate-200">
                             {{ $stand->stand_number }}
@@ -20,8 +20,30 @@
                                 {{ $stand->plan->name }}
                             </span>
                         @endif
+                        @if($stand->is_trial)
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-amber-50 text-amber-800 border border-amber-300">
+                                🧪 Modo Sandbox Demo
+                            </span>
+                        @elseif($stand->is_active)
+                            <span class="text-[11px] font-bold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-300">
+                                ✅ Stand Oficial Activo
+                            </span>
+                        @endif
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">{{ $stand->sector }} • Base de Datos Aislada y Seguridad Multitenant</p>
+                    <p class="text-xs text-slate-500 mt-1 flex flex-wrap items-center gap-1.5">
+                        <span>{{ $stand->sector }}</span>
+                        <span>•</span>
+                        <span class="font-medium text-slate-700">🎪 {{ $stand->event_name ?? 'Expo Paraguay' }}</span>
+                        @if($stand->event_end_date)
+                            <span>•</span>
+                            <span class="font-medium text-slate-600">{{ $stand->formattedEventDates() }}</span>
+                            @if($stand->isExpired())
+                                <span class="text-rose-600 font-bold bg-rose-50 px-1.5 py-0.2 rounded-sm border border-rose-200">Feria Concluida</span>
+                            @else
+                                <span class="text-emerald-700 font-bold bg-emerald-50 px-1.5 py-0.2 rounded-sm border border-emerald-200">{{ $stand->daysRemaining() }} días restantes</span>
+                            @endif
+                        @endif
+                    </p>
                 </div>
             </div>
 
@@ -96,25 +118,86 @@
             </div>
         @endif
 
-        @if($stand->status === 'pending' || ! $stand->is_active)
-            <div class="p-4 sm:p-5 rounded-lg bg-amber-50 border border-amber-300 text-amber-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
-                <div class="flex items-center gap-3">
-                    <div class="w-9 h-9 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-base shrink-0">
-                        ⏳
+        @if($stand->is_trial)
+            <!-- BANNER MODO SANDBOX / DEMO & ACTIVACIÓN OFICIAL -->
+            <div class="p-4 sm:p-5 rounded-lg bg-amber-50/90 border border-amber-300 text-amber-950 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xs">
+                <div class="flex items-start gap-3.5">
+                    <div class="w-10 h-10 rounded-md bg-amber-200/70 border border-amber-300 text-amber-900 flex items-center justify-center font-bold text-lg shrink-0">
+                        🧪
                     </div>
                     <div>
-                        <div class="text-xs font-bold uppercase tracking-wider text-amber-900">
-                            {{ $stand->status === 'suspended' ? 'Stand Suspendido Temporalmente' : 'Stand en Revisión / Pendiente de Aprobación' }}
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs font-bold uppercase tracking-wider text-amber-900">
+                                Modo Sandbox / Demo Activo
+                            </span>
+                            <span class="text-[10px] font-semibold px-2 py-0.5 rounded-sm bg-white border border-amber-300 text-amber-800">
+                                {{ $totalLeads }}/{{ $maxTrialLeads }} Leads de Prueba Usados
+                            </span>
+                            @if($stand->payment_status === 'submitted')
+                                <span class="text-[10px] font-bold px-2 py-0.5 rounded-sm bg-indigo-100 border border-indigo-300 text-indigo-800 flex items-center gap-1">
+                                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span> Comprobante en Verificación
+                                </span>
+                            @endif
                         </div>
-                        <div class="text-xs text-amber-800 mt-0.5 leading-relaxed">
-                            {{ $stand->status === 'suspended' 
-                                ? 'La captación pública de este stand está pausada. Comunícate con Soteweb para reactivarla.' 
-                                : 'Tu stand fue registrado con éxito. El equipo de Soteweb activará la captación de leads y ruleta tras verificar tu solicitud. Mientras tanto, puedes configurar tus premios y ajustar tus datos.' }}
+                        <p class="text-xs text-amber-800 mt-1 leading-relaxed max-w-2xl">
+                            @if($stand->payment_status === 'submitted')
+                                Has notificado tu transferencia{{ $stand->payment_reference ? ' (Ref: ' . $stand->payment_reference . ')' : '' }}. El equipo de Soteweb está validando el pago para habilitar la captación ilimitada y soporte en vivo.
+                            @else
+                                Tu stand está habilitado para realizar simulaciones internas y hasta {{ $maxTrialLeads }} registros de prueba. Para operar ilimitadamente durante la feria, transfiere el valor de tu plan y notifícalo aquí.
+                            @endif
+                        </p>
+                    </div>
+                </div>
+
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                    <button type="button" @click="showPaymentModal = true" 
+                            class="px-4 py-2 rounded-md bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-xs transition-all flex items-center gap-1.5 cursor-pointer">
+                        <span>💳</span>
+                        <span>{{ $stand->payment_status === 'submitted' ? 'Ver Datos de Pago' : 'Activar Stand Oficial' }}</span>
+                    </button>
+                    <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}?text={{ urlencode('Hola Soteweb, tengo una consulta sobre la activación de mi stand: ' . $stand->name . ' (Slug: ' . $stand->slug . ')') }}" 
+                       target="_blank" 
+                       class="px-3.5 py-2 rounded-md bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-xs shadow-xs transition-all flex items-center gap-1">
+                        <span>💬 WhatsApp</span>
+                    </a>
+                </div>
+            </div>
+        @elseif($stand->status === 'suspended' || ! $stand->is_active)
+            <div class="p-4 sm:p-5 rounded-lg bg-rose-50 border border-rose-300 text-rose-900 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-md bg-rose-100 text-rose-800 flex items-center justify-center font-bold text-base shrink-0">
+                        ⏸
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold uppercase tracking-wider text-rose-900">
+                            Stand Suspendido Temporalmente
+                        </div>
+                        <div class="text-xs text-rose-800 mt-0.5 leading-relaxed">
+                            La captación pública de este stand está pausada. Comunícate con Soteweb para reactivarla.
                         </div>
                     </div>
                 </div>
-                <a href="https://wa.me/595981123456" target="_blank" class="shrink-0 px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all">
+                <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}" target="_blank" class="shrink-0 px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all">
                     WhatsApp Soporte &rarr;
+                </a>
+            </div>
+        @elseif($stand->isExpired())
+            <div class="p-4 sm:p-5 rounded-lg bg-slate-100 border border-slate-300 text-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xs">
+                <div class="flex items-center gap-3">
+                    <div class="w-9 h-9 rounded-md bg-slate-200 text-slate-700 flex items-center justify-center font-bold text-base shrink-0">
+                        🏁
+                    </div>
+                    <div>
+                        <div class="text-xs font-bold uppercase tracking-wider text-slate-900">
+                            Feria Finalizada ({{ $stand->event_name ?? 'Expo Paraguay' }})
+                        </div>
+                        <div class="text-xs text-slate-600 mt-0.5 leading-relaxed">
+                            La fecha de cierre de la feria concluyó el {{ $stand->event_end_date?->format('d/m/Y') }}. La captación en mostrador está cerrada, pero tu panel de leads, estadísticas y sorteos continuarán disponibles permanentemente.
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ route('expo.export', $stand->slug) }}" class="shrink-0 px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all flex items-center gap-1.5">
+                    <span>📥 Descargar Todos los Leads (.xlsx)</span>
                 </a>
             </div>
         @endif
@@ -743,6 +826,122 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- MODAL: ACTIVAR STAND OFICIAL & DATOS BANCARIOS -->
+        <div x-show="showPaymentModal" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg max-w-xl w-full p-6 shadow-2xl border border-slate-200 relative my-8"
+                 @click.away="showPaymentModal = false">
+                
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-md bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-sm">
+                            💳
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Activar Stand Oficial B2B</h3>
+                            <p class="text-[11px] text-slate-500">Habilita captación ilimitada y ruleta para la feria</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="showPaymentModal = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <div class="space-y-4 text-xs">
+                    <!-- Resumen del Plan -->
+                    <div class="p-3.5 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between">
+                        <div>
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Plan Seleccionado</div>
+                            <div class="text-sm font-bold text-slate-900">{{ $stand->plan?->name ?? 'Plan B2B' }}</div>
+                            <div class="text-[11px] text-slate-500">{{ $stand->event_name ?? 'Expo Paraguay' }}</div>
+                        </div>
+                        <div class="text-right">
+                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Inversión</div>
+                            <div class="text-base font-extrabold text-emerald-700">
+                                {{ number_format($stand->plan?->price_pyg ?? 890000, 0, ',', '.') }} Gs.
+                            </div>
+                            <div class="text-[10px] text-slate-500">IVA incluido</div>
+                        </div>
+                    </div>
+
+                    <!-- Datos Bancarios Oficiales -->
+                    <div class="p-4 rounded-md bg-indigo-50/60 border border-indigo-200 space-y-2.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
+                                🏦 Cuentas Oficiales para Transferencia (SIPAP)
+                            </span>
+                            <span class="text-[10px] font-semibold text-indigo-700 bg-white px-2 py-0.5 rounded-sm border border-indigo-200">
+                                Paraguay
+                            </span>
+                        </div>
+                        
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-700 pt-1">
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase">Banco:</span>
+                                <span class="font-bold text-slate-900">{{ $bankConfig['bank_name'] ?? 'Banco Itaú Paraguay' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase">Titular de la Cuenta:</span>
+                                <span class="font-bold text-slate-900">{{ $bankConfig['account_holder'] ?? $bankConfig['beneficiary'] ?? 'Soteweb Tecnología' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase">RUC:</span>
+                                <span class="font-bold text-slate-900">{{ $bankConfig['ruc'] ?? '80098765-4' }}</span>
+                            </div>
+                            <div>
+                                <span class="text-slate-400 block text-[10px] uppercase">N° de Cuenta:</span>
+                                <span class="font-mono font-bold text-indigo-900">{{ $bankConfig['account_number'] ?? '720012345' }}</span>
+                            </div>
+                            <div class="sm:col-span-2">
+                                <span class="text-slate-400 block text-[10px] uppercase">Alias SIPAP:</span>
+                                <span class="font-mono font-bold text-indigo-900 bg-white px-2 py-0.5 rounded-sm border border-indigo-200">{{ $bankConfig['sipap_alias'] ?? 'soteweb.expo' }}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario de Notificación de Pago -->
+                    <form action="{{ route('expo.stand.notify-payment', $stand->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-3 pt-1">
+                        @csrf
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1">
+                                N° de Comprobante / Referencia SIPAP (Opcional si subes archivo)
+                            </label>
+                            <input type="text" name="payment_reference" value="{{ old('payment_reference', $stand->payment_reference) }}"
+                                   placeholder="Ej: TRF-902184 / Comprobante Itaú"
+                                   class="w-full text-xs rounded-md border-slate-300 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 py-2 px-3">
+                        </div>
+
+                        <div>
+                            <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1">
+                                Adjuntar Comprobante (Foto o PDF)
+                            </label>
+                            <input type="file" name="payment_proof" accept="image/*,.pdf"
+                                   class="w-full text-xs text-slate-500 file:mr-3 file:py-1.5 file:px-3 file:rounded-md file:border-0 file:text-xs file:font-semibold file:bg-slate-100 file:text-slate-700 hover:file:bg-slate-200 border border-slate-200 rounded-md p-1">
+                            <p class="text-[10px] text-slate-400 mt-1">Formatos admitidos: JPG, PNG o PDF (Máx. 5MB).</p>
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
+                            <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}?text={{ urlencode('Hola Soteweb, acabo de transferir para activar el stand: ' . $stand->name . ' (Plan: ' . ($stand->plan?->name ?? 'Oficial') . '). Adjunto mi comprobante.') }}" 
+                               target="_blank"
+                               class="w-full sm:w-auto px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition">
+                                <span>💬 Enviar Comprobante por WhatsApp</span>
+                            </a>
+
+                            <div class="flex items-center gap-2 w-full sm:w-auto justify-end">
+                                <button type="button" @click="showPaymentModal = false" class="px-3.5 py-2 rounded-md border border-slate-200 text-slate-600 font-semibold hover:bg-slate-50 transition cursor-pointer">
+                                    Cerrar
+                                </button>
+                                <button type="submit" class="px-4 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-xs transition cursor-pointer">
+                                    Notificar Pago &rarr;
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 

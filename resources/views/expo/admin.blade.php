@@ -233,11 +233,14 @@
                                                 </span>
                                                 <span class="text-[10px] text-slate-400 font-mono">/{{ $stand->slug }}</span>
                                             </div>
+                                            <div class="text-[10px] text-slate-500 mt-0.5">
+                                                🎪 {{ $stand->event_name ?? 'Expo Paraguay' }}
+                                            </div>
                                         </div>
                                     </div>
                                 </td>
 
-                                <!-- Plan Contratado -->
+                                <!-- Plan Contratado & Pago -->
                                 <td class="px-5 py-3.5 whitespace-nowrap">
                                     @if($stand->plan)
                                         <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-gold-50 text-gold-800 border border-gold-200">
@@ -248,26 +251,67 @@
                                             Sin Plan
                                         </span>
                                     @endif
+
+                                    <!-- Estado de Pago -->
+                                    <div class="mt-1">
+                                        @if($stand->payment_status === 'paid')
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.2 rounded-sm border border-emerald-200">
+                                                💰 Pagado
+                                            </span>
+                                        @elseif($stand->payment_status === 'submitted')
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-800 bg-amber-50 px-1.5 py-0.2 rounded-sm border border-amber-300">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span> Comprobante Enviado
+                                            </span>
+                                            @if($stand->payment_proof_path)
+                                                <a href="{{ asset('storage/' . $stand->payment_proof_path) }}" target="_blank" class="block text-[10px] text-indigo-600 hover:underline font-semibold mt-0.5">
+                                                    📄 Ver Comprobante
+                                                </a>
+                                            @endif
+                                            @if($stand->payment_reference)
+                                                <span class="block text-[9px] text-slate-500 font-mono">Ref: {{ $stand->payment_reference }}</span>
+                                            @endif
+                                        @else
+                                            <span class="inline-flex items-center gap-1 text-[10px] font-medium text-slate-500 bg-slate-100 px-1.5 py-0.2 rounded-sm border border-slate-200">
+                                                ⏳ Pago Pendiente
+                                            </span>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 <!-- Estado -->
                                 <td class="px-5 py-3.5 whitespace-nowrap">
-                                    @if($stand->status === 'active' || ($stand->is_active && $stand->status !== 'suspended' && $stand->status !== 'pending'))
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
-                                            Activo
-                                        </span>
-                                    @elseif($stand->status === 'pending' || (! $stand->is_active && $stand->status !== 'suspended'))
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
-                                            Pendiente
-                                        </span>
-                                    @else
-                                        <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
-                                            <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
-                                            Suspendido
-                                        </span>
-                                    @endif
+                                    <div class="space-y-1">
+                                        @if($stand->is_trial)
+                                            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300">
+                                                🧪 Demo ({{ $stand->leads_count }}/10)
+                                            </span>
+                                        @elseif($stand->status === 'active' || ($stand->is_active && $stand->status !== 'suspended' && $stand->status !== 'pending'))
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                Oficial Activo
+                                            </span>
+                                        @elseif($stand->status === 'pending' || (! $stand->is_active && $stand->status !== 'suspended'))
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-amber-50 text-amber-800 border border-amber-300">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 animate-pulse"></span>
+                                                Pendiente
+                                            </span>
+                                        @else
+                                            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                                                <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span>
+                                                Suspendido
+                                            </span>
+                                        @endif
+
+                                        @if($stand->event_end_date)
+                                            <div class="text-[10px] text-slate-500">
+                                                @if($stand->isExpired())
+                                                    <span class="text-rose-600 font-bold">Feria Finalizada</span>
+                                                @else
+                                                    <span>{{ $stand->daysRemaining() }}d restantes</span>
+                                                @endif
+                                            </div>
+                                        @endif
+                                    </div>
                                 </td>
 
                                 <!-- Titular / Empresa -->

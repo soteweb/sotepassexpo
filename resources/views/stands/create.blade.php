@@ -144,9 +144,9 @@
                         <div>
                             <x-input-label value="Color Corporativo Principal *" />
                             <div class="flex gap-2">
-                                <input type="color" name="primary_color" value="{{ old('primary_color', '#16a34a') }}"
+                                <input type="color" name="primary_color" value="{{ old('primary_color', '#059669') }}"
                                        class="h-9 w-12 rounded-md bg-slate-50 border border-slate-300 cursor-pointer p-0.5">
-                                <x-text-input type="text" name="primary_color_text" value="{{ old('primary_color', '#16a34a') }}" readonly class="flex-1 font-mono text-xs" />
+                                <x-text-input type="text" name="primary_color_text" value="{{ old('primary_color', '#059669') }}" readonly class="flex-1 font-mono text-xs" />
                             </div>
                         </div>
 
@@ -158,7 +158,30 @@
                         </div>
                     </div>
 
-                    <div>
+                    <!-- Datos del Evento / Feria -->
+                    <div class="pt-4 border-t border-slate-100">
+                        <div class="mb-3">
+                            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-700">3. Datos de la Feria / Evento</h3>
+                            <p class="text-[11px] text-slate-400">Define el nombre y las fechas de duración de la feria para la vigencia del servicio.</p>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                            <div>
+                                <x-input-label value="Nombre de la Feria / Evento *" />
+                                <x-text-input type="text" name="event_name" :value="old('event_name', 'Expo Paraguay 2026')" required placeholder="Ej. Expo Paraguay 2026" class="w-full" />
+                            </div>
+                            <div>
+                                <x-input-label value="Fecha de Inicio de la Feria" />
+                                <x-text-input type="date" name="event_start_date" :value="old('event_start_date')" class="w-full font-mono text-xs" />
+                            </div>
+                            <div>
+                                <x-input-label value="Fecha de Finalización *" />
+                                <x-text-input type="date" name="event_end_date" :value="old('event_end_date')" class="w-full font-mono text-xs" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
                         <x-input-label value="Eslogan o Mensaje de Bienvenida (Opcional)" />
                         <x-text-input type="text" name="tagline" :value="old('tagline')" placeholder="Ej. Innovación y tecnología para los visitantes de la Expo." class="w-full" />
                     </div>
@@ -169,7 +192,7 @@
                         </a>
                         <button type="submit" 
                                 class="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all active:scale-[0.99] cursor-pointer border border-emerald-500">
-                            Activar Mi Stand y Entrar al Panel &rarr;
+                            Comenzar Prueba Gratuita y Entrar al Panel &rarr;
                         </button>
                     </div>
                 </div>
