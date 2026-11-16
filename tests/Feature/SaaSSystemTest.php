@@ -44,7 +44,7 @@ class SaaSSystemTest extends TestCase
         ]);
 
         $plan = Plan::where('has_ruleta', true)->firstOrFail();
-        $slug = 'semillas-guarani-'.rand(100, 999);
+        $slug = 'semillas-guarani-'.uniqid();
 
         $response = $this->actingAs($user)->post('/stands', [
             'plan_id' => $plan->id,
@@ -89,7 +89,7 @@ class SaaSSystemTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $slugA = 'stand-a-'.rand(100, 999);
+        $slugA = 'stand-a-'.uniqid();
         $standA = Stand::create([
             'user_id' => $userA->id,
             'name' => 'Stand A',
@@ -156,7 +156,7 @@ class SaaSSystemTest extends TestCase
 
         $stand = Stand::create([
             'name' => 'Stand Pendiente Test',
-            'slug' => 'stand-pending-'.rand(100, 999),
+            'slug' => 'stand-pending-'.uniqid(),
             'stand_number' => 'P-01',
             'sector' => 'Test',
             'primary_color' => '#16a34a',
@@ -199,7 +199,7 @@ class SaaSSystemTest extends TestCase
 
     public function test_stand_without_ruleta_redirects_to_gracias_page_with_ticket(): void
     {
-        $slug = 'stand-qr-only-'.rand(100, 999);
+        $slug = 'stand-qr-only-'.uniqid();
         $stand = Stand::create([
             'name' => 'Stand Sin Ruleta',
             'slug' => $slug,
@@ -266,7 +266,7 @@ class SaaSSystemTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $slug = 'custom-stand-'.rand(100, 999);
+        $slug = 'custom-stand-'.uniqid();
         $stand = Stand::create([
             'user_id' => $user->id,
             'name' => 'Custom Stand',
@@ -339,7 +339,7 @@ class SaaSSystemTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $slug = 'agrotec-'.rand(100, 999);
+        $slug = 'agrotec-'.uniqid();
         $stand = Stand::create([
             'user_id' => $user->id,
             'name' => 'AgroTec Original',
@@ -401,7 +401,7 @@ class SaaSSystemTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $slug = 'agrodraws-'.rand(100, 999);
+        $slug = 'agrodraws-'.uniqid();
         $stand = Stand::create([
             'user_id' => $user->id,
             'name' => 'AgroDraws S.A.',
@@ -508,7 +508,7 @@ class SaaSSystemTest extends TestCase
             'password' => Hash::make('secret123'),
         ]);
 
-        $slug = 'custom-brand-'.rand(100, 999);
+        $slug = 'custom-brand-'.uniqid();
         $stand = Stand::create([
             'user_id' => $user->id,
             'name' => 'Custom Brand Co.',
@@ -554,7 +554,7 @@ class SaaSSystemTest extends TestCase
 
         $standToDelete = Stand::create([
             'name' => 'Stand Temporal a Borrar',
-            'slug' => 'stand-to-delete-'.rand(100, 999),
+            'slug' => 'stand-to-delete-'.uniqid(),
             'stand_number' => 'DEL-01',
             'sector' => 'Pruebas',
             'primary_color' => '#dc2626',

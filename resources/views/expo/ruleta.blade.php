@@ -62,33 +62,33 @@
     <div class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 antialiased select-none overflow-x-hidden">
 
         <!-- Top Header con Identidad Corporativa y Atajos Rápidos -->
-        <header class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center py-1.5 sm:py-2 relative flex items-center justify-between gap-3 shrink-0">
+        <header class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center py-2 relative flex items-center justify-between gap-3 shrink-0">
             
             <!-- Botón Volver al Formulario de Registro (Flujo Rápido de Promotor) -->
             <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}"
                title="Volver al Formulario de Registro"
-               class="p-2 sm:px-3 sm:py-2 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
-                <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+               class="p-2 sm:px-3 sm:py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
+                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 <span class="hidden sm:inline font-semibold text-[11px]">Registro</span>
             </a>
 
-            <!-- Identidad de la Empresa: Logo + Nombre -->
+            <!-- Identidad de la Empresa: Logo + Nombre (100% Nítido y Visible) -->
             <div class="flex items-center justify-center gap-2.5 sm:gap-3 flex-1 min-w-0">
                 @if($stand->logo_url)
-                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-md bg-white p-1 shadow-xs border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-md bg-white p-1 shadow-xs border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
                         <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
                     </div>
                 @endif
                 <div class="text-left truncate">
-                    <h1 class="{{ $isTotem ? 'text-lg sm:text-2xl' : 'text-sm sm:text-base md:text-lg' }} font-bold text-white tracking-tight truncate">
+                    <h1 class="{{ $isTotem ? 'text-lg sm:text-2xl' : 'text-base sm:text-xl' }} font-bold text-slate-900 tracking-tight truncate">
                         {{ $stand->name }}
                     </h1>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
+                        <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
                             {{ $stand->stand_number }} &bull; {{ $stand->sector }}
                         </span>
                         @if($isTotem)
-                            <span class="text-[9px] sm:text-[10px] font-semibold uppercase text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-500/40">
+                            <span class="text-[9px] sm:text-[10px] font-semibold uppercase text-amber-800 bg-amber-50 px-2 py-0.5 rounded-md border border-amber-300">
                                 MODO TÓTEM TOUCH
                             </span>
                         @endif
@@ -100,12 +100,12 @@
             <div class="flex items-center gap-1.5 shrink-0">
                 <a href="{{ route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
                    title="Alternar Modo Tótem / TV Touch Vertical"
-                   class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-slate-900 text-slate-400 border-slate-800' }} hover:text-white transition text-xs flex items-center gap-1">
+                   class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }} hover:text-slate-900 transition text-xs flex items-center gap-1 shadow-xs">
                     <span class="text-xs">📺</span>
                     <span class="hidden sm:inline font-semibold text-[10px]">{{ $isTotem ? 'Tótem TV' : 'Modo TV' }}</span>
                 </a>
                 <button onclick="toggleFullScreen()" title="Pantalla Completa (F11)"
-                        class="p-2 rounded-md bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs cursor-pointer">
+                        class="p-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition text-xs cursor-pointer shadow-xs">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
             </div>
@@ -113,8 +113,8 @@
 
         <!-- Barra Informativa del Participante -->
         <div class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center my-0.5 shrink-0">
-            <span class="text-xs sm:text-sm text-slate-400 font-medium">
-                Participante: <strong class="text-emerald-400 font-semibold">{{ $lead->full_name }}</strong> ({{ $lead->city }})
+            <span class="text-xs sm:text-sm text-slate-600 font-medium">
+                Participante: <strong class="text-slate-900 font-bold">{{ $lead->full_name }}</strong> <span class="text-slate-400 font-normal">({{ $lead->city }})</span>
             </span>
         </div>
 
@@ -133,8 +133,8 @@
                 </div>
             @endif
 
-            <!-- Contenedor de la Ruleta (Escalado Fluido Inteligente con max-h-[50vh] para Garantizar Espacio) -->
-            <div class="relative w-[280px] h-[280px] xs:w-[320px] xs:h-[320px] sm:w-[420px] sm:h-[420px] md:w-[480px] md:h-[480px] lg:w-[540px] lg:h-[540px] max-h-[50vh] max-w-[50vh] flex items-center justify-center transition-all duration-300 my-1 sm:my-2">
+            <!-- Contenedor de la Ruleta (Escalado Fluido con Excelente Presencia Visual) -->
+            <div class="relative w-[300px] h-[300px] xs:w-[340px] xs:h-[340px] sm:w-[440px] sm:h-[440px] md:w-[500px] md:h-[500px] lg:w-[560px] lg:h-[560px] max-h-[56vh] max-w-[56vh] flex items-center justify-center transition-all duration-300 my-1 sm:my-2">
                 
                 <!-- Puntero / Clapper Metálico con Sombra 3D -->
                 <div class="ruleta-pointer-wrap">
@@ -178,14 +178,14 @@
                         <span class="text-base sm:text-lg">🎯</span>
                         <span>¡TOCÁ AQUÍ PARA GIRAR!</span>
                     </button>
-                    <p id="spinNotice" class="text-center text-[11px] sm:text-xs text-slate-400 mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
+                    <p id="spinNotice" class="text-center text-[11px] sm:text-xs text-slate-500 mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
                 @endif
             </div>
 
         </main>
 
         <!-- Footer -->
-        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-[11px] text-slate-500 border-t border-slate-900">
+        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-[11px] text-slate-400 border-t border-slate-200">
             SotePass Expo &bull; Certificación de Ruletas y Sorteos en Tiempo Real
         </footer>
 
@@ -333,6 +333,21 @@
             } catch (e) {}
         }
 
+        function getContrastColor(hexColor) {
+            if (!hexColor) return '#ffffff';
+            let clean = hexColor.replace('#', '');
+            if (clean.length === 3) {
+                clean = clean.split('').map(c => c + c).join('');
+            }
+            let num = parseInt(clean, 16);
+            if (isNaN(num)) return '#ffffff';
+            let r = (num >> 16) & 255;
+            let g = (num >> 8) & 255;
+            let b = num & 255;
+            let luminance = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+            return luminance > 165 ? '#0f172a' : '#ffffff';
+        }
+
         function drawWheel() {
             const centerX = canvas.width / 2;
             const centerY = canvas.height / 2;
@@ -383,25 +398,82 @@
                 ctx.strokeStyle = '#ffffff';
                 ctx.stroke();
 
-                // 2. Texto del Premio (Calculado con margen de seguridad respecto al centro)
+                // 2. Texto del Premio - GRANDE, NÍTIDO Y DE MÁXIMA VISIBILIDAD
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(startAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
-                ctx.fillStyle = p.text_color || '#ffffff';
+                ctx.textBaseline = 'middle';
                 
-                let fontSize = numSlices > 10 ? 12 : (numSlices > 6 ? 14 : 16);
-                ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
-                ctx.shadowColor = 'rgba(0,0,0,0.85)';
-                ctx.shadowBlur = 6;
-                
-                let text = p.name || '';
-                // Espacio radial máximo antes de tocar la tapa central (dejar al menos 120px desde el centro)
-                const maxTextWidth = radius - 130;
-                while (ctx.measureText(text).width > maxTextWidth && text.length > 4) {
-                    text = text.substring(0, text.length - 2) + '…';
+                // Determinar contraste cromático
+                let textColor = p.text_color;
+                if (!textColor) {
+                    textColor = getContrastColor(baseColor);
                 }
-                ctx.fillText(text, radius - 30, 5);
+                ctx.fillStyle = textColor;
+                
+                // Tamaño de fuente base significativamente más grande
+                let fontSize = 28;
+                if (numSlices <= 4) fontSize = 34;
+                else if (numSlices <= 6) fontSize = 29;
+                else if (numSlices <= 8) fontSize = 25;
+                else if (numSlices <= 10) fontSize = 22;
+                else fontSize = 18;
+
+                ctx.font = `800 ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+                
+                if (textColor === '#ffffff') {
+                    ctx.shadowColor = 'rgba(0, 0, 0, 0.95)';
+                    ctx.shadowBlur = 8;
+                    ctx.shadowOffsetX = 1;
+                    ctx.shadowOffsetY = 2;
+                } else {
+                    ctx.shadowColor = 'rgba(255, 255, 255, 0.9)';
+                    ctx.shadowBlur = 6;
+                    ctx.shadowOffsetX = 0;
+                    ctx.shadowOffsetY = 1;
+                }
+                
+                const rawText = (p.name || '').trim();
+                const maxTextWidth = radius - 135; // Espacio seguro antes de la tapa central
+
+                // Dividir inteligentemente en 2 líneas si hay múltiples palabras y el texto es largo
+                const words = rawText.split(' ');
+                let lines = [];
+                if (words.length >= 2 && ctx.measureText(rawText).width > (maxTextWidth * 0.82) && numSlices <= 8) {
+                    const mid = Math.ceil(words.length / 2);
+                    lines = [words.slice(0, mid).join(' '), words.slice(mid).join(' ')];
+                } else {
+                    lines = [rawText];
+                }
+
+                // Si alguna línea excede el ancho, escalar suavemente la fuente
+                let currentFontSize = fontSize;
+                let longestWidth = Math.max(...lines.map(l => ctx.measureText(l).width));
+                while (longestWidth > maxTextWidth && currentFontSize > 15) {
+                    currentFontSize -= 1.5;
+                    ctx.font = `800 ${currentFontSize}px "Plus Jakarta Sans", sans-serif`;
+                    longestWidth = Math.max(...lines.map(l => ctx.measureText(l).width));
+                }
+
+                // Truncar con elipsis únicamente en palabras compuestas extremas
+                lines = lines.map(line => {
+                    while (ctx.measureText(line).width > maxTextWidth && line.length > 4) {
+                        line = line.substring(0, line.length - 2) + '…';
+                    }
+                    return line;
+                });
+
+                // Dibujar líneas centradas verticalmente en el sector
+                const textEndRadius = radius - 30;
+                if (lines.length === 1) {
+                    ctx.fillText(lines[0], textEndRadius, 0);
+                } else {
+                    const lineSpacing = currentFontSize * 1.15;
+                    ctx.fillText(lines[0], textEndRadius, -lineSpacing / 2);
+                    ctx.fillText(lines[1], textEndRadius, lineSpacing / 2);
+                }
+
                 ctx.restore();
 
                 // 3. Remache / Clavija Dorada en el perímetro (Pin mecánico 3D)
@@ -436,6 +508,9 @@
         }
 
         drawWheel();
+        if (document.fonts) {
+            document.fonts.ready.then(() => drawWheel());
+        }
 
         async function ejecutarGiro() {
             if (isSpinning) return;
