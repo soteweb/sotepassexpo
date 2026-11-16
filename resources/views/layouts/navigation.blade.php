@@ -6,28 +6,27 @@
         : collect();
 @endphp
 
-<div>
-    <!-- Mobile Sidebar Backdrop (Off-canvas) -->
-    <div x-show="sidebarOpen" 
-         x-cloak
-         x-transition:enter="transition-opacity ease-linear duration-300"
-         x-transition:enter-start="opacity-0"
-         x-transition:enter-end="opacity-100"
-         x-transition:leave="transition-opacity ease-linear duration-300"
-         x-transition:leave-start="opacity-100"
-         x-transition:leave-end="opacity-0"
-         @click="sidebarOpen = false"
-         class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 lg:hidden">
-    </div>
+<!-- Mobile Sidebar Backdrop (Off-canvas) -->
+<div x-show="sidebarOpen" 
+     x-cloak
+     x-transition:enter="transition-opacity ease-linear duration-300"
+     x-transition:enter-start="opacity-0"
+     x-transition:enter-end="opacity-100"
+     x-transition:leave="transition-opacity ease-linear duration-300"
+     x-transition:leave-start="opacity-100"
+     x-transition:leave-end="opacity-0"
+     @click="sidebarOpen = false"
+     class="fixed inset-0 bg-slate-900/40 backdrop-blur-xs z-40 lg:hidden">
+</div>
 
-    <!-- Sidebar Container (Base44 SaaS Style - Expands to w-64, Collapses to w-16 Mini Rail) -->
-    <aside :class="{
-               'translate-x-0': sidebarOpen, 
-               '-translate-x-full': !sidebarOpen, 
-               'w-64 lg:w-16': sidebarCollapsed, 
-               'w-64 lg:w-64': !sidebarCollapsed
-           }"
-           class="fixed top-0 bottom-0 left-0 z-50 bg-[#fcfbfa] text-slate-800 flex flex-col transition-all duration-300 ease-in-out border-r border-[#eae8e4] shadow-xl lg:shadow-none font-sans select-none overflow-x-hidden lg:translate-x-0">
+<!-- Sidebar Container (Base44 SaaS Style - Expands to w-64, Collapses to w-16 Mini Rail) -->
+<aside :class="{
+           'translate-x-0': sidebarOpen, 
+           '-translate-x-full': !sidebarOpen, 
+           'lg:w-16': sidebarCollapsed, 
+           'lg:w-64': !sidebarCollapsed
+       }"
+       class="fixed inset-y-0 left-0 z-50 w-64 bg-[#fcfbfa] text-slate-800 flex flex-col transition-all duration-300 ease-in-out border-r border-[#eae8e4] shadow-xl lg:shadow-none font-sans select-none overflow-x-hidden lg:static lg:h-screen lg:sticky lg:top-0 lg:shrink-0 lg:translate-x-0 lg:z-30">
         
         <!-- 1. Brand Header -->
         <div class="h-16 flex items-center border-b border-[#f0eee9] shrink-0"
@@ -216,4 +215,3 @@
         </div>
 
     </aside>
-</div>

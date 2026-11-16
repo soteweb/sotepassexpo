@@ -80,8 +80,7 @@
         @include('layouts.navigation', ['stand' => $stand ?? null])
 
         <!-- Main Content Area -->
-        <div :class="sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-64'" 
-             class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out">
+        <div class="flex-1 flex flex-col min-w-0 transition-all duration-300 ease-in-out">
             
             <!-- Topbar Header -->
             <header class="h-16 bg-white border-b border-slate-200/80 sticky top-0 z-30 flex items-center justify-between px-3 sm:px-6 lg:px-8 shadow-xs">
