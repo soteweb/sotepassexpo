@@ -69,9 +69,6 @@
                 </a>
             </div>
         </div>
-                </a>
-            </div>
-        </div>
 
         <!-- NOTIFICACIONES FLASH -->
         @if(session('success'))
@@ -321,8 +318,6 @@
                     </button>
                 </div>
             </form>
-        </div>
-
         </div>
 
         <!-- TABLA DE VISITANTES Y LEADS CAPTADOS EN TIEMPO REAL -->
