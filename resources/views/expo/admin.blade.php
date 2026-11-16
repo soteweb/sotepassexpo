@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot:title>Administración Global | SotePass Expo (Soteweb)</x-slot>
 
-    <div class="space-y-8" x-data="{ openCreateModal: false }">
+    <div class="space-y-8" x-data="{ openCreateModal: false, editingPlan: null, planName: '', planPrice: 0, planDesc: '', planBadge: '', planAction: '' }">
 
         <!-- Top Header & Actions -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -104,8 +104,12 @@
                         <p class="text-xs text-slate-500 mt-2 leading-relaxed">{{ $plan->description }}</p>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
-                        <span class="text-slate-400 font-medium">Stands suscriptos:</span>
-                        <span class="font-black px-2.5 py-0.5 rounded-lg bg-gold-50 text-gold-800 border border-gold-100">{{ $plan->stands_count }}</span>
+                        <span class="text-slate-400 font-medium">Stands: <strong class="text-slate-700">{{ $plan->stands_count }}</strong></span>
+                        <button type="button" 
+                                @click="editingPlan = {{ $plan->id }}; planName = '{{ addslashes($plan->name) }}'; planPrice = {{ $plan->price }}; planDesc = '{{ addslashes($plan->description) }}'; planBadge = '{{ addslashes($plan->badge_text ?? '') }}'; planAction = '{{ route('expo.admin.plans.update', $plan->id) }}'"
+                                class="text-gold-700 hover:text-gold-900 font-bold hover:underline text-[11px] flex items-center gap-1 cursor-pointer">
+                            <span>✏️ Ajustar Tarifa</span>
+                        </button>
                     </div>
                 </div>
             @endforeach
@@ -448,6 +452,65 @@
                         </button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- MODAL: EDITAR PLAN B2B (MASTER / DUEÑO DEL SAAS) -->
+        <div x-show="editingPlan !== null" 
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="editingPlan = null"></div>
+
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-lg bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6"
+                     @click.stop>
+                    
+                    <div class="flex items-center justify-between pb-4 border-b border-slate-100">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-gold-700">Ajuste de Precios Master</span>
+                            <h3 class="text-lg font-black text-slate-900" x-text="'Editar ' + planName"></h3>
+                        </div>
+                        <button type="button" @click="editingPlan = null" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+
+                    <form method="POST" :action="planAction" class="space-y-4 text-xs">
+                        @csrf
+
+                        <div>
+                            <x-input-label value="Nombre del Plan *" />
+                            <x-text-input type="text" name="name" x-model="planName" required class="w-full text-xs" />
+                        </div>
+
+                        <div>
+                            <x-input-label value="Precio en Guaraníes (PYG) *" />
+                            <x-text-input type="number" name="price" x-model="planPrice" required step="50000" min="0" class="w-full font-mono text-xs" />
+                            <p class="text-[10px] text-slate-400 mt-1">Ej: 800000 para Gs. 800.000 (sin puntos).</p>
+                        </div>
+
+                        <div>
+                            <x-input-label value="Etiqueta / Badge (Opcional)" />
+                            <x-text-input type="text" name="badge_text" x-model="planBadge" placeholder="Ej: MÁS POPULAR" class="w-full text-xs" />
+                        </div>
+
+                        <div>
+                            <x-input-label value="Descripción Comercial" />
+                            <textarea name="description" x-model="planDesc" rows="3" class="w-full rounded-xl border-slate-200 text-xs focus:border-gold-500 focus:ring-gold-500"></textarea>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                            <button type="button" @click="editingPlan = null" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-600 text-white font-bold shadow-md transition cursor-pointer">
+                                Guardar Nueva Tarifa
+                            </button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
 

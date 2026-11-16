@@ -48,6 +48,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     Route::get('/', [ExpoController::class, 'admin'])->name('expo.admin');
     Route::post('/stands', [ExpoController::class, 'createStand'])->name('expo.admin.create');
     Route::post('/stands/{stand}/status', [ExpoController::class, 'updateStandStatus'])->name('expo.admin.stand.status');
+    Route::post('/plans/{plan}', [ExpoController::class, 'updatePlan'])->name('expo.admin.plans.update');
 });
 
 // ==========================================
@@ -56,6 +57,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
 // Landing Móvil de Captación (QR del Stand)
 Route::get('/stand/{slug}', [ExpoController::class, 'stand'])->name('expo.stand');
 Route::post('/stand/{slug}/registro', [ExpoController::class, 'registerLead'])->name('expo.register')->middleware('throttle:30,1');
+
+// Confirmación de Registro y Cupón de Sorteo (Para stands sin ruleta o finalizado)
+Route::get('/gracias/{slug}/{leadId}', [ExpoController::class, 'gracias'])->name('expo.gracias');
 
 // Ruleta Digital Touch / Tótem
 Route::get('/ruleta/{slug}/{leadId}', [ExpoController::class, 'ruleta'])->name('expo.ruleta');

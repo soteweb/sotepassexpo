@@ -196,4 +196,64 @@ class SaaSSystemTest extends TestCase
         ]);
         $unauthResponse->assertRedirect(route('dashboard'));
     }
+
+    public function test_stand_without_ruleta_redirects_to_gracias_page_with_ticket(): void
+    {
+        $slug = 'stand-qr-only-'.rand(100, 999);
+        $stand = Stand::create([
+            'name' => 'Stand Sin Ruleta',
+            'slug' => $slug,
+            'stand_number' => 'QR-01',
+            'sector' => 'Maquinarias',
+            'primary_color' => '#16a34a',
+            'secondary_color' => '#0f172a',
+            'access_pin' => '1234',
+            'allow_spins' => false, // Ruleta Desactivada
+            'status' => 'active',
+            'is_active' => true,
+        ]);
+
+        $uniquePhone = '0981'.rand(100000, 999999);
+        $response = $this->post("/stand/{$slug}/registro", [
+            'full_name' => 'Visitante Sin Ruleta',
+            'phone' => $uniquePhone,
+            'city' => 'Santa Rita',
+            'profile' => 'Productor / Agricultor',
+        ]);
+
+        $lead = $stand->leads()->where('phone', $uniquePhone)->firstOrFail();
+        $response->assertRedirect(route('expo.gracias', ['slug' => $slug, 'leadId' => $lead->id]));
+
+        // Probar que la vista de gracias carga correctamente
+        $graciasResponse = $this->get(route('expo.gracias', ['slug' => $slug, 'leadId' => $lead->id]));
+        $graciasResponse->assertStatus(200);
+        $graciasResponse->assertSee('¡Gracias por tu Visita!');
+        $graciasResponse->assertSee('Visitante Sin Ruleta');
+        $graciasResponse->assertSee('TICKET-');
+    }
+
+    public function test_superadmin_can_update_plan_pricing(): void
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::create([
+            'name' => 'Admin Plan Test',
+            'email' => 'admin_plan_'.rand(100, 999).'@soteweb.com',
+            'role' => 'admin',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $plan = Plan::firstOrFail();
+
+        $response = $this->actingAs($admin)->post(route('expo.admin.plans.update', $plan), [
+            'name' => 'Plan Ajustado SuperAdmin',
+            'price' => 750000,
+            'description' => 'Tarifa económica especial para la feria',
+            'badge_text' => 'OFERTA ESPECIAL',
+        ]);
+
+        $response->assertRedirect();
+        $plan->refresh();
+        $this->assertEquals(750000, $plan->price);
+        $this->assertEquals('Plan Ajustado SuperAdmin', $plan->name);
+        $this->assertEquals('OFERTA ESPECIAL', $plan->badge_text);
+    }
 }

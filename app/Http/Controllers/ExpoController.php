@@ -172,6 +172,59 @@ class ExpoController extends Controller
             ->latest()
             ->first();
 
+        // Si el stand NO tiene ruleta (solo toma datos para sorteo en pantalla o base de datos)
+        if (! $stand->allow_spins) {
+            if ($existingLead) {
+                $existingLead->update([
+                    'full_name' => $validated['full_name'],
+                    'city' => $validated['city'],
+                    'profile' => $validated['profile'],
+                ]);
+                session(['allowed_lead_id_'.$stand->id => $existingLead->id]);
+
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'lead_id' => $existingLead->id,
+                        'full_name' => $existingLead->full_name,
+                        'redirect_url' => route('expo.gracias', ['slug' => $slug, 'leadId' => $existingLead->id]),
+                    ]);
+                }
+
+                return redirect()->route('expo.gracias', [
+                    'slug' => $slug,
+                    'leadId' => $existingLead->id,
+                ])->with('repeat_notice', 'already_registered');
+            }
+
+            $lead = $stand->leads()->create([
+                'full_name' => $validated['full_name'],
+                'phone' => $validated['phone'],
+                'clean_phone' => $cleanPhone,
+                'city' => $validated['city'],
+                'profile' => $validated['profile'],
+                'hectares' => $validated['hectares'] ?? null,
+                'interest' => $validated['interest'] ?? null,
+                'ip_address' => $request->ip(),
+            ]);
+
+            session(['allowed_lead_id_'.$stand->id => $lead->id]);
+
+            if ($request->wantsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'lead_id' => $lead->id,
+                    'full_name' => $lead->full_name,
+                    'redirect_url' => route('expo.gracias', ['slug' => $slug, 'leadId' => $lead->id]),
+                ]);
+            }
+
+            return redirect()->route('expo.gracias', [
+                'slug' => $slug,
+                'leadId' => $lead->id,
+            ]);
+        }
+
         if ($existingLead && $policy !== 'unlimited') {
             if ($policy === 'once_per_event') {
                 if ($existingLead->spin()->exists()) {
@@ -242,6 +295,12 @@ class ExpoController extends Controller
     public function ruleta(Request $request, string $slug, int $leadId): View|RedirectResponse
     {
         $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+
+        // Si el stand tiene la ruleta desactivada, mostrar su confirmación de sorteo
+        if (! $stand->allow_spins) {
+            return redirect()->route('expo.gracias', ['slug' => $slug, 'leadId' => $leadId]);
+        }
+
         $lead = $stand->leads()->findOrFail($leadId);
         $isTotem = $request->boolean('totem');
 
@@ -707,5 +766,40 @@ class ExpoController extends Controller
         ];
 
         return back()->with('success', $messages[$status] ?? 'Estado actualizado correctamente.');
+    }
+
+    /**
+     * Pantalla de Confirmación de Registro y Ticket para Sorteo en TV (Para stands sin ruleta o finalizado)
+     */
+    public function gracias(Request $request, string $slug, int $leadId): View
+    {
+        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $lead = $stand->leads()->findOrFail($leadId);
+        $draw = $stand->draws()->where('status', 'pending')->latest()->first()
+            ?? $stand->draws()->latest()->first();
+
+        return view('expo.gracias', compact('stand', 'lead', 'draw'));
+    }
+
+    /**
+     * Actualizar Plan B2B desde SuperAdmin (Cambiar precio, descripción, etc.)
+     */
+    public function updatePlan(Request $request, Plan $plan): RedirectResponse
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:120',
+            'price' => 'required|integer|min:0',
+            'description' => 'nullable|string',
+            'badge_text' => 'nullable|string|max:50',
+        ]);
+
+        $plan->update([
+            'name' => $validated['name'],
+            'price' => $validated['price'],
+            'description' => $validated['description'] ?? null,
+            'badge_text' => $validated['badge_text'] ?? null,
+        ]);
+
+        return back()->with('success', "¡Tarifa del {$plan->name} actualizada a {$plan->formatted_price}!");
     }
 }
