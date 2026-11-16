@@ -635,6 +635,17 @@ class ExpoController extends Controller
     }
 
     /**
+     * Vista de Personalización de Marca y Landing Móvil del Stand
+     */
+    public function personalizarLanding(string $slug): View
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        return view('expo.personalizar', compact('stand'));
+    }
+
+    /**
      * Canjear Cupón de Premio en Mostrador (Validador Antifraude)
      */
     public function redeemCoupon(Request $request, string $slug): RedirectResponse

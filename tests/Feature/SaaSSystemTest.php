@@ -489,4 +489,50 @@ class SaaSSystemTest extends TestCase
         $response->assertSee('Sorteo Final');
         $response->assertSee('hero-totem-ruleta.jpg');
     }
+
+    public function test_personalizar_landing_view_is_accessible_for_authorized_owner(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Customizer',
+            'company_name' => 'Custom Brand Co.',
+            'email' => 'customizer_'.rand(1000, 9999).'@agrotest.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $otherUser = User::create([
+            'name' => 'Other User',
+            'company_name' => 'Other Co.',
+            'email' => 'other_'.rand(1000, 9999).'@agrotest.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'custom-brand-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Custom Brand Co.',
+            'slug' => $slug,
+            'stand_number' => 'Stand Z-99',
+            'sector' => 'Biotecnología',
+            'primary_color' => '#16a34a',
+            'is_active' => true,
+        ]);
+
+        // 1. Dueño puede acceder a la vista dedicada de personalización
+        $response = $this->actingAs($user)->get(route('expo.stand.personalizar', $slug));
+        $response->assertOk();
+        $response->assertSee('Personalización de Marca y Landing');
+        $response->assertSee('Colores Corporativos');
+        $response->assertSee('Vista Previa Móvil en Vivo');
+
+        // 2. Otro expositor no puede acceder (403)
+        $responseOther = $this->actingAs($otherUser)->get(route('expo.stand.personalizar', $slug));
+        $responseOther->assertForbidden();
+
+        // 3. Usuario no autenticado es redirigido a login
+        $this->post('/logout');
+        $responseGuest = $this->get(route('expo.stand.personalizar', $slug));
+        $responseGuest->assertRedirect(route('login'));
+    }
 }

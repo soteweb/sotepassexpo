@@ -95,6 +95,18 @@
                         <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">{{ $currentStand->name }}</span>
                     </a>
 
+                    <!-- Personalizar Landing del Visitante -->
+                    @php $isPersonalizar = request()->routeIs('expo.stand.personalizar') && request()->route('slug') === $currentStand->slug; @endphp
+                    <a href="{{ route('expo.stand.personalizar', $currentStand->slug) }}"
+                       title="Personalizar Landing y Marca"
+                       class="flex items-center rounded-xl text-[13px] transition-colors {{ $isPersonalizar ? 'bg-[#edeae4] font-bold text-slate-900 shadow-2xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-semibold' }}"
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'gap-2.5 px-3 py-2'">
+                        <div class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">
+                            🎨
+                        </div>
+                        <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Personalizar Landing</span>
+                    </a>
+
                     <!-- Landing QR -->
                     <a href="{{ route('expo.stand', $currentStand->slug) }}" 
                        target="_blank"
