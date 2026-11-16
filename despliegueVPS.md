@@ -185,6 +185,7 @@ Para que los sorteos, expiraciones y colas funcionen automáticamente:
 
 | Error / Síntoma | Causa | Solución Definitiva |
 | :--- | :--- | :--- |
+| **`git@github.com: Permission denied (publickey)`** | El VPS intenta conectarse por SSH sin tener una clave SSH configurada en GitHub. | Cambiar a HTTPS (el repositorio es público y no pide claves):<br>`git remote set-url origin https://github.com/soteweb/sotepassexpo.git`<br>y luego `git pull`. |
 | **Los menús no reaccionan, el sidebar no colapsa o el diseño se ve detrás** | Assets de Livewire y frontend no publicados o compilados en producción. | 1. Verificar `APP_URL=https://...` en `.env`<br>2. `php artisan config:clear`<br>3. `npm install && npm run build`<br>4. `php artisan livewire:publish --assets`<br>5. `php artisan view:clear` |
 | **`file_get_contents(.env): Failed to open stream`** | No existe el archivo `.env`. | Ejecutar `cp .env.example .env` antes de `key:generate`. |
 | **`FATAL: role "x" does not exist`** | El usuario no existe en el PostgreSQL del puerto 5432. | Crear el usuario conectándose con `-h 127.0.0.1 -p 5432`. |
