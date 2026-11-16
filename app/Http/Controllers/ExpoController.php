@@ -22,12 +22,59 @@ class ExpoController extends Controller
      */
     public function index(): View
     {
-        $stands = Stand::where('is_active', true)->with(['plan', 'user'])->withCount(['leads', 'spins'])->get();
+        // Stand Oficial DEMO Estándar y Neutral de SotePass Expo (Sin asociar a marcas registradas)
+        $demoStand = Stand::firstOrCreate(
+            ['slug' => 'demo'],
+            [
+                'name' => 'DEMO SotePass Expo',
+                'sector' => 'Pabellón Tecnológico',
+                'stand_number' => 'Stand DEMO',
+                'primary_color' => '#4338ca',
+                'secondary_color' => '#1e1b4b',
+                'access_pin' => '1234',
+                'status' => 'approved',
+                'is_active' => true,
+                'allow_spins' => true,
+                'tagline' => 'Demostración Interactiva Oficial para Expositores',
+            ]
+        );
+
+        if ($demoStand->prizes()->count() === 0) {
+            $demoPrizes = [
+                ['name' => 'Gorra Oficial SotePass', 'total_stock' => 50, 'remaining_stock' => 45, 'probability_weight' => 25, 'color' => '#4338ca', 'is_real_prize' => true],
+                ['name' => 'Termo Metálico', 'total_stock' => 20, 'remaining_stock' => 15, 'probability_weight' => 15, 'color' => '#059669', 'is_real_prize' => true],
+                ['name' => 'Llavero de Marca', 'total_stock' => 80, 'remaining_stock' => 60, 'probability_weight' => 25, 'color' => '#d97706', 'is_real_prize' => true],
+                ['name' => '¡Seguí Participando!', 'total_stock' => 9999, 'remaining_stock' => 9999, 'probability_weight' => 35, 'color' => '#64748b', 'is_real_prize' => false],
+            ];
+            foreach ($demoPrizes as $dp) {
+                $demoStand->prizes()->create($dp);
+            }
+        }
+
+        if ($demoStand->draws()->count() === 0) {
+            $demoStand->draws()->create([
+                'title' => 'Sorteo Final DEMO',
+                'prize_description' => 'Gran Premio del Stand (Demostración)',
+                'status' => 'pending',
+            ]);
+        }
+
+        if ($demoStand->leads()->count() === 0) {
+            $demoStand->leads()->create([
+                'full_name' => 'Visitante Demostración',
+                'phone' => '+595 981 000000',
+                'clean_phone' => '595981000000',
+                'city' => 'Asunción',
+                'profile' => 'Productor Agrícola',
+            ]);
+        }
+
+        $stands = Stand::where('is_active', true)->where('slug', '!=', 'demo')->with(['plan', 'user'])->withCount(['leads', 'spins'])->get();
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
         $totalLeads = Lead::count();
         $totalSpins = RuletaSpin::count();
         $totalStands = $stands->count();
-        $demoSlug = $stands->first()?->slug ?? 'demo';
+        $demoSlug = 'demo';
 
         return view('expo.index', compact('stands', 'plans', 'totalLeads', 'totalSpins', 'totalStands', 'demoSlug'));
     }
@@ -526,9 +573,22 @@ class ExpoController extends Controller
             ->pluck('winner_lead_id')
             ->toArray();
 
-        $eligibleLeads = $stand->leads()->whereNotIn('id', $previousWinnerIds)->get();
+        $excludeIds = (array) $request->input('exclude_lead_ids', []);
+        $allExcludeIds = array_unique(array_merge($previousWinnerIds, $excludeIds));
+
+        // Si este sorteo ya tenía un ganador y se está volviendo a sortear (ej. ganador ausente), excluir al anterior
+        if ($draw->winner_lead_id) {
+            $allExcludeIds[] = $draw->winner_lead_id;
+            $allExcludeIds = array_unique($allExcludeIds);
+        }
+
+        $eligibleLeads = $stand->leads()->whereNotIn('id', $allExcludeIds)->get();
         if ($eligibleLeads->isEmpty()) {
-            $eligibleLeads = $stand->leads()->get();
+            // Si ya no quedan participantes sin premiar, tomar de los leads no ausentes
+            $eligibleLeads = $stand->leads()->whereNotIn('id', $excludeIds)->get();
+            if ($eligibleLeads->isEmpty()) {
+                $eligibleLeads = $stand->leads()->get();
+            }
         }
 
         if ($eligibleLeads->isEmpty()) {
@@ -1043,6 +1103,21 @@ class ExpoController extends Controller
         ];
 
         return back()->with('success', $messages[$status] ?? 'Estado actualizado correctamente.');
+    }
+
+    /**
+     * Eliminar Stand / Cliente desde SuperAdmin (Master)
+     */
+    public function destroyStand(Stand $stand): RedirectResponse
+    {
+        if (! Auth::check() || ! Auth::user()->isAdmin()) {
+            abort(403, 'Solo el usuario Master / SuperAdmin puede eliminar clientes.');
+        }
+
+        $standName = $stand->name;
+        $stand->delete();
+
+        return back()->with('success', "El stand '{$standName}' y todos sus registros asociados han sido eliminados.");
     }
 
     /**

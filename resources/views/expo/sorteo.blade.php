@@ -133,12 +133,17 @@
             </div>
 
             <!-- Botones de Acción -->
-            <div class="mt-4 sm:mt-6 flex items-center justify-center gap-3">
+            <div class="mt-4 sm:mt-6 flex flex-wrap items-center justify-center gap-3">
                 <button id="btnSortear" onclick="iniciarSorteo()"
                         class="text-white font-black text-sm sm:text-base md:text-lg px-6 sm:px-10 py-3 sm:py-3.5 rounded-2xl transition shadow-xl uppercase tracking-wider flex items-center gap-2.5 cursor-pointer hover:brightness-110 active:scale-95"
                         style="background: linear-gradient(135deg, {{ $stand->primary_color }}, {{ $stand->secondary_color ?? '#1e293b' }}); box-shadow: 0 8px 25px -4px {{ $stand->primary_color }}88;">
                     <svg class="w-5 h-5 animate-spin-slow" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
                     <span>Iniciar Sorteo en Vivo</span>
+                </button>
+
+                <button id="btnAusente" onclick="sortearPorAusencia()" style="display: none;"
+                        class="px-5 py-3 sm:py-3.5 rounded-2xl bg-amber-500/20 hover:bg-amber-500/30 text-amber-300 border border-amber-500/50 text-xs sm:text-sm font-bold transition flex items-center gap-2 cursor-pointer shadow-md">
+                    <span>⚠️ Ganador Ausente (Volver a Sortear)</span>
                 </button>
             </div>
 
@@ -166,6 +171,8 @@
         let selectedDrawId = {{ $activeDraw->id }};
         let participants = [];
         let isRunning = false;
+        let currentWinnerObj = null;
+        let excludedLeadIds = [];
 
         setInterval(() => {
             const relojEl = document.getElementById('reloj');
@@ -231,6 +238,8 @@
             if (target.status === 'completed' && target.winner) {
                 mostrarGanadorExistente(target.winner);
             } else {
+                currentWinnerObj = null;
+                document.getElementById('btnAusente').style.display = 'none';
                 document.getElementById('nombreDisplay').innerText = 'PRESIONE INICIAR';
                 document.getElementById('nombreDisplay').classList.remove('glow-text', 'text-emerald-400');
                 document.getElementById('nombreDisplay').classList.add('text-slate-200');
@@ -241,6 +250,10 @@
         }
 
         function mostrarGanadorExistente(winner) {
+            currentWinnerObj = winner;
+            const btnAus = document.getElementById('btnAusente');
+            if (btnAus) btnAus.style.display = 'inline-flex';
+
             const display = document.getElementById('nombreDisplay');
             display.innerText = winner.full_name.toUpperCase();
             display.classList.remove('text-slate-200');
@@ -268,7 +281,7 @@
             } catch (e) {}
         }
 
-        async function iniciarSorteo() {
+        async function iniciarSorteo(isAbsentReDraw = false) {
             if (isRunning) return;
             if (participants.length === 0) {
                 alert('No hay participantes registrados en este stand todavía.');
@@ -283,6 +296,9 @@
 
             isRunning = true;
             document.getElementById('btnSortear').disabled = true;
+            const btnAus = document.getElementById('btnAusente');
+            if (btnAus) btnAus.style.display = 'none';
+
             document.getElementById('laserLine').classList.remove('hidden');
             document.getElementById('datosGanador').classList.add('opacity-0');
             document.getElementById('estadoTexto').innerText = 'BUSCANDO GANADOR EN TIEMPO REAL...';
@@ -301,7 +317,8 @@
                     },
                     body: JSON.stringify({ 
                         pin: enteredPin,
-                        draw_id: selectedDrawId
+                        draw_id: selectedDrawId,
+                        exclude_lead_ids: excludedLeadIds
                     })
                 });
 
@@ -351,6 +368,10 @@
         }
 
         function revelarGanador(winner) {
+            currentWinnerObj = winner;
+            const btnAus = document.getElementById('btnAusente');
+            if (btnAus) btnAus.style.display = 'inline-flex';
+
             document.getElementById('laserLine').classList.add('hidden');
             const display = document.getElementById('nombreDisplay');
             
@@ -384,6 +405,21 @@
             isRunning = false;
             document.getElementById('btnSortear').disabled = false;
             document.getElementById('btnSortear').innerHTML = `<span>Sorteo Completado (Volver a Sortear)</span>`;
+        }
+
+        function sortearPorAusencia() {
+            if (isRunning) return;
+            if (!currentWinnerObj) {
+                alert('No hay un ganador seleccionado para re-sortear.');
+                return;
+            }
+            if (!confirm(`¿Confirmas que "${currentWinnerObj.full_name}" no se encuentra presente y deseas sortear de nuevo para otorgar el premio a otro asistente?`)) {
+                return;
+            }
+            if (!excludedLeadIds.includes(currentWinnerObj.id)) {
+                excludedLeadIds.push(currentWinnerObj.id);
+            }
+            iniciarSorteo(true);
         }
 
         function toggleFullScreen() {

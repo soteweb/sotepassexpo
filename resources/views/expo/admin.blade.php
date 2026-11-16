@@ -310,9 +310,20 @@
                                     <!-- Abrir Sorteo TV -->
                                     <a href="{{ route('expo.sorteo', $stand->slug) }}" target="_blank"
                                        class="inline-flex items-center p-1.5 rounded-xl text-slate-500 hover:text-slate-800 hover:bg-slate-100 transition-colors border border-transparent"
-                                       title="Abrir Sorteo en TV 4K">
+                                       title="Abrir Sorteo en Pantalla">
                                         📺
                                     </a>
+
+                                    <!-- Eliminar Stand (Exclusivo Master) -->
+                                    <form method="POST" action="{{ route('expo.admin.stand.destroy', $stand->id) }}" class="inline" onsubmit="return confirm('¿Estás seguro de que deseas ELIMINAR definitivamente el stand de {{ addslashes($stand->name) }} y todos sus datos asociados?');">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" 
+                                                class="inline-flex items-center p-1.5 rounded-xl text-slate-400 hover:text-red-600 hover:bg-red-50 transition-colors cursor-pointer"
+                                                title="Eliminar Cliente / Stand">
+                                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                        </button>
+                                    </form>
                                 </td>
                             </tr>
                         @empty

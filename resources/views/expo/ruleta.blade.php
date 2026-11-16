@@ -256,19 +256,29 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            const fallbackPalette = ['#4f46e5', '#16a34a', '#d97706', '#2563eb', '#9333ea', '#0891b2', '#ea580c', '#475569'];
+
             for (let i = 0; i < numSlices; i++) {
                 const startAngle = currentAngle + i * sliceAngle;
                 const endAngle = startAngle + sliceAngle;
                 const p = prizes[i];
 
+                // Resolver color del sector evitando que sectores contiguos tengan el mismo tono
+                let sliceColor = p.color;
+                if (!sliceColor || (i > 0 && sliceColor === prizes[i - 1].color)) {
+                    sliceColor = fallbackPalette[i % fallbackPalette.length];
+                }
+
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
                 ctx.arc(centerX, centerY, radius, startAngle, endAngle);
                 ctx.closePath();
-                ctx.fillStyle = p.color || '#16a34a';
+                ctx.fillStyle = sliceColor;
                 ctx.fill();
-                ctx.lineWidth = 3;
-                ctx.strokeStyle = '#0f172a';
+                
+                // Borde blanco de 4px para máxima definición visual entre sectores
+                ctx.lineWidth = 4;
+                ctx.strokeStyle = '#ffffff';
                 ctx.stroke();
 
                 ctx.save();
@@ -276,13 +286,15 @@
                 ctx.rotate(startAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = p.text_color || '#ffffff';
-                ctx.font = 'bold 16px "Plus Jakarta Sans", sans-serif';
-                ctx.shadowColor = 'rgba(0,0,0,0.7)';
-                ctx.shadowBlur = 5;
+                
+                let fontSize = numSlices > 8 ? 13 : 15;
+                ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
+                ctx.shadowColor = 'rgba(0,0,0,0.8)';
+                ctx.shadowBlur = 6;
                 
                 let text = p.name;
-                if (text.length > 22) text = text.substring(0, 20) + '...';
-                ctx.fillText(text, radius - 30, 6);
+                if (text.length > 18) text = text.substring(0, 16) + '...';
+                ctx.fillText(text, radius - 28, 5);
                 ctx.restore();
             }
         }

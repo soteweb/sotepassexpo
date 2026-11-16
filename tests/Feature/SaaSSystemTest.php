@@ -535,4 +535,95 @@ class SaaSSystemTest extends TestCase
         $responseGuest = $this->get(route('expo.stand.personalizar', $slug));
         $responseGuest->assertRedirect(route('login'));
     }
+
+    public function test_master_admin_can_delete_client_stand_and_expositor_cannot(): void
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::create([
+            'name' => 'Admin Master Test',
+            'email' => 'admin_master_'.rand(100, 999).'@soteweb.com',
+            'role' => 'admin',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $expositor = User::create([
+            'name' => 'Expositor Simple',
+            'email' => 'simple_'.rand(100, 999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $standToDelete = Stand::create([
+            'name' => 'Stand Temporal a Borrar',
+            'slug' => 'stand-to-delete-'.rand(100, 999),
+            'stand_number' => 'DEL-01',
+            'sector' => 'Pruebas',
+            'primary_color' => '#dc2626',
+            'access_pin' => '9999',
+            'is_active' => true,
+        ]);
+
+        // Expositor normal intenta borrar -> Redirigido a dashboard (o 403 con json) y el stand no se borra
+        $responseForbidden = $this->actingAs($expositor)->delete(route('expo.admin.stand.destroy', $standToDelete));
+        $responseForbidden->assertRedirect(route('dashboard'));
+        $this->assertDatabaseHas('stands', ['id' => $standToDelete->id]);
+
+        $responseForbiddenJson = $this->actingAs($expositor)->deleteJson(route('expo.admin.stand.destroy', $standToDelete));
+        $responseForbiddenJson->assertForbidden();
+        $this->assertDatabaseHas('stands', ['id' => $standToDelete->id]);
+
+        // Master Admin borra -> Éxito 302 y registro eliminado
+        $responseSuccess = $this->actingAs($admin)->delete(route('expo.admin.stand.destroy', $standToDelete));
+        $responseSuccess->assertRedirect();
+        $this->assertDatabaseMissing('stands', ['id' => $standToDelete->id]);
+    }
+
+    public function test_sorteo_final_redraw_excludes_absent_winner(): void
+    {
+        $admin = User::where('role', 'admin')->first() ?? User::create([
+            'name' => 'Admin Draw Test',
+            'email' => 'admin_draw_'.rand(100, 999).'@soteweb.com',
+            'role' => 'admin',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-draw-test-'.rand(100, 999);
+        $stand = Stand::create([
+            'name' => 'Stand Draw Test',
+            'slug' => $slug,
+            'stand_number' => 'DT-01',
+            'sector' => 'Test',
+            'primary_color' => '#4338ca',
+            'access_pin' => '1234',
+            'is_active' => true,
+        ]);
+
+        $lead1 = $stand->leads()->create(['full_name' => 'Participante 1', 'phone' => '0981111111', 'city' => 'Asuncion', 'profile' => 'Productor']);
+        $lead2 = $stand->leads()->create(['full_name' => 'Participante 2', 'phone' => '0981222222', 'city' => 'Hernandarias', 'profile' => 'Productor']);
+
+        $draw = $stand->draws()->create([
+            'title' => 'Sorteo Principal',
+            'prize_description' => 'Gran Premio',
+            'status' => 'pending',
+        ]);
+
+        // 1er Sorteo: Sale el Lead 1
+        $response1 = $this->actingAs($admin)->postJson(route('expo.sorteo.execute', $slug), [
+            'draw_id' => $draw->id,
+            'pin' => '1234',
+        ]);
+        $response1->assertOk();
+        $winner1Id = $response1->json('winner.id');
+
+        // 2do Sorteo: El primer ganador está ausente, se pasa en exclude_lead_ids
+        $response2 = $this->actingAs($admin)->postJson(route('expo.sorteo.execute', $slug), [
+            'draw_id' => $draw->id,
+            'pin' => '1234',
+            'exclude_lead_ids' => [$winner1Id],
+        ]);
+        $response2->assertOk();
+        $winner2Id = $response2->json('winner.id');
+
+        // El segundo ganador NUNCA puede ser el mismo que estaba ausente
+        $this->assertNotEquals($winner1Id, $winner2Id);
+    }
 }

@@ -238,7 +238,9 @@
                                         @csrf
                                         <td class="py-3">
                                             <div class="flex items-center gap-2">
-                                                <span class="w-3.5 h-3.5 rounded-full shrink-0" style="background-color: {{ $prize->color }};"></span>
+                                                <input type="color" name="color" value="{{ $prize->color ?? '#6366f1' }}" 
+                                                       class="w-7 h-7 rounded-lg border border-slate-200 cursor-pointer p-0.5 shrink-0 hover:scale-105 transition" 
+                                                       title="Clic para cambiar el color de este sector en la ruleta">
                                                 <input type="text" name="name" value="{{ $prize->name }}" required
                                                        class="text-xs font-bold text-slate-800 bg-transparent border-b border-transparent hover:border-slate-300 focus:border-gold-500 focus:bg-white rounded px-1 py-0.5 w-full">
                                             </div>
@@ -532,7 +534,11 @@
                             <div>
                                 <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Color del Sector</label>
                                 <div class="flex items-center gap-2">
-                                    <input type="color" name="color" value="#16a34a" class="h-9 w-12 rounded-xl border border-slate-200 cursor-pointer p-0.5">
+                                    @php
+                                        $palette = ['#4f46e5', '#d97706', '#059669', '#dc2626', '#7c3aed', '#0891b2', '#ea580c', '#475569'];
+                                        $nextColor = $palette[$prizes->count() % count($palette)];
+                                    @endphp
+                                    <input type="color" name="color" value="{{ $nextColor }}" class="h-9 w-12 rounded-xl border border-slate-200 cursor-pointer p-0.5">
                                     <span class="text-[11px] text-slate-500 font-mono">Selector</span>
                                 </div>
                             </div>
