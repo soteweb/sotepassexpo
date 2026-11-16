@@ -1160,7 +1160,7 @@ class ExpoController extends Controller
     }
 
     /**
-     * Actualizar Plan B2B desde SuperAdmin (Cambiar precio, descripción, etc.)
+     * Actualizar Plan B2B desde SuperAdmin (Cambiar precio, descripción, items/features en modo texto, etc.)
      */
     public function updatePlan(Request $request, Plan $plan): RedirectResponse
     {
@@ -1169,16 +1169,31 @@ class ExpoController extends Controller
             'price' => 'required|integer|min:0',
             'description' => 'nullable|string',
             'badge_text' => 'nullable|string|max:50',
+            'features' => 'nullable',
         ]);
+
+        $features = $plan->features ?? [];
+        if ($request->has('features')) {
+            $rawFeatures = $request->input('features');
+            if (is_array($rawFeatures)) {
+                $features = array_values(array_filter(array_map('trim', $rawFeatures), fn ($line) => $line !== ''));
+            } elseif (is_string($rawFeatures)) {
+                $lines = preg_split('/\r\n|\r|\n/', $rawFeatures);
+                $features = array_values(array_filter(array_map('trim', $lines), fn ($line) => $line !== ''));
+            } else {
+                $features = [];
+            }
+        }
 
         $plan->update([
             'name' => $validated['name'],
             'price' => $validated['price'],
             'description' => $validated['description'] ?? null,
             'badge_text' => $validated['badge_text'] ?? null,
+            'features' => $features,
         ]);
 
-        return back()->with('success', "¡Tarifa del {$plan->name} actualizada a {$plan->formatted_price}!");
+        return back()->with('success', "¡Plan {$plan->name} actualizado con éxito!");
     }
 
     /**

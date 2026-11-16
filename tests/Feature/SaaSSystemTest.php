@@ -248,6 +248,7 @@ class SaaSSystemTest extends TestCase
             'price' => 750000,
             'description' => 'Tarifa económica especial para la feria',
             'badge_text' => 'OFERTA ESPECIAL',
+            'features' => "Beneficio 1 Nuevo\nBeneficio 2 con Sorteo\nBeneficio 3 Soporte VIP",
         ]);
 
         $response->assertRedirect();
@@ -255,6 +256,11 @@ class SaaSSystemTest extends TestCase
         $this->assertEquals(750000, $plan->price);
         $this->assertEquals('Plan Ajustado SuperAdmin', $plan->name);
         $this->assertEquals('OFERTA ESPECIAL', $plan->badge_text);
+        $this->assertEquals([
+            'Beneficio 1 Nuevo',
+            'Beneficio 2 con Sorteo',
+            'Beneficio 3 Soporte VIP',
+        ], $plan->features);
     }
 
     public function test_stand_owner_can_manage_prizes_toggle_ruleta_and_update_draw_config(): void

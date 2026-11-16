@@ -1,7 +1,29 @@
 <x-app-layout>
     <x-slot:title>Administración Global | SotePass Expo (Soteweb)</x-slot>
 
-    <div class="space-y-8" x-data="{ openCreateModal: false, editingPlan: null, planName: '', planPrice: 0, planDesc: '', planBadge: '', planAction: '' }">
+    <div class="space-y-8" x-data="{ 
+        openCreateModal: false, 
+        editingPlan: null, 
+        planName: '', 
+        planPrice: 0, 
+        planDesc: '', 
+        planBadge: '', 
+        planFeatures: '', 
+        planAction: '',
+        openPlanEdit(id) {
+            const el = document.getElementById('plan-data-' + id);
+            if (el) {
+                const data = JSON.parse(el.textContent);
+                this.editingPlan = data.id;
+                this.planName = data.name;
+                this.planPrice = data.price;
+                this.planDesc = data.description;
+                this.planBadge = data.badge_text;
+                this.planFeatures = data.features;
+                this.planAction = data.action;
+            }
+        }
+    }">
 
         <!-- Top Header & Actions -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -91,24 +113,50 @@
         <!-- Planes B2B Activos (SaaS Tiers Soteweb) -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             @foreach($plans as $plan)
+                <script type="application/json" id="plan-data-{{ $plan->id }}">{!! json_encode([
+                    'id' => $plan->id,
+                    'name' => $plan->name,
+                    'price' => $plan->price,
+                    'description' => $plan->description ?? '',
+                    'badge_text' => $plan->badge_text ?? '',
+                    'features' => implode("\n", $plan->features ?? []),
+                    'action' => route('expo.admin.plans.update', $plan->id),
+                ]) !!}</script>
+
                 <div class="bg-white rounded-lg p-5 border border-slate-200 shadow-xs relative overflow-hidden flex flex-col justify-between hover:border-slate-300 transition-all">
                     @if($plan->badge_text)
-                        <span class="absolute top-4 right-4 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-gold-100 text-gold-900 border border-gold-300">
+                        <span class="absolute top-4 right-4 text-[9px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
                             {{ $plan->badge_text }}
                         </span>
                     @endif
                     <div>
                         <div class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Plan Oficial B2B</div>
                         <div class="text-base font-bold text-slate-900 mt-0.5">{{ $plan->name }}</div>
-                        <div class="text-xl font-bold text-gold-600 mt-1">{{ $plan->formatted_price }}</div>
-                        <p class="text-xs text-slate-500 mt-2 leading-relaxed">{{ $plan->description }}</p>
+                        <div class="text-xl font-bold text-emerald-700 mt-1">{{ $plan->formatted_price }}</div>
+                        <p class="text-xs text-slate-500 mt-1 leading-relaxed">{{ $plan->description }}</p>
+
+                        <!-- Items / Beneficios Incluidos -->
+                        <div class="my-3 pt-3 border-t border-slate-100 space-y-1.5">
+                            <div class="flex items-center justify-between text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
+                                <span>Items incluidos:</span>
+                                <span class="text-emerald-700 font-bold font-mono">{{ count($plan->features ?? []) }}</span>
+                            </div>
+                            @forelse(($plan->features ?? []) as $feat)
+                                <div class="flex items-start gap-1.5 text-xs text-slate-600">
+                                    <span class="text-emerald-600 font-bold shrink-0">✓</span>
+                                    <span class="line-clamp-1 leading-snug">{{ $feat }}</span>
+                                </div>
+                            @empty
+                                <span class="text-xs text-slate-400 italic">Sin características cargadas</span>
+                            @endforelse
+                        </div>
                     </div>
                     <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
                         <span class="text-slate-400 font-medium">Stands: <strong class="text-slate-700">{{ $plan->stands_count }}</strong></span>
                         <button type="button" 
-                                @click="editingPlan = {{ $plan->id }}; planName = '{{ addslashes($plan->name) }}'; planPrice = {{ $plan->price }}; planDesc = '{{ addslashes($plan->description) }}'; planBadge = '{{ addslashes($plan->badge_text ?? '') }}'; planAction = '{{ route('expo.admin.plans.update', $plan->id) }}'"
-                                class="text-slate-700 hover:text-slate-900 font-semibold hover:underline text-[11px] flex items-center gap-1 cursor-pointer">
-                            <span>✏️ Ajustar Tarifa</span>
+                                @click="openPlanEdit({{ $plan->id }})"
+                                class="text-emerald-700 hover:text-emerald-800 font-semibold hover:underline text-[11px] flex items-center gap-1 cursor-pointer">
+                            <span>✏️ Editar Plan e Items</span>
                         </button>
                     </div>
                 </div>
@@ -479,7 +527,7 @@
                     
                     <div class="flex items-center justify-between pb-3 border-b border-slate-100">
                         <div>
-                            <span class="text-[10px] font-semibold uppercase tracking-wider text-gold-700">Ajuste de Precios Master</span>
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-700">Ajuste de Precios e Items Master</span>
                             <h3 class="text-base font-bold text-slate-900" x-text="'Editar ' + planName"></h3>
                         </div>
                         <button type="button" @click="editingPlan = null" class="w-7 h-7 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-bold cursor-pointer">
@@ -508,7 +556,16 @@
 
                         <div>
                             <x-input-label value="Descripción Comercial" />
-                            <textarea name="description" x-model="planDesc" rows="3" class="w-full rounded-md border-slate-300 text-xs focus:border-slate-900 focus:ring-1 focus:ring-slate-900 p-2.5"></textarea>
+                            <textarea name="description" x-model="planDesc" rows="2" class="w-full rounded-md border-slate-300 text-xs focus:border-slate-900 focus:ring-1 focus:ring-slate-900 p-2.5"></textarea>
+                        </div>
+
+                        <div>
+                            <div class="flex items-center justify-between mb-1">
+                                <x-input-label value="Items y Beneficios Incluidos (1 por línea)" />
+                                <span class="text-[10px] text-emerald-700 font-semibold uppercase tracking-wider">Modo Texto</span>
+                            </div>
+                            <textarea name="features" x-model="planFeatures" rows="6" placeholder="Escribe un beneficio por renglón...&#10;Ej: Landing Mobile Personalizada con QR&#10;Ruleta Digital de la Suerte&#10;Sorteo Final en Pantalla" class="w-full rounded-md border-slate-300 font-sans text-xs focus:border-slate-900 focus:ring-1 focus:ring-slate-900 p-2.5 leading-relaxed"></textarea>
+                            <p class="text-[10px] text-slate-400 mt-1">Cada línea se formateará como un ítem con tilde verde (✓) en la landing, al registrar empresa y en el stand.</p>
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-2.5">
@@ -516,7 +573,7 @@
                                 Cancelar
                             </button>
                             <button type="submit" class="px-4 py-2 rounded-md bg-slate-900 hover:bg-slate-800 text-white font-semibold shadow-xs transition cursor-pointer">
-                                Guardar Tarifa
+                                Guardar Cambios del Plan
                             </button>
                         </div>
                     </form>
