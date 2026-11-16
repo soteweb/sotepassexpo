@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/panel/{slug}/sorteos/{drawId}', [ExpoController::class, 'destroyDraw'])->name('expo.draw.destroy');
     Route::post('/panel/{slug}/sorteo-config', [ExpoController::class, 'updateDrawConfig'])->name('expo.draw.update');
     Route::post('/panel/{slug}/branding', [ExpoController::class, 'updateBranding'])->name('expo.stand.branding');
+    Route::post('/panel/{slug}/reset-event', [ExpoController::class, 'resetStandForNewEvent'])->name('expo.stand.reset');
     Route::get('/export/{slug}', [ExpoController::class, 'exportLeads'])->name('expo.export');
 });
 

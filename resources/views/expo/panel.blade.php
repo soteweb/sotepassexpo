@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }}</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -481,6 +481,88 @@
                     {{ $leads->links() }}
                 </div>
             @endif
+        </div>
+
+        <!-- ZONA DE MANTENIMIENTO: REINICIAR STAND PARA NUEVO EVENTO / FERIA -->
+        <div class="bg-gradient-to-r from-slate-50 to-amber-50/40 rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xs flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="space-y-1.5 max-w-2xl">
+                <div class="flex items-center gap-2">
+                    <span class="w-8 h-8 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center text-sm font-bold">🔄</span>
+                    <h3 class="text-base font-black text-slate-900 tracking-tight">Preparar Stand para un Nuevo Evento</h3>
+                </div>
+                <p class="text-xs text-slate-600 leading-relaxed">
+                    ¿Vas a reutilizar este stand en una nueva feria o edición comercial? Asegúrate de <strong>descargar primero el Excel</strong> con los datos captados. Luego puedes reiniciar el padrón para vaciar los leads, reponer el stock inicial de premios y dejar el stand listo desde cero.
+                </p>
+            </div>
+
+            <div class="flex flex-wrap items-center gap-3 shrink-0">
+                <a href="{{ route('expo.export', $stand->slug) }}" 
+                   class="px-4 py-2.5 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs shadow-2xs transition flex items-center gap-2">
+                    <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    <span>Descargar Respaldo Excel</span>
+                </a>
+
+                <button type="button" @click="showResetModal = true"
+                        class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-sm transition flex items-center gap-1.5 cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                    <span>Reiniciar para Nuevo Evento</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- MODAL: CONFIRMACIÓN DE RESETEO DE STAND PARA NUEVA FERIA -->
+        <div x-show="showResetModal" 
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showResetModal = false"></div>
+
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-5"
+                     @click.stop>
+                    
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div class="flex items-center gap-2">
+                            <span class="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center text-sm font-bold">⚠️</span>
+                            <h3 class="text-base font-black text-slate-900">Reiniciar Stand para Nueva Feria</h3>
+                        </div>
+                        <button type="button" @click="showResetModal = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+
+                    <div class="p-3.5 rounded-2xl bg-rose-50 border border-rose-100 text-rose-800 text-xs leading-relaxed space-y-1">
+                        <p class="font-bold">Esta acción realizará lo siguiente:</p>
+                        <ul class="list-disc list-inside space-y-0.5 text-[11px] text-rose-700">
+                            <li>Eliminará todos los <strong>contactos / leads</strong> captados en la feria actual.</li>
+                            <li>Eliminará el historial de giros de ruleta y cupones canjeados.</li>
+                            <li>Restaurará el <strong>stock de premios</strong> a sus valores iniciales.</li>
+                            <li>Reiniciará los sorteos finalizados para volver a sortear.</li>
+                        </ul>
+                    </div>
+
+                    <form action="{{ route('expo.stand.reset', $stand->slug) }}" method="POST" class="space-y-4 text-xs">
+                        @csrf
+                        <div>
+                            <label class="block text-[11px] font-black uppercase tracking-wider text-slate-500 mb-1">
+                                Para confirmar, escribe la palabra <strong class="text-rose-600">REINICIAR</strong>:
+                            </label>
+                            <input type="text" name="confirm_text" required placeholder="REINICIAR"
+                                   class="w-full text-xs font-mono font-bold uppercase rounded-xl border-slate-200 focus:border-rose-500 focus:ring-rose-500 py-2.5 px-3">
+                        </div>
+
+                        <div class="pt-3 border-t border-slate-100 flex items-center justify-end gap-3">
+                            <button type="button" @click="showResetModal = false" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md shadow-rose-600/20 transition cursor-pointer">
+                                Sí, Reiniciar Stand
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
         <!-- MODAL: AGREGAR NUEVO PREMIO / SECTOR A LA RULETA -->

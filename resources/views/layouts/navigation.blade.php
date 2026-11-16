@@ -83,6 +83,20 @@
                         @endif
                     </div>
 
+                    @if($authUser && $authUser->stands->count() > 1)
+                        <div x-show="!sidebarCollapsed" class="px-2 pb-2">
+                            <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Cambiar de Stand / Evento</label>
+                            <select onchange="if(this.value) window.location.href = this.value" 
+                                    class="w-full text-xs font-bold rounded-xl border-slate-200 bg-white py-1.5 px-2 focus:border-gold-500 focus:ring-gold-500 shadow-2xs cursor-pointer">
+                                @foreach($authUser->stands as $userStand)
+                                    <option value="{{ route('expo.panel', $userStand->slug) }}" {{ (isset($currentStand) && $currentStand->id === $userStand->id) ? 'selected' : '' }}>
+                                        {{ $userStand->name }} ({{ $userStand->stand_number }})
+                                    </option>
+                                @endforeach
+                            </select>
+                        </div>
+                    @endif
+
                     <!-- Panel de Control Stand -->
                     @php $isPanel = request()->routeIs('expo.panel') && request()->route('slug') === $currentStand->slug; @endphp
                     <a href="{{ route('expo.panel', $currentStand->slug) }}"

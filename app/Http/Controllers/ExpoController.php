@@ -1154,4 +1154,43 @@ class ExpoController extends Controller
 
         return back()->with('success', "¡Tarifa del {$plan->name} actualizada a {$plan->formatted_price}!");
     }
+
+    /**
+     * Reiniciar Padrón y Stock para un Nuevo Evento (Reutilización del Stand)
+     */
+    public function resetStandForNewEvent(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $request->validate([
+            'confirm_text' => 'required|string',
+        ]);
+
+        if (trim(strtolower($request->input('confirm_text'))) !== 'reiniciar') {
+            return back()->with('error', "Debes escribir exactamente la palabra 'REINICIAR' para confirmar el reseteo del stand.");
+        }
+
+        DB::transaction(function () use ($stand) {
+            // 1. Eliminar giros y leads de la feria previa (cascada)
+            $stand->spins()->delete();
+            $stand->leads()->delete();
+
+            // 2. Restaurar stock de premios al total inicial
+            foreach ($stand->prizes as $prize) {
+                $prize->update([
+                    'remaining_stock' => $prize->total_stock,
+                ]);
+            }
+
+            // 3. Reiniciar sorteos a estado pendiente
+            $stand->draws()->update([
+                'winner_lead_id' => null,
+                'draw_date' => null,
+                'status' => 'pending',
+            ]);
+        });
+
+        return back()->with('success', "¡Stand '{$stand->name}' reiniciado con éxito! Padrón de leads en cero, stock de ruleta restaurado y sorteos listos para el nuevo evento.");
+    }
 }

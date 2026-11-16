@@ -626,4 +626,54 @@ class SaaSSystemTest extends TestCase
         // El segundo ganador NUNCA puede ser el mismo que estaba ausente
         $this->assertNotEquals($winner1Id, $winner2Id);
     }
+
+    public function test_stand_can_be_reset_for_new_event(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Reset Test',
+            'email' => 'reset_'.rand(100, 999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-reset-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Reset Co.',
+            'slug' => $slug,
+            'stand_number' => 'R-01',
+            'sector' => 'Test',
+            'primary_color' => '#4338ca',
+            'access_pin' => '1234',
+            'is_active' => true,
+        ]);
+
+        $prize = $stand->prizes()->create([
+            'name' => 'Gorra Oficial',
+            'total_stock' => 50,
+            'remaining_stock' => 20, // Stock gastado
+            'probability_weight' => 50,
+        ]);
+
+        $stand->leads()->create(['full_name' => 'Lead Antiguo', 'phone' => '0981111111', 'city' => 'Asuncion', 'profile' => 'Productor']);
+
+        // 1. Falla si confirm_text es incorrecto
+        $failResponse = $this->actingAs($user)->post(route('expo.stand.reset', $slug), [
+            'confirm_text' => 'incorrecto',
+        ]);
+        $failResponse->assertRedirect();
+        $this->assertEquals(1, $stand->leads()->count());
+
+        // 2. Éxito si escribe REINICIAR
+        $successResponse = $this->actingAs($user)->post(route('expo.stand.reset', $slug), [
+            'confirm_text' => 'REINICIAR',
+        ]);
+        $successResponse->assertRedirect();
+        $successResponse->assertSessionHas('success');
+
+        // Padrón limpio y stock de premios restaurado
+        $this->assertEquals(0, $stand->leads()->count());
+        $prize->refresh();
+        $this->assertEquals(50, $prize->remaining_stock);
+    }
 }
