@@ -27,8 +27,9 @@ class ExpoController extends Controller
         $totalLeads = Lead::count();
         $totalSpins = RuletaSpin::count();
         $totalStands = $stands->count();
+        $demoSlug = $stands->first()?->slug ?? 'demo';
 
-        return view('expo.index', compact('stands', 'plans', 'totalLeads', 'totalSpins', 'totalStands'));
+        return view('expo.index', compact('stands', 'plans', 'totalLeads', 'totalSpins', 'totalStands', 'demoSlug'));
     }
 
     /**
@@ -439,10 +440,19 @@ class ExpoController extends Controller
     public function sorteo(string $slug): View
     {
         $stand = Stand::where('slug', $slug)->firstOrFail();
-        $draw = $stand->draws()->latest()->first();
+        $draws = $stand->draws()->with('winner')->orderBy('id', 'asc')->get();
+        if ($draws->isEmpty()) {
+            $defaultDraw = $stand->draws()->create([
+                'title' => 'Gran Sorteo Final '.$stand->name,
+                'prize_description' => 'Premio Principal del Stand',
+                'status' => 'pending',
+            ]);
+            $draws = collect([$defaultDraw]);
+        }
+        $activeDraw = $draws->where('status', 'pending')->first() ?? $draws->first();
         $totalParticipants = $stand->leads()->count();
 
-        return view('expo.sorteo', compact('stand', 'draw', 'totalParticipants'));
+        return view('expo.sorteo', compact('stand', 'draws', 'activeDraw', 'totalParticipants'));
     }
 
     /**
@@ -451,7 +461,8 @@ class ExpoController extends Controller
     public function sorteoData(string $slug): JsonResponse
     {
         $stand = Stand::where('slug', $slug)->firstOrFail();
-        $draw = $stand->draws()->latest()->first();
+        $draws = $stand->draws()->with('winner')->orderBy('id', 'asc')->get();
+        $activeDraw = $draws->where('status', 'pending')->first() ?? $draws->first();
 
         $totalParticipants = $stand->leads()->count();
 
@@ -465,7 +476,8 @@ class ExpoController extends Controller
 
         return response()->json([
             'stand' => $stand,
-            'draw' => $draw,
+            'draw' => $activeDraw,
+            'draws' => $draws,
             'total_participants' => $totalParticipants,
             'participants' => $participants,
         ]);
@@ -478,6 +490,7 @@ class ExpoController extends Controller
     {
         $stand = Stand::where('slug', $slug)->firstOrFail();
         $pin = $request->input('pin');
+        $drawId = $request->input('draw_id');
 
         // Permitir si es admin/dueño autenticado o si proveyó el PIN correcto
         $isAuthorized = false;
@@ -492,19 +505,37 @@ class ExpoController extends Controller
             return response()->json(['error' => 'PIN de mostrador no autorizado.'], 401);
         }
 
-        $leads = $stand->leads()->get();
-        if ($leads->isEmpty()) {
+        // Buscar el draw específico o el primer pendiente
+        $draw = null;
+        if ($drawId) {
+            $draw = $stand->draws()->where('id', $drawId)->first();
+        }
+        if (! $draw) {
+            $draw = $stand->draws()->where('status', 'pending')->oldest('id')->first()
+                ?: $stand->draws()->create([
+                    'title' => 'Gran Sorteo Final '.$stand->name,
+                    'prize_description' => 'Gran Premio del Stand',
+                    'status' => 'pending',
+                ]);
+        }
+
+        // Excluir a ganadores de otros sorteos del mismo stand si hay suficientes participantes
+        $previousWinnerIds = $stand->draws()
+            ->whereNotNull('winner_lead_id')
+            ->where('id', '!=', $draw->id)
+            ->pluck('winner_lead_id')
+            ->toArray();
+
+        $eligibleLeads = $stand->leads()->whereNotIn('id', $previousWinnerIds)->get();
+        if ($eligibleLeads->isEmpty()) {
+            $eligibleLeads = $stand->leads()->get();
+        }
+
+        if ($eligibleLeads->isEmpty()) {
             return response()->json(['error' => 'No hay participantes registrados.'], 400);
         }
 
-        $winner = $leads->random();
-
-        $draw = $stand->draws()->where('status', 'pending')->latest()->first()
-            ?: $stand->draws()->create([
-                'title' => 'Sorteo Oficial '.$stand->name,
-                'prize_description' => 'Gran Premio del Stand',
-                'status' => 'pending',
-            ]);
+        $winner = $eligibleLeads->random();
 
         $draw->update([
             'winner_lead_id' => $winner->id,
@@ -514,6 +545,11 @@ class ExpoController extends Controller
 
         return response()->json([
             'success' => true,
+            'draw' => [
+                'id' => $draw->id,
+                'title' => $draw->title,
+                'prize_description' => $draw->prize_description,
+            ],
             'winner' => [
                 'id' => $winner->id,
                 'full_name' => $winner->full_name,
@@ -592,9 +628,10 @@ class ExpoController extends Controller
         $totalLeads = $stand->leads()->count();
         $totalSpins = $stand->spins()->count();
         $redeemedSpins = $stand->spins()->where('is_redeemed', true)->count();
-        $latestDraw = $stand->draws()->latest()->first();
+        $draws = $stand->draws()->with('winner')->orderBy('id', 'asc')->get();
+        $latestDraw = $draws->last();
 
-        return view('expo.panel', compact('stand', 'prizes', 'leads', 'totalLeads', 'totalSpins', 'redeemedSpins', 'latestDraw'));
+        return view('expo.panel', compact('stand', 'prizes', 'leads', 'totalLeads', 'totalSpins', 'redeemedSpins', 'latestDraw', 'draws'));
     }
 
     /**
@@ -741,6 +778,66 @@ class ExpoController extends Controller
             : "Ruleta DESACTIVADA. El stand ahora opera en modo 'Solo Captación de Datos para Sorteo Final'.";
 
         return back()->with('success', $msg);
+    }
+
+    /**
+     * Crear un Nuevo Premio para el Sorteo Final
+     */
+    public function storeDraw(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:150',
+            'prize_description' => 'required|string|max:200',
+        ]);
+
+        $stand->draws()->create([
+            'title' => $validated['title'],
+            'prize_description' => $validated['prize_description'],
+            'status' => 'pending',
+        ]);
+
+        return back()->with('success', "¡Nuevo premio de Sorteo Final '{$validated['prize_description']}' agregado con éxito!");
+    }
+
+    /**
+     * Editar un Premio del Sorteo Final
+     */
+    public function updateDraw(Request $request, string $slug, int $drawId): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $draw = $stand->draws()->findOrFail($drawId);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:150',
+            'prize_description' => 'required|string|max:200',
+        ]);
+
+        $draw->update([
+            'title' => $validated['title'],
+            'prize_description' => $validated['prize_description'],
+        ]);
+
+        return back()->with('success', "¡Premio '{$validated['prize_description']}' actualizado con éxito!");
+    }
+
+    /**
+     * Eliminar un Premio del Sorteo Final
+     */
+    public function destroyDraw(string $slug, int $drawId): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $draw = $stand->draws()->findOrFail($drawId);
+        $prizeName = $draw->prize_description;
+        $draw->delete();
+
+        return back()->with('success', "¡Premio '{$prizeName}' eliminado del Sorteo Final!");
     }
 
     /**

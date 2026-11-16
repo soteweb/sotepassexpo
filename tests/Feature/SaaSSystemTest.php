@@ -383,11 +383,110 @@ class SaaSSystemTest extends TestCase
         $responseRuleta->assertSee('#dc2626');
         $responseRuleta->assertSee('Ruleta de Premios Activa');
 
-        // 3. Desactivar ruleta y verificar modo Sorteo Oficial en TV
+        // 3. Desactivar ruleta y verificar modo Sorteo Oficial
         $stand->update(['allow_spins' => false]);
         $responseSorteo = $this->get(route('expo.stand', $slug));
         $responseSorteo->assertOk();
         $responseSorteo->assertSee('Gran Sorteo en TV 4K');
         $responseSorteo->assertSee('Obtener Mi Cupón de Sorteo');
+    }
+
+    public function test_stand_owner_can_manage_multiple_draw_prizes_and_execute_specific_draw(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Draws',
+            'company_name' => 'AgroDraws S.A.',
+            'email' => 'draws_owner_'.rand(1000, 9999).'@agrotest.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'agrodraws-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'AgroDraws S.A.',
+            'slug' => $slug,
+            'stand_number' => 'Stand C-05',
+            'sector' => 'Maquinaria',
+            'primary_color' => '#2563eb',
+            'access_pin' => '1234',
+            'is_active' => true,
+        ]);
+
+        // Registrar 2 participantes
+        $lead1 = $stand->leads()->create(['full_name' => 'Participante Uno', 'phone' => '0981111222', 'city' => 'Santa Rita', 'profile' => 'Productor Agrícola']);
+        $lead2 = $stand->leads()->create(['full_name' => 'Participante Dos', 'phone' => '0982222333', 'city' => 'Naranjal', 'profile' => 'Ganadero']);
+
+        // 1. Crear nuevo premio de Sorteo Final
+        $this->actingAs($user)->post(route('expo.draw.store', $slug), [
+            'title' => '1º Gran Premio',
+            'prize_description' => 'Smart TV 65 Pulgadas 4K UHD',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('draws', [
+            'stand_id' => $stand->id,
+            'title' => '1º Gran Premio',
+            'prize_description' => 'Smart TV 65 Pulgadas 4K UHD',
+            'status' => 'pending',
+        ]);
+
+        // 2. Crear segundo premio
+        $this->actingAs($user)->post(route('expo.draw.store', $slug), [
+            'title' => '2º Premio Especial',
+            'prize_description' => 'Juego de Herramientas Bosch',
+        ])->assertRedirect();
+
+        $draw2 = $stand->draws()->where('title', '2º Premio Especial')->firstOrFail();
+
+        // 3. Editar segundo premio
+        $this->actingAs($user)->post(route('expo.draw.update-item', ['slug' => $slug, 'drawId' => $draw2->id]), [
+            'title' => '2º Premio Actualizado',
+            'prize_description' => 'Kit Taladro e Inalámbrico Bosch Pro',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('draws', [
+            'id' => $draw2->id,
+            'title' => '2º Premio Actualizado',
+            'prize_description' => 'Kit Taladro e Inalámbrico Bosch Pro',
+        ]);
+
+        // 4. Ejecutar sorteo para el segundo premio específicamente vía API
+        $responseExec = $this->actingAs($user)->postJson(route('expo.sorteo.execute', $slug), [
+            'draw_id' => $draw2->id,
+            'pin' => '1234',
+        ]);
+
+        $responseExec->assertOk();
+        $responseExec->assertJson(['success' => true]);
+
+        $draw2->refresh();
+        $this->assertEquals('completed', $draw2->status);
+        $this->assertNotNull($draw2->winner_lead_id);
+
+        // 5. Eliminar un premio
+        $draw3 = $stand->draws()->create([
+            'title' => 'Premio a Eliminar',
+            'prize_description' => 'Gorra extra',
+            'status' => 'pending',
+        ]);
+
+        $this->actingAs($user)->delete(route('expo.draw.destroy', ['slug' => $slug, 'drawId' => $draw3->id]))
+            ->assertRedirect();
+
+        $this->assertDatabaseMissing('draws', ['id' => $draw3->id]);
+    }
+
+    public function test_landing_page_is_light_toned_and_has_no_kurosu_references(): void
+    {
+        $response = $this->get(route('expo.index'));
+        $response->assertOk();
+
+        // Verifica que no aparezca el nombre Kurosu
+        $response->assertDontSee('Kurosu');
+
+        // Verifica que aparezca el DEMO oficial de SotePass y Sorteo Final
+        $response->assertSee('DEMO SotePass Expo');
+        $response->assertSee('Sorteo Final');
+        $response->assertSee('hero-totem-ruleta.jpg');
     }
 }

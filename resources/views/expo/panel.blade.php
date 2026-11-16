@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }}</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -483,50 +483,109 @@
 
         </div>
 
-        <!-- CONFIGURACIÓN DEL SORTEO EN PANTALLA GIGANTE TV 4K (PREMIO PRINCIPAL) -->
-        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+        <!-- GESTIÓN INTEGRAL DE PREMIOS DEL SORTEO FINAL (MÚLTIPLES PREMIOS) -->
+        <div class="bg-white rounded-[2rem] p-6 sm:p-8 border border-slate-100 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-100">
                 <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-lg">
-                        📺
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-black text-xl shadow-xs">
+                        🎁
                     </div>
                     <div>
-                        <h2 class="text-base font-black text-slate-900">Gran Sorteo Oficial en Pantalla TV 4K</h2>
-                        <p class="text-xs text-slate-500">Configura el título y el premio principal que se proyectará en la televisión de tu stand.</p>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-base sm:text-lg font-black text-slate-900 tracking-tight">Premios del Sorteo Final</h2>
+                            <span class="text-[10px] font-black uppercase px-2 py-0.5 rounded bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                {{ $draws->count() }} {{ $draws->count() === 1 ? 'Premio' : 'Premios' }}
+                            </span>
+                        </div>
+                        <p class="text-xs text-slate-500 mt-0.5">Agrega, edita o elimina los premios que se sortearán en pantalla grande al final de la jornada o cierre de feria.</p>
                     </div>
                 </div>
-                @if($stand->plan?->has_tv_draw ?? true)
+
+                <div class="flex flex-wrap items-center gap-2">
+                    <button type="button" 
+                            @click="showNewDrawModal = true"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl transition cursor-pointer">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span>+ Agregar Premio de Sorteo</span>
+                    </button>
+
                     <a href="{{ route('expo.sorteo', $stand->slug) }}" target="_blank"
                        class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer">
-                        <span>Lanzar Pantalla de Sorteo 4K &rarr;</span>
+                        <span>📺 Pantalla Sorteo Final &rarr;</span>
                     </a>
-                @endif
+                </div>
             </div>
 
-            @php
-                $currentDraw = $stand->draws()->where('status', 'pending')->latest()->first()
-                    ?? $stand->draws()->latest()->first();
-            @endphp
-
-            <form action="{{ route('expo.draw.update', $stand->slug) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
-                @csrf
-                <div>
-                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Título del Sorteo</label>
-                    <input type="text" name="title" value="{{ old('title', $currentDraw?->title ?? 'Gran Sorteo Oficial ' . $stand->name) }}" required
-                           class="w-full font-bold text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50/50 py-2.5 px-3">
-                </div>
-                <div>
-                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Premio Principal en Juego *</label>
-                    <input type="text" name="prize_description" value="{{ old('prize_description', $currentDraw?->prize_description ?? 'Premio Principal del Stand en Pantalla TV 4K') }}" required placeholder="Ej. Generador Solar 5kVA o Termo Grabado"
-                           class="w-full font-bold text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50/50 py-2.5 px-3">
-                </div>
-                <div class="flex items-end">
-                    <button type="submit" 
-                            class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer">
-                        Guardar Premio Principal
-                    </button>
-                </div>
-            </form>
+            <!-- Tabla de Premios del Sorteo Final -->
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-slate-100 text-[10px] font-black uppercase tracking-wider text-slate-400">
+                            <th class="pb-3 pl-2"># Orden</th>
+                            <th class="pb-3">Título del Sorteo</th>
+                            <th class="pb-3">Descripción del Premio</th>
+                            <th class="pb-3">Estado / Ganador</th>
+                            <th class="pb-3 text-right pr-2">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        @forelse($draws as $index => $d)
+                            <tr class="hover:bg-slate-50/50 transition">
+                                <td class="py-3.5 pl-2 font-mono font-bold text-slate-400">
+                                    {{ $index + 1 }}º
+                                </td>
+                                <td class="py-3.5 font-bold text-slate-900">
+                                    {{ $d->title }}
+                                </td>
+                                <td class="py-3.5 font-semibold text-slate-700">
+                                    {{ $d->prize_description }}
+                                </td>
+                                <td class="py-3.5">
+                                    @if($d->status === 'completed' && $d->winner)
+                                        <div class="inline-flex flex-col">
+                                            <span class="inline-flex items-center gap-1 text-[11px] font-black text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg">
+                                                <span>✓ Ganador: {{ $d->winner->full_name }}</span>
+                                            </span>
+                                            <span class="text-[10px] text-slate-400 mt-0.5 font-mono">
+                                                {{ $d->winner->city }} • {{ $d->draw_date?->format('d/m H:i') }}
+                                            </span>
+                                        </div>
+                                    @else
+                                        <span class="inline-flex items-center gap-1 text-[10px] font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2 py-0.5 rounded-lg">
+                                            <span>🟡 Pendiente de sorteo</span>
+                                        </span>
+                                    @endif
+                                </td>
+                                <td class="py-3.5 text-right pr-2">
+                                    <div class="inline-flex items-center gap-1">
+                                        <button type="button" 
+                                                @click="editingDraw = { id: {{ $d->id }}, title: '{{ addslashes($d->title) }}', prize_description: '{{ addslashes($d->prize_description) }}' }"
+                                                class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-[11px] transition cursor-pointer">
+                                            Editar
+                                        </button>
+                                        <form action="{{ route('expo.draw.destroy', ['slug' => $stand->slug, 'drawId' => $d->id]) }}" method="POST" class="inline"
+                                              onsubmit="return confirm('¿Seguro que deseas eliminar este premio del sorteo final?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" 
+                                                    class="p-1 rounded-lg text-slate-400 hover:text-red-600 hover:bg-red-50 transition cursor-pointer"
+                                                    title="Eliminar Premio">
+                                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="5" class="py-6 text-center text-slate-400">
+                                    No hay premios configurados aún para el sorteo final. Haz clic en <strong>+ Agregar Premio de Sorteo</strong>.
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <!-- TABLA DE VISITANTES Y LEADS CAPTADOS EN TIEMPO REAL -->
@@ -699,6 +758,96 @@
                         </div>
                     </form>
                 </div>
+            </div>
+        </div>
+
+        <!-- MODAL: AGREGAR NUEVO PREMIO AL SORTEO FINAL -->
+        <div x-show="showNewDrawModal" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative"
+                 @click.away="showNewDrawModal = false">
+                
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm">
+                            🎁
+                        </div>
+                        <h3 class="text-base font-black text-slate-900">Nuevo Premio de Sorteo Final</h3>
+                    </div>
+                    <button type="button" @click="showNewDrawModal = false" class="text-slate-400 hover:text-slate-600 p-1">
+                        ✕
+                    </button>
+                </div>
+
+                <form action="{{ route('expo.draw.store', $stand->slug) }}" method="POST" class="space-y-4 text-xs">
+                    @csrf
+                    <div>
+                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Título del Sorteo *</label>
+                        <input type="text" name="title" required placeholder="Ej. 1º Gran Premio, o 2º Premio Especial"
+                               class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 py-2.5 px-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Descripción del Premio *</label>
+                        <input type="text" name="prize_description" required placeholder="Ej. Smart TV 65 pulgadas 4K UHD, o Kit de Herramientas"
+                               class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 py-2.5 px-3">
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <button type="button" @click="showNewDrawModal = false" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold shadow-md transition cursor-pointer">
+                            + Guardar Premio
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- MODAL: EDITAR PREMIO DE SORTEO FINAL -->
+        <div x-show="editingDraw !== null" 
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-slate-100 relative"
+                 @click.away="editingDraw = null">
+                
+                <div class="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-sm">
+                            ✏️
+                        </div>
+                        <h3 class="text-base font-black text-slate-900">Editar Premio de Sorteo Final</h3>
+                    </div>
+                    <button type="button" @click="editingDraw = null" class="text-slate-400 hover:text-slate-600 p-1">
+                        ✕
+                    </button>
+                </div>
+
+                <form :action="'{{ url('/panel/' . $stand->slug . '/sorteos') }}/' + (editingDraw ? editingDraw.id : '')" method="POST" class="space-y-4 text-xs">
+                    @csrf
+                    <div>
+                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Título del Sorteo *</label>
+                        <input type="text" name="title" x-model="editingDraw.title" required
+                               class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 py-2.5 px-3">
+                    </div>
+
+                    <div>
+                        <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Descripción del Premio *</label>
+                        <input type="text" name="prize_description" x-model="editingDraw.prize_description" required
+                               class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 py-2.5 px-3">
+                    </div>
+
+                    <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                        <button type="button" @click="editingDraw = null" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition cursor-pointer">
+                            Cancelar
+                        </button>
+                        <button type="submit" class="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold shadow-md transition cursor-pointer">
+                            Guardar Cambios
+                        </button>
+                    </div>
+                </form>
             </div>
         </div>
 

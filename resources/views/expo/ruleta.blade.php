@@ -40,10 +40,10 @@
 
     <div class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 antialiased">
 
-        <!-- Top Header -->
+        <!-- Top Header con Identidad Corporativa -->
         <header class="w-full {{ $isTotem ? 'max-w-2xl' : 'max-w-md sm:max-w-lg' }} text-center py-2 relative">
             <!-- Botones Superiores: Pantalla Completa & Modo Tótem -->
-            <div class="absolute right-0 top-1 flex items-center gap-1.5">
+            <div class="absolute right-0 top-1 flex items-center gap-1.5 z-20">
                 <a href="{{ route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
                    title="Alternar Modo Tótem / TV Touch Vertical"
                    class="p-2 rounded-xl border {{ $isTotem ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-slate-900 text-slate-400 border-slate-800' }} hover:text-white transition text-xs flex items-center gap-1">
@@ -51,23 +51,36 @@
                     <span class="hidden sm:inline font-bold text-[10px]">{{ $isTotem ? 'Tótem TV' : 'Modo TV' }}</span>
                 </a>
                 <button onclick="toggleFullScreen()" title="Pantalla Completa (F11)"
-                        class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs">
+                        class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
             </div>
 
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                SotePass Expo • {{ $stand->stand_number }}
-                @if($isTotem)
-                    <span class="text-amber-400 ml-1">• MODO TÓTEM VERTICAL</span>
+            <!-- Identidad de la Empresa: Logo + Nombre -->
+            <div class="flex items-center justify-center gap-3 mb-2">
+                @if($stand->logo_url)
+                    <div class="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-white p-1.5 shadow-md border-2 border-white flex items-center justify-center overflow-hidden shrink-0">
+                        <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
+                    </div>
                 @endif
+                <div class="text-center sm:text-left">
+                    <h1 class="{{ $isTotem ? 'text-2xl sm:text-4xl' : 'text-xl sm:text-2xl' }} font-black text-white tracking-tight">
+                        {{ $stand->name }}
+                    </h1>
+                    <div class="flex items-center justify-center sm:justify-start gap-2 mt-0.5">
+                        <span class="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
+                            {{ $stand->stand_number }} &bull; {{ $stand->sector }}
+                        </span>
+                        @if($isTotem)
+                            <span class="text-[10px] font-black uppercase text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500/40">
+                                MODO TÓTEM VERTICAL
+                            </span>
+                        @endif
+                    </div>
+                </div>
             </div>
 
-            <h1 class="{{ $isTotem ? 'text-2xl sm:text-4xl' : 'text-xl sm:text-2xl' }} font-black text-white tracking-tight">
-                {{ $stand->name }}
-            </h1>
-            <p class="{{ $isTotem ? 'text-sm sm:text-base' : 'text-xs' }} text-slate-400 mt-0.5">
+            <p class="{{ $isTotem ? 'text-sm sm:text-base' : 'text-xs' }} text-slate-400">
                 Participante: <strong class="text-emerald-400">{{ $lead->full_name }}</strong> ({{ $lead->city }})
             </p>
         </header>
@@ -87,8 +100,8 @@
                 </div>
             @endif
 
-            <!-- Contenedor de la Ruleta (Escalado Dinámico para TV Touch Vertical) -->
-            <div class="relative {{ $isTotem ? 'w-[320px] h-[320px] sm:w-[460px] sm:h-[460px] md:w-[540px] md:h-[540px]' : 'w-[320px] h-[320px] sm:w-[380px] sm:h-[380px]' }} flex items-center justify-center transition-all duration-300">
+            <!-- Contenedor de la Ruleta (Escalado Dinámico para TV Touch Vertical y Móviles) -->
+            <div class="relative w-[280px] h-[280px] xs:w-[320px] xs:h-[320px] {{ $isTotem ? 'sm:w-[460px] sm:h-[460px] md:w-[540px] md:h-[540px]' : 'sm:w-[380px] sm:h-[380px]' }} flex items-center justify-center transition-all duration-300">
                 
                 <div id="ruletaPointer" class="ruleta-pointer"></div>
 
@@ -97,7 +110,8 @@
                 </div>
 
                 <!-- Centro decorativo con LOGO OFICIAL DE LA EMPRESA -->
-                <div class="ruleta-center-cap {{ $isTotem ? 'w-24 h-24 p-2.5' : 'w-20 h-20 p-2' }} bg-white shadow-2xl">
+                <div class="ruleta-center-cap {{ $isTotem ? 'w-24 h-24 p-2.5' : 'w-18 h-18 sm:w-20 sm:h-20 p-2' }} bg-white shadow-2xl border-4"
+                     style="border-color: {{ $stand->primary_color }};">
                     @if($stand->logo_url)
                         <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="w-full h-full object-contain rounded-full">
                     @else

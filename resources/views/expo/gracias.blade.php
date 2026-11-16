@@ -4,10 +4,18 @@
     <div class="min-h-screen bg-[#f8f7f5] flex items-center justify-center p-4 antialiased">
         <div class="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 border border-slate-200/80 shadow-xl text-center space-y-6">
             
-            <!-- Logo Stand -->
-            <div class="w-16 h-16 mx-auto rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-md"
-                 style="background-color: {{ $stand->primary_color }};">
-                {{ strtoupper(substr($stand->slug, 0, 2)) }}
+            <!-- Logo Stand Oficial -->
+            <div class="flex justify-center">
+                @if($stand->logo_url)
+                    <div class="w-20 h-20 rounded-3xl bg-white p-2 shadow-xl border-2 border-slate-100 flex items-center justify-center overflow-hidden">
+                        <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
+                    </div>
+                @else
+                    <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-white text-xl font-black shadow-md"
+                         style="background-color: {{ $stand->primary_color }};">
+                        {{ strtoupper(substr($stand->slug, 0, 2)) }}
+                    </div>
+                @endif
             </div>
 
             <div>
