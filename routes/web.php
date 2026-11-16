@@ -42,6 +42,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/panel/{slug}/premios/{prizeId}', [ExpoController::class, 'destroyPrize'])->name('expo.prize.destroy');
     Route::post('/panel/{slug}/toggle-ruleta', [ExpoController::class, 'toggleRuleta'])->name('expo.stand.toggle-ruleta');
     Route::post('/panel/{slug}/sorteo-config', [ExpoController::class, 'updateDrawConfig'])->name('expo.draw.update');
+    Route::post('/panel/{slug}/branding', [ExpoController::class, 'updateBranding'])->name('expo.stand.branding');
     Route::get('/export/{slug}', [ExpoController::class, 'exportLeads'])->name('expo.export');
 });
 

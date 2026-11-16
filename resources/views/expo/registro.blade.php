@@ -1,90 +1,146 @@
 <x-guest-layout>
     <x-slot:title>Bienvenido a {{ $stand->name }} | SotePass Expo</x-slot>
 
-    <div class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 bg-[#f8f7f5] antialiased">
+    <div class="min-h-screen flex flex-col justify-center items-center p-3 sm:p-6 bg-[#f8f7f5] antialiased">
 
-        <div class="w-full max-w-md bg-white rounded-3xl border border-slate-200/80 shadow-xl overflow-hidden relative">
+        <div class="w-full max-w-md bg-white rounded-[2.5rem] border border-slate-200/80 shadow-2xl overflow-hidden relative">
             
-            <!-- Header con Identidad del Stand y SotePass -->
-            <div class="relative p-6 pb-8 text-center overflow-hidden" style="background: linear-gradient(135deg, {{ $stand->primary_color }} 0%, {{ $stand->secondary_color }} 100%);">
-                <div class="absolute -right-12 -top-12 w-40 h-40 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-                <div class="absolute -left-12 -bottom-12 w-40 h-40 bg-black/20 rounded-full blur-xl pointer-events-none"></div>
+            <!-- HEADER DE MARCA (COLORES Y DEGRADADO CORPORATIVO) -->
+            <div class="relative pt-8 pb-14 px-6 text-center overflow-hidden" 
+                 style="background: linear-gradient(135deg, {{ $stand->primary_color }} 0%, {{ $stand->secondary_color ?? '#0f172a' }} 100%);">
+                
+                <!-- Efectos de luz sutiles de fondo -->
+                <div class="absolute -right-16 -top-16 w-48 h-48 bg-white/15 rounded-full blur-2xl pointer-events-none"></div>
+                <div class="absolute -left-16 -bottom-16 w-48 h-48 bg-black/25 rounded-full blur-2xl pointer-events-none"></div>
 
-                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/30 backdrop-blur-md text-[11px] font-bold text-white tracking-wider uppercase mb-3 border border-white/20">
+                <!-- Badge Ubicación / Stand -->
+                <div class="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-black/25 backdrop-blur-md text-[11px] font-bold text-white tracking-wide uppercase mb-3 border border-white/20 shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                    <span>SotePass Expo • {{ $stand->stand_number }}</span>
+                    <span>{{ $stand->stand_number }} &bull; {{ $stand->sector }}</span>
                     @if($isTotem)
-                        <span class="text-amber-300 ml-1">• TÓTEM</span>
+                        <span class="text-amber-300 ml-1 font-black">&bull; TÓTEM</span>
                     @endif
                 </div>
 
-                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-sm">
+                <!-- Nombre de la Empresa / Marca -->
+                <h1 class="text-2xl sm:text-3xl font-black text-white tracking-tight leading-tight drop-shadow-sm px-2">
                     {{ $stand->name }}
                 </h1>
-                <p class="text-xs text-white/90 font-medium mt-1">
-                    {{ $stand->sector }}
-                </p>
+
+                <!-- Eslogan o Mensaje de Bienvenida -->
+                @if($stand->tagline)
+                    <p class="text-xs text-white/90 font-medium mt-1.5 max-w-xs mx-auto leading-relaxed">
+                        {{ $stand->tagline }}
+                    </p>
+                @endif
             </div>
 
-            <!-- Cuerpo del Registro (Estilo SotePass) -->
-            <div class="p-6 -mt-4 bg-white rounded-t-3xl relative z-10 space-y-5">
-                
-                <div class="text-center">
-                    <div class="w-12 h-12 bg-gold-50 text-gold-700 rounded-2xl flex items-center justify-center mx-auto mb-2 border border-gold-100 text-xl font-bold shadow-2xs">
-                        🎁
+            <!-- LOGO FLOTANTE DE LA EMPRESA (TIPO APP PREMIUM) -->
+            <div class="relative -mt-10 mb-2 flex justify-center z-20">
+                @if($stand->logo_url)
+                    <div class="w-20 h-20 sm:w-24 sm:h-24 rounded-3xl bg-white p-2.5 shadow-xl shadow-black/10 border-2 border-white flex items-center justify-center overflow-hidden transform hover:scale-105 transition-transform duration-300">
+                        <img src="{{ $stand->logo_url }}" 
+                             alt="{{ $stand->name }}" 
+                             class="max-w-full max-h-full object-contain">
                     </div>
-                    <h2 class="text-lg font-black text-slate-900 tracking-tight">¡Girá la Ruleta de Premios!</h2>
-                    <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed">
-                        Registrate en 30 segundos, descubrí tu premio instantáneo y participá del gran sorteo oficial del stand.
-                    </p>
+                @else
+                    <div class="w-20 h-20 rounded-3xl flex items-center justify-center font-black text-white text-2xl shadow-xl shadow-black/10 border-2 border-white transform hover:scale-105 transition-transform duration-300"
+                         style="background: linear-gradient(135deg, {{ $stand->primary_color }}, {{ $stand->secondary_color ?? '#0f172a' }});">
+                        {{ strtoupper(substr($stand->slug, 0, 2)) }}
+                    </div>
+                @endif
+            </div>
+
+            <!-- CUERPO PRINCIPAL DEL FORMULARIO -->
+            <div class="p-6 sm:p-8 pt-3 bg-white relative z-10 space-y-6">
+                
+                <!-- Encabezado de la Acción (Ruleta vs Sorteo Final) -->
+                <div class="text-center">
+                    @if($stand->allow_spins)
+                        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[11px] font-black uppercase tracking-wider mb-1.5">
+                            <span>🎡 Ruleta de Premios Activa</span>
+                        </div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-tight">¡Girá la Ruleta de la Suerte!</h2>
+                        <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed max-w-xs mx-auto">
+                            Completá tus datos en 20 segundos y descubrí al instante qué regalo te llevás de nuestro stand.
+                        </p>
+                    @else
+                        <div class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-indigo-50 text-indigo-800 border border-indigo-200 text-[11px] font-black uppercase tracking-wider mb-1.5">
+                            <span>🎟️ Gran Sorteo en TV 4K</span>
+                        </div>
+                        <h2 class="text-xl font-black text-slate-900 tracking-tight">¡Participá del Sorteo Oficial!</h2>
+                        <p class="text-xs text-slate-500 mt-1 font-medium leading-relaxed max-w-xs mx-auto">
+                            Registrate para recibir tu cupón digital y participar en vivo del sorteo en nuestra pantalla gigante.
+                        </p>
+                    @endif
                 </div>
 
-                <!-- Formulario de Captación -->
+                <!-- Formulario de Captación Mobile -->
                 <form action="{{ route('expo.register', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" method="POST" class="space-y-4">
                     @csrf
 
                     <!-- Nombre Completo -->
                     <div>
-                        <x-input-label value="Nombre y Apellido *" />
-                        <x-text-input type="text" name="full_name" required value="{{ old('full_name') }}" placeholder="Ej. Carlos Ferreira" class="w-full" />
+                        <x-input-label value="Nombre y Apellido *" class="text-xs font-bold text-slate-700" />
+                        <div class="relative mt-1">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                👤
+                            </span>
+                            <input type="text" name="full_name" required value="{{ old('full_name') }}" 
+                                   autocapitalize="words" autocomplete="name"
+                                   placeholder="Ej. Ing. Carlos Ferreira" 
+                                   class="w-full pl-10 pr-4 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-sm font-semibold text-slate-900 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
+                        </div>
                         <x-input-error :messages="$errors->get('full_name')" />
                     </div>
 
-                    <!-- WhatsApp -->
+                    <!-- WhatsApp / Celular con Prefijo Paraguay -->
                     <div>
-                        <x-input-label value="Número de WhatsApp *" />
-                        <div class="relative">
-                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-600 font-bold text-xs">
+                        <x-input-label value="Número de WhatsApp *" class="text-xs font-bold text-slate-700" />
+                        <div class="relative mt-1">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-emerald-700 font-bold text-xs">
                                 💬 +595
                             </div>
-                            <input type="tel" name="phone" required value="{{ old('phone') }}" placeholder="981 123 456"
-                                class="w-full pl-20 pr-4 py-2.5 bg-slate-50/50 hover:bg-slate-50 focus:bg-white text-sm text-slate-900 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all font-mono">
+                            <input type="tel" name="phone" required value="{{ old('phone') }}" 
+                                   inputmode="tel" autocomplete="tel"
+                                   placeholder="981 123 456"
+                                   class="w-full pl-20 pr-4 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-sm font-mono font-bold text-slate-900 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                         </div>
                         <x-input-error :messages="$errors->get('phone')" />
                     </div>
 
-                    <!-- Ciudad / Localidad -->
+                    <!-- Ciudad o Región -->
                     <div>
-                        <x-input-label value="Ciudad o Región *" />
-                        <x-text-input type="text" name="city" required value="{{ old('city') }}" placeholder="Ej. Naranjal, Alto Paraná" class="w-full" />
+                        <x-input-label value="Ciudad / Región *" class="text-xs font-bold text-slate-700" />
+                        <div class="relative mt-1">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                📍
+                            </span>
+                            <input type="text" name="city" required value="{{ old('city') }}" 
+                                   placeholder="Ej. Naranjal, Alto Paraná" 
+                                   class="w-full pl-10 pr-4 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-sm font-semibold text-slate-900 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
+                        </div>
                         <x-input-error :messages="$errors->get('city')" />
                     </div>
 
-                    <!-- Perfil de Producción -->
-                    <div class="grid grid-cols-2 gap-3">
+                    <!-- Perfil y Hectáreas (2 columnas cómodas en móvil) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         <div>
-                            <x-input-label value="Perfil de Actividad *" />
-                            <select name="profile" required class="w-full py-2.5 bg-slate-50/50 hover:bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
+                            <x-input-label value="Actividad / Perfil *" class="text-xs font-bold text-slate-700" />
+                            <select name="profile" required 
+                                    class="w-full mt-1 py-3 px-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                                 <option value="Productor Agrícola">Productor Agrícola</option>
                                 <option value="Ganadero">Ganadero</option>
                                 <option value="Contratista Rural">Contratista Rural</option>
                                 <option value="Ingeniero Agrónomo">Ing. Agrónomo / Técnico</option>
-                                <option value="Estudiante / Público">Visitante / Estudiante</option>
+                                <option value="Estudiante / Académico">Estudiante / Académico</option>
+                                <option value="Visitante General">Visitante General</option>
                             </select>
                         </div>
                         <div>
-                            <x-input-label value="Hectáreas Aprox." />
-                            <select name="hectares" class="w-full py-2.5 bg-slate-50/50 hover:bg-slate-50 focus:bg-white text-xs font-semibold text-slate-800 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
+                            <x-input-label value="Hectáreas (Aprox.)" class="text-xs font-bold text-slate-700" />
+                            <select name="hectares" 
+                                    class="w-full mt-1 py-3 px-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                                 <option value="">Sin especificar</option>
                                 <option value="1 a 50 ha">1 a 50 ha</option>
                                 <option value="50 a 300 ha">50 a 300 ha</option>
@@ -94,18 +150,22 @@
                         </div>
                     </div>
 
-                    <!-- Botón de Registro & Acceso a la Ruleta -->
-                    <div class="pt-2">
+                    <!-- Botón de Acción Principal (Personalizado al color de la marca) -->
+                    <div class="pt-3">
                         <button type="submit" 
-                                class="w-full py-3.5 px-6 rounded-2xl text-white font-black text-sm uppercase tracking-wider shadow-lg transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                                style="background-color: {{ $stand->primary_color }};">
-                            <span>Continuar a la Ruleta</span>
-                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
+                                class="w-full py-4 px-6 rounded-2xl text-white font-black text-sm uppercase tracking-wider shadow-xl transition-all duration-200 active:scale-95 flex items-center justify-center gap-2 cursor-pointer hover:brightness-110"
+                                style="background-color: {{ $stand->primary_color }}; box-shadow: 0 10px 25px -5px {{ $stand->primary_color }}66;">
+                            @if($stand->allow_spins)
+                                <span>Girar la Ruleta Ahora &rarr;</span>
+                            @else
+                                <span>Obtener Mi Cupón de Sorteo &rarr;</span>
+                            @endif
                         </button>
                     </div>
 
-                    <p class="text-[10px] text-center text-slate-400 font-medium">
-                        Tus datos son resguardados por {{ $stand->name }} bajo normativa de privacidad comercial.
+                    <!-- Garantía de Privacidad Comercial -->
+                    <p class="text-[10px] text-center text-slate-400 font-medium leading-relaxed pt-1">
+                        🔒 Tus datos están protegidos por <strong>{{ $stand->name }}</strong> bajo normativa de confidencialidad de la Expo.
                     </p>
                 </form>
 
@@ -113,10 +173,13 @@
 
         </div>
 
-        <!-- Footer SotePass -->
+        <!-- Footer Oficial SotePass Expo -->
         <div class="mt-6 text-center">
-            <p class="text-xs text-slate-500 font-medium">
-                Tecnología provista por <a href="{{ route('expo.index') }}" class="text-gold-700 hover:text-gold-800 font-bold underline transition-colors">SotePass&reg; Expo</a>
+            <p class="text-xs text-slate-400 font-medium flex items-center justify-center gap-1.5">
+                <span>Tecnología provista por</span>
+                <a href="{{ route('expo.index') }}" class="text-slate-700 hover:text-gold-700 font-extrabold transition-colors">
+                    SotePass&reg; Expo
+                </a>
             </p>
         </div>
 

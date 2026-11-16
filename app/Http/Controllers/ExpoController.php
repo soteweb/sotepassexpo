@@ -772,6 +772,53 @@ class ExpoController extends Controller
     }
 
     /**
+     * Actualizar Personalización e Identidad Visual del Stand (Logo, Colores, Eslogan)
+     */
+    public function updateBranding(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:120',
+            'tagline' => 'nullable|string|max:255',
+            'stand_number' => 'required|string|max:50',
+            'sector' => 'required|string|max:100',
+            'primary_color' => 'required|string|max:20',
+            'secondary_color' => 'required|string|max:20',
+            'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
+            'logo_url' => 'nullable|string|max:255',
+        ]);
+
+        $logoPath = $stand->logo_url;
+
+        if ($request->hasFile('logo')) {
+            $file = $request->file('logo');
+            $filename = 'logo_'.$stand->slug.'_'.time().'.'.$file->getClientOriginalExtension();
+            $destinationPath = public_path('uploads/logos');
+            if (! file_exists($destinationPath)) {
+                mkdir($destinationPath, 0755, true);
+            }
+            $file->move($destinationPath, $filename);
+            $logoPath = '/uploads/logos/'.$filename;
+        } elseif ($request->filled('logo_url')) {
+            $logoPath = $validated['logo_url'];
+        }
+
+        $stand->update([
+            'name' => $validated['name'],
+            'tagline' => $validated['tagline'] ?? null,
+            'stand_number' => $validated['stand_number'],
+            'sector' => $validated['sector'],
+            'primary_color' => $validated['primary_color'],
+            'secondary_color' => $validated['secondary_color'],
+            'logo_url' => $logoPath,
+        ]);
+
+        return back()->with('success', "¡Identidad visual y landing móvil de '{$stand->name}' actualizadas con éxito!");
+    }
+
+    /**
      * Helper de Autorización Multitenant para Dueño de Stand y SuperAdmin
      */
     protected function authorizeStandOwner(Stand $stand): void

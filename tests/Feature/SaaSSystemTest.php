@@ -327,4 +327,67 @@ class SaaSSystemTest extends TestCase
             'prize_description' => 'Dron Agrícola DJI Phantom Pro',
         ]);
     }
+
+    public function test_stand_owner_can_customize_branding_colors_logo_and_visitor_landing(): void
+    {
+        $uniqueEmail = 'branding_owner_'.rand(1000, 9999).'@agrotest.com';
+        $user = User::create([
+            'name' => 'Marcos Branding',
+            'company_name' => 'AgroTec Paraguay',
+            'email' => $uniqueEmail,
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'agrotec-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'AgroTec Original',
+            'slug' => $slug,
+            'stand_number' => 'Stand A-10',
+            'sector' => 'Tecnología Agrícola',
+            'primary_color' => '#16a34a',
+            'secondary_color' => '#14532d',
+            'allow_spins' => true,
+            'is_active' => true,
+        ]);
+
+        // 1. Dueño actualiza branding e identidad visual
+        $response = $this->actingAs($user)->post(route('expo.stand.branding', $slug), [
+            'name' => 'AgroTec Premium 2026',
+            'tagline' => 'Innovación y Biotecnología para el Campo',
+            'stand_number' => 'Stand VIP-01',
+            'sector' => 'Semillas & Drones',
+            'primary_color' => '#dc2626',
+            'secondary_color' => '#7f1d1d',
+            'logo_url' => 'https://sotepass.com/logos/agrotec.png',
+        ]);
+
+        $response->assertRedirect();
+        $this->assertDatabaseHas('stands', [
+            'id' => $stand->id,
+            'name' => 'AgroTec Premium 2026',
+            'tagline' => 'Innovación y Biotecnología para el Campo',
+            'stand_number' => 'Stand VIP-01',
+            'sector' => 'Semillas & Drones',
+            'primary_color' => '#dc2626',
+            'secondary_color' => '#7f1d1d',
+            'logo_url' => 'https://sotepass.com/logos/agrotec.png',
+        ]);
+
+        // 2. Visitar la landing del visitante en modo Ruleta
+        $responseRuleta = $this->get(route('expo.stand', $slug));
+        $responseRuleta->assertOk();
+        $responseRuleta->assertSee('AgroTec Premium 2026');
+        $responseRuleta->assertSee('Innovación y Biotecnología para el Campo');
+        $responseRuleta->assertSee('#dc2626');
+        $responseRuleta->assertSee('Ruleta de Premios Activa');
+
+        // 3. Desactivar ruleta y verificar modo Sorteo Oficial en TV
+        $stand->update(['allow_spins' => false]);
+        $responseSorteo = $this->get(route('expo.stand', $slug));
+        $responseSorteo->assertOk();
+        $responseSorteo->assertSee('Gran Sorteo en TV 4K');
+        $responseSorteo->assertSee('Obtener Mi Cupón de Sorteo');
+    }
 }
