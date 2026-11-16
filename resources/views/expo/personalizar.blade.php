@@ -186,6 +186,24 @@
                         </div>
                     </div>
 
+                    <!-- 4. Perfiles y Rubros Personalizables del Formulario -->
+                    <div class="bg-slate-50/70 rounded-2xl p-5 border border-slate-200/80 space-y-3">
+                        <div class="flex items-center gap-2">
+                            <span class="w-7 h-7 rounded-lg bg-gold-100 text-gold-800 flex items-center justify-center font-bold text-xs">👥</span>
+                            <div>
+                                <label class="block text-xs font-bold text-slate-800">Perfiles de Visitantes en el Formulario</label>
+                                <p class="text-[11px] text-slate-500">Define las opciones que verán tus visitantes en el selector de "Actividad / Perfil". Escríbelas separadas por comas.</p>
+                            </div>
+                        </div>
+
+                        <div>
+                            <textarea name="profiles_list" rows="2" 
+                                      class="w-full text-xs font-semibold rounded-xl border-slate-200 focus:border-gold-500 p-3 bg-white shadow-2xs leading-relaxed"
+                                      placeholder="Productor Agrícola, Ganadero, Contratista Rural, Ingeniero Agrónomo, Comerciante, Visitante General">{{ implode(', ', $stand->getProfileOptions()) }}</textarea>
+                            <span class="text-[10px] text-slate-400 mt-1 block">Ejemplo: Productor, Contratista, Comerciante, Mecánico, Inversionista, Otro</span>
+                        </div>
+                    </div>
+
                     <!-- Botón de Guardar Cambios -->
                     <div class="pt-4 border-t border-slate-100 flex items-center justify-between">
                         <span class="text-[11px] text-slate-400">Los cambios se aplican inmediatamente a la landing y a la ruleta.</span>

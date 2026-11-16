@@ -49,4 +49,26 @@ class Stand extends Model
     {
         return $this->hasMany(Draw::class)->orderBy('id', 'desc');
     }
+
+    /**
+     * Opciones de perfil/actividad configuradas para el stand
+     *
+     * @return array<int, string>
+     */
+    public function getProfileOptions(): array
+    {
+        if (! empty($this->custom_questions['profiles']) && is_array($this->custom_questions['profiles'])) {
+            return $this->custom_questions['profiles'];
+        }
+
+        return [
+            'Productor Agrícola',
+            'Ganadero',
+            'Contratista Rural',
+            'Ingeniero Agrónomo',
+            'Estudiante / Académico',
+            'Comerciante / Proveedor',
+            'Visitante General',
+        ];
+    }
 }

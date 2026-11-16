@@ -205,10 +205,18 @@ class ExpoController extends Controller
             'full_name' => 'required|string|max:150',
             'phone' => 'required|string|max:50',
             'city' => 'required|string|max:100',
-            'profile' => 'required|string|max:60',
-            'hectares' => 'nullable|string|max:60',
+            'profile' => 'required|string|max:100',
+            'observation' => 'nullable|string|max:500',
+            'promoter_name' => 'nullable|string|max:100',
             'interest' => 'nullable|string|max:120',
         ]);
+
+        $observation = $validated['observation'] ?? $validated['interest'] ?? null;
+        $promoterName = ! empty($validated['promoter_name']) ? trim($validated['promoter_name']) : null;
+        $customAnswers = [
+            'promoter_name' => $promoterName,
+            'observation' => $observation,
+        ];
 
         $isTotem = $request->boolean('totem');
         $policy = $stand->spin_policy ?? 'once_per_event';
@@ -227,6 +235,8 @@ class ExpoController extends Controller
                     'full_name' => $validated['full_name'],
                     'city' => $validated['city'],
                     'profile' => $validated['profile'],
+                    'observation' => $observation,
+                    'promoter_name' => $promoterName ?? $existingLead->promoter_name,
                 ]);
                 session(['allowed_lead_id_'.$stand->id => $existingLead->id]);
 
@@ -251,8 +261,11 @@ class ExpoController extends Controller
                 'clean_phone' => $cleanPhone,
                 'city' => $validated['city'],
                 'profile' => $validated['profile'],
-                'hectares' => $validated['hectares'] ?? null,
-                'interest' => $validated['interest'] ?? null,
+                'hectares' => null,
+                'interest' => $observation,
+                'observation' => $observation,
+                'promoter_name' => $promoterName,
+                'custom_answers' => $customAnswers,
                 'ip_address' => $request->ip(),
             ]);
 
@@ -280,6 +293,8 @@ class ExpoController extends Controller
                         'full_name' => $validated['full_name'],
                         'city' => $validated['city'],
                         'profile' => $validated['profile'],
+                        'observation' => $observation,
+                        'promoter_name' => $promoterName ?? $existingLead->promoter_name,
                     ]);
 
                     session(['allowed_lead_id_'.$stand->id => $existingLead->id]);
@@ -314,8 +329,11 @@ class ExpoController extends Controller
             'clean_phone' => $cleanPhone,
             'city' => $validated['city'],
             'profile' => $validated['profile'],
-            'hectares' => $validated['hectares'] ?? null,
-            'interest' => $validated['interest'] ?? null,
+            'hectares' => null,
+            'interest' => $observation,
+            'observation' => $observation,
+            'promoter_name' => $promoterName,
+            'custom_answers' => $customAnswers,
             'ip_address' => $request->ip(),
         ]);
 
@@ -646,7 +664,7 @@ class ExpoController extends Controller
         return response()->streamDownload(function () use ($leads) {
             $output = fopen('php://output', 'w');
             fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
-            fputcsv($output, ['ID', 'Fecha / Hora', 'Nombre Completo', 'WhatsApp / Teléfono', 'Ciudad', 'Perfil', 'Hectáreas', 'Interés Comercial', 'Premio Ruleta', 'Código Cupón', 'Estado Canje'], ';');
+            fputcsv($output, ['ID', 'Fecha / Hora', 'Nombre Completo', 'WhatsApp / Teléfono', 'Ciudad', 'Perfil', 'Promotor/a', 'Observación', 'Premio Ruleta', 'Código Cupón', 'Estado Canje'], ';');
 
             foreach ($leads as $l) {
                 fputcsv($output, [
@@ -656,8 +674,8 @@ class ExpoController extends Controller
                     $l->phone,
                     $l->city,
                     $l->profile,
-                    $l->hectares ?: 'N/D',
-                    $l->interest ?: 'General',
+                    $l->promoter_name ?: 'Autoregistro (Visitante)',
+                    $l->observation ?: ($l->interest ?: '—'),
                     $l->spin?->prize?->name ?: 'No giró',
                     $l->spin?->coupon_code ?: 'N/A',
                     $l->spin?->is_redeemed ? 'CANJEADO' : ($l->spin ? 'PENDIENTE' : 'SIN PREMIO'),
@@ -973,6 +991,13 @@ class ExpoController extends Controller
             $logoPath = $validated['logo_url'];
         }
 
+        $customQuestions = $stand->custom_questions ?? [];
+        if ($request->has('profiles_list')) {
+            $rawProfiles = explode(',', (string) $request->input('profiles_list'));
+            $cleaned = array_values(array_filter(array_map('trim', $rawProfiles)));
+            $customQuestions['profiles'] = ! empty($cleaned) ? $cleaned : null;
+        }
+
         $stand->update([
             'name' => $validated['name'],
             'tagline' => $validated['tagline'] ?? null,
@@ -981,6 +1006,7 @@ class ExpoController extends Controller
             'primary_color' => $validated['primary_color'],
             'secondary_color' => $validated['secondary_color'],
             'logo_url' => $logoPath,
+            'custom_questions' => $customQuestions,
         ]);
 
         return back()->with('success', "¡Identidad visual y landing móvil de '{$stand->name}' actualizadas con éxito!");

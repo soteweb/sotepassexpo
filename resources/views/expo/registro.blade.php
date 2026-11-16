@@ -52,7 +52,11 @@
             </div>
 
             <!-- CUERPO PRINCIPAL DEL FORMULARIO -->
-            <div class="p-6 sm:p-8 pt-3 bg-white relative z-10 space-y-6">
+            <div class="p-6 sm:p-8 pt-3 bg-white relative z-10 space-y-6"
+                 x-data="{ 
+                     isPromotor: {{ request()->has('promotor') ? 'true' : 'false' }} || !!localStorage.getItem('promoter_name'), 
+                     promoterName: localStorage.getItem('promoter_name') || '' 
+                 }">
                 
                 <!-- Encabezado de la Acción (Ruleta vs Sorteo Final) -->
                 <div class="text-center">
@@ -78,6 +82,33 @@
                 <!-- Formulario de Captación Mobile -->
                 <form action="{{ route('expo.register', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" method="POST" class="space-y-4">
                     @csrf
+
+                    <!-- Toggle Discreto para Registro Asistido por Promotor/a (Solo se activa si se pulsa) -->
+                    <div class="flex items-center justify-between pb-1.5 border-b border-slate-100">
+                        <button type="button" @click="isPromotor = !isPromotor" 
+                                class="inline-flex items-center gap-1.5 text-[11px] font-bold text-slate-500 hover:text-slate-800 transition cursor-pointer">
+                            <span class="w-2.5 h-2.5 rounded-full border border-slate-300 flex items-center justify-center transition-colors" :class="isPromotor ? 'bg-emerald-500 border-emerald-500' : 'bg-slate-200'"></span>
+                            <span x-text="isPromotor ? '✓ Registro Asistido por Promotor/a' : '¿Cargado por Promotor/a?'"></span>
+                        </button>
+                        <template x-if="isPromotor && promoterName">
+                            <span class="text-[10px] font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-lg" x-text="promoterName"></span>
+                        </template>
+                    </div>
+
+                    <!-- Campo Nombre del Promotor/a (Opcional - Memorizado en el dispositivo) -->
+                    <div x-show="isPromotor" x-cloak class="p-3.5 rounded-2xl bg-emerald-50/70 border border-emerald-200/80 space-y-1.5 transition-all">
+                        <label class="block text-[11px] font-bold text-emerald-950">Nombre del Promotor/a (Stand)</label>
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-emerald-600 text-xs">
+                                👤
+                            </span>
+                            <input type="text" name="promoter_name" x-model="promoterName"
+                                   @input="localStorage.setItem('promoter_name', $event.target.value)"
+                                   placeholder="Ej. Camila, Lucas, etc."
+                                   class="w-full pl-8 pr-3 py-2 bg-white text-xs font-bold text-slate-800 border border-emerald-300 rounded-xl focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500">
+                        </div>
+                        <p class="text-[9px] text-emerald-700">Queda memorizado en esta tablet para los siguientes visitantes.</p>
+                    </div>
 
                     <!-- Nombre Completo -->
                     <div>
@@ -123,30 +154,30 @@
                         <x-input-error :messages="$errors->get('city')" />
                     </div>
 
-                    <!-- Perfil y Hectáreas (2 columnas cómodas en móvil) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div>
-                            <x-input-label value="Actividad / Perfil *" class="text-xs font-bold text-slate-700" />
-                            <select name="profile" required 
-                                    class="w-full mt-1 py-3 px-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
-                                <option value="Productor Agrícola">Productor Agrícola</option>
-                                <option value="Ganadero">Ganadero</option>
-                                <option value="Contratista Rural">Contratista Rural</option>
-                                <option value="Ingeniero Agrónomo">Ing. Agrónomo / Técnico</option>
-                                <option value="Estudiante / Académico">Estudiante / Académico</option>
-                                <option value="Visitante General">Visitante General</option>
-                            </select>
-                        </div>
-                        <div>
-                            <x-input-label value="Hectáreas (Aprox.)" class="text-xs font-bold text-slate-700" />
-                            <select name="hectares" 
-                                    class="w-full mt-1 py-3 px-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
-                                <option value="">Sin especificar</option>
-                                <option value="1 a 50 ha">1 a 50 ha</option>
-                                <option value="50 a 300 ha">50 a 300 ha</option>
-                                <option value="300 a 1.000 ha">300 a 1.000 ha</option>
-                                <option value="+1.000 ha">+1.000 ha</option>
-                            </select>
+                    <!-- Actividad / Perfil (Personalizable por la empresa) -->
+                    <div>
+                        <x-input-label value="Actividad / Perfil *" class="text-xs font-bold text-slate-700" />
+                        <select name="profile" required 
+                                class="w-full mt-1 py-3 px-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-xs font-bold text-slate-800 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
+                            @foreach($stand->getProfileOptions() as $pOption)
+                                <option value="{{ $pOption }}" {{ old('profile') === $pOption ? 'selected' : '' }}>
+                                    {{ $pOption }}
+                                </option>
+                            @endforeach
+                        </select>
+                        <x-input-error :messages="$errors->get('profile')" />
+                    </div>
+
+                    <!-- Observación (Opcional) -->
+                    <div>
+                        <x-input-label value="Observación" class="text-xs font-bold text-slate-700" />
+                        <div class="relative mt-1">
+                            <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                📝
+                            </span>
+                            <input type="text" name="observation" value="{{ old('observation') }}" 
+                                   placeholder="Ej. Interesado en cotizar cosechadora, semillas, servicios..." 
+                                   class="w-full pl-10 pr-4 py-3 bg-slate-50/70 hover:bg-slate-50 focus:bg-white text-sm font-semibold text-slate-900 border border-slate-200 rounded-2xl focus:ring-2 focus:ring-gold-500/20 focus:border-gold-500 transition-all">
                         </div>
                     </div>
 

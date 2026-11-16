@@ -676,4 +676,68 @@ class SaaSSystemTest extends TestCase
         $prize->refresh();
         $this->assertEquals(50, $prize->remaining_stock);
     }
+
+    public function test_visitor_registration_supports_promoter_name_observation_and_custom_profiles(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Profiles Test',
+            'email' => 'profiles_'.rand(100, 999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-profiles-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Tech Solutions',
+            'slug' => $slug,
+            'stand_number' => 'TECH-01',
+            'sector' => 'Tecnología',
+            'primary_color' => '#2563eb',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'is_active' => true,
+        ]);
+
+        $stand->prizes()->create(['name' => 'Premio 1', 'remaining_stock' => 10, 'total_stock' => 10, 'probability_weight' => 50]);
+        $stand->prizes()->create(['name' => 'Premio 2', 'remaining_stock' => 10, 'total_stock' => 10, 'probability_weight' => 50]);
+
+        // 1. Dueño configura perfiles personalizados
+        $this->actingAs($user)->post(route('expo.stand.branding', $slug), [
+            'name' => 'Stand Tech Solutions',
+            'sector' => 'Tecnología',
+            'stand_number' => 'TECH-01',
+            'primary_color' => '#2563eb',
+            'secondary_color' => '#1e3a8a',
+            'profiles_list' => 'Desarrollador, Diseñador, Gerente IT, Estudiante, Otro',
+        ])->assertRedirect();
+
+        $stand->refresh();
+        $this->assertEquals(['Desarrollador', 'Diseñador', 'Gerente IT', 'Estudiante', 'Otro'], $stand->getProfileOptions());
+
+        // 2. La pantalla de registro muestra los perfiles personalizados y no tiene 'Hectáreas'
+        $viewResponse = $this->get(route('expo.stand', $slug));
+        $viewResponse->assertOk();
+        $viewResponse->assertSee('Desarrollador');
+        $viewResponse->assertSee('Gerente IT');
+        $viewResponse->assertDontSee('Hectáreas (Aprox.)');
+
+        // 3. Registro asistido por promotor con observación
+        $uniquePhone = '0981'.rand(100000, 999999);
+        $postResponse = $this->post(route('expo.register', $slug), [
+            'full_name' => 'Marta Benitez',
+            'phone' => $uniquePhone,
+            'city' => 'Ciudad del Este',
+            'profile' => 'Gerente IT',
+            'observation' => 'Interesada en software de trazabilidad para silos',
+            'promoter_name' => 'Camila Promotora',
+        ]);
+
+        $postResponse->assertRedirect();
+        $lead = $stand->leads()->where('clean_phone', preg_replace('/[^0-9]/', '', $uniquePhone))->firstOrFail();
+        $this->assertEquals('Gerente IT', $lead->profile);
+        $this->assertEquals('Camila Promotora', $lead->promoter_name);
+        $this->assertEquals('Interesada en software de trazabilidad para silos', $lead->observation);
+        $this->assertNull($lead->hectares);
+    }
 }

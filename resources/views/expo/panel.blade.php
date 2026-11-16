@@ -410,7 +410,8 @@
                             <th class="px-6 py-3.5">WhatsApp</th>
                             <th class="px-6 py-3.5">Ciudad</th>
                             <th class="px-6 py-3.5">Perfil</th>
-                            <th class="px-6 py-3.5">Hectáreas</th>
+                            <th class="px-6 py-3.5">Promotor/a</th>
+                            <th class="px-6 py-3.5">Observación</th>
                             <th class="px-6 py-3.5 text-center">Premio Ruleta</th>
                             <th class="px-6 py-3.5 text-center">Estado Cupón</th>
                         </tr>
@@ -437,8 +438,17 @@
                                         {{ $lead->profile }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap font-mono text-slate-500">
-                                    {{ $lead->hectares ?: '—' }}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    @if($lead->promoter_name)
+                                        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 border border-emerald-200 text-[11px] font-bold">
+                                            👤 {{ $lead->promoter_name }}
+                                        </span>
+                                    @else
+                                        <span class="text-slate-400 text-[11px] italic">Autoregistro</span>
+                                    @endif
+                                </td>
+                                <td class="px-6 py-4 text-slate-600 text-[11px] max-w-[180px] truncate" title="{{ $lead->observation ?? $lead->interest ?? '' }}">
+                                    {{ $lead->observation ?? $lead->interest ?? '—' }}
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     @if($lead->spin && $lead->spin->prize)
