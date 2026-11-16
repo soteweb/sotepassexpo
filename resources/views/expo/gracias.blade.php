@@ -63,13 +63,13 @@
             </div>
 
             <!-- Aviso del Sorteo en TV -->
-            <div class="p-3.5 rounded-md bg-indigo-50/70 border border-indigo-100 text-indigo-900 text-xs flex items-center gap-3 text-left">
-                <div class="w-9 h-9 rounded-md bg-indigo-100 text-indigo-700 flex items-center justify-center text-base shrink-0">
+            <div class="p-3.5 rounded-md bg-emerald-50/70 border border-emerald-100 text-emerald-950 text-xs flex items-center gap-3 text-left">
+                <div class="w-9 h-9 rounded-md bg-emerald-100 text-emerald-700 flex items-center justify-center text-base shrink-0">
                     📺
                 </div>
                 <div>
                     <span class="font-semibold block">Sorteo Oficial en Pantalla Gigante</span>
-                    <span class="text-[11px] text-indigo-700 leading-tight block mt-0.5">
+                    <span class="text-[11px] text-emerald-800 leading-tight block mt-0.5">
                         El sorteo se realizará en vivo en la televisión del stand entre todos los visitantes registrados.
                     </span>
                 </div>

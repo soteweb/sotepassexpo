@@ -1,7 +1,7 @@
 <x-guest-layout>
     <x-slot:title>SotePass Expo | Captación Digital de Leads y Ruleta para Stands</x-slot>
 
-    <div class="min-h-screen bg-[#fcfbfa] text-slate-800 flex flex-col antialiased selection:bg-indigo-500 selection:text-white">
+    <div class="min-h-screen bg-[#fcfbfa] text-slate-800 flex flex-col antialiased selection:bg-emerald-600 selection:text-white">
 
         <!-- Top Announcement Bar -->
         <div class="bg-slate-900 text-slate-200 text-xs font-semibold py-2 px-4 text-center border-b border-slate-800">
@@ -16,25 +16,27 @@
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
                 
                 <!-- Brand Logo SotePass Expo -->
-                <a href="{{ route('expo.index') }}" class="flex items-center gap-3 group">
-                    <div class="w-9 h-9 rounded-md bg-indigo-600 flex items-center justify-center font-bold text-white text-lg shadow-xs group-hover:scale-105 transition-transform">
-                        S
+                <a href="{{ route('expo.index') }}" class="flex items-center gap-2.5 group">
+                    <div class="w-9 h-9 rounded-md bg-emerald-600 flex items-center justify-center text-white shadow-xs group-hover:scale-105 transition-transform shrink-0">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
                     </div>
-                    <div>
-                        <span class="font-bold text-slate-900 text-base sm:text-lg tracking-tight">SotePass <span class="text-indigo-600">Expo</span></span>
-                        <span class="block text-[10px] text-slate-400 -mt-1 font-semibold uppercase tracking-wider">Captación Digital para Stands</span>
+                    <div class="flex items-center gap-1.5">
+                        <span class="font-bold text-slate-900 text-lg tracking-tight">Sote<span class="text-emerald-600">Pass</span></span>
+                        <span class="text-[10px] font-semibold uppercase tracking-wider px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-800 border border-emerald-200">Expo</span>
                     </div>
                 </a>
 
                 <!-- Enlaces y Acciones -->
                 <div class="flex items-center gap-3 sm:gap-4">
-                    <a href="#solucion" class="hidden md:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition">
+                    <a href="#solucion" class="hidden md:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
                         ¿Cómo Funciona?
                     </a>
-                    <a href="#demo" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition">
+                    <a href="#demo" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
                         Demos en Vivo
                     </a>
-                    <a href="#planes" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition">
+                    <a href="#planes" class="hidden sm:inline-flex px-3 py-1.5 text-xs font-semibold text-slate-600 hover:text-emerald-600 transition">
                         Planes B2B
                     </a>
 
@@ -45,15 +47,15 @@
                                 <span>Panel SuperAdmin</span>
                             </a>
                         @else
-                            <a href="{{ route('dashboard') }}" class="px-3.5 py-2 rounded-md bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs">
+                            <a href="{{ route('dashboard') }}" class="px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-xs">
                                 <span>Mi Panel Expositor &rarr;</span>
                             </a>
                         @endif
                     @else
-                        <a href="{{ route('login') }}" class="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-indigo-600 transition">
+                        <a href="{{ route('login') }}" class="px-3 py-2 text-xs font-semibold text-slate-700 hover:text-emerald-600 transition">
                             Iniciar Sesión
                         </a>
-                        <a href="{{ route('register') }}" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs rounded-md transition shadow-xs flex items-center gap-1.5">
+                        <a href="{{ route('register') }}" class="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs rounded-md transition shadow-xs flex items-center gap-1.5">
                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                             <span>Registrar Empresa</span>
                         </a>
@@ -66,7 +68,7 @@
         <section class="relative pt-12 pb-20 sm:pt-16 sm:pb-28 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto overflow-hidden">
             
             <!-- Fondos y resplandores suaves de tono claro -->
-            <div class="absolute -top-24 right-10 w-96 h-96 bg-indigo-100/50 rounded-full blur-3xl pointer-events-none"></div>
+            <div class="absolute -top-24 right-10 w-96 h-96 bg-emerald-100/40 rounded-full blur-3xl pointer-events-none"></div>
             <div class="absolute top-1/2 left-0 w-80 h-80 bg-amber-100/40 rounded-full blur-3xl pointer-events-none"></div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center relative z-10">
@@ -75,7 +77,7 @@
                 <div class="lg:col-span-7 space-y-6 text-center lg:text-left">
                     
                     <!-- Badge de Feria / Novedad -->
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700 shadow-xs">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 shadow-xs">
                         <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                         <span>Para Empresas en Agrodinámica, Innovar y Ferias Comerciales</span>
                     </div>
@@ -83,7 +85,7 @@
                     <!-- Titular de Gran Impacto -->
                     <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold text-slate-900 tracking-tight leading-[1.12]">
                         Dejá de regalar merchandising sin retorno.<br class="hidden sm:inline">
-                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-900">
+                        <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 via-emerald-700 to-slate-900">
                             Captá clientes reales con Ruleta y Sorteo Final.
                         </span>
                     </h1>
@@ -96,7 +98,7 @@
                     <!-- Botones de Acción (CTAs B2B Rectangulares) -->
                     <div class="pt-2 flex flex-wrap items-center justify-center lg:justify-start gap-3">
                         <a href="{{ route('register') }}" 
-                           class="px-6 py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-md shadow-xs transition flex items-center gap-2 cursor-pointer border border-indigo-500">
+                           class="px-6 py-3.5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs sm:text-sm uppercase tracking-wider rounded-md shadow-xs transition flex items-center gap-2 cursor-pointer border border-emerald-500">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
                             <span>Registrar Mi Empresa / Stand</span>
                         </a>
@@ -106,7 +108,7 @@
                             <span>Ver Demo en Vivo 🎡</span>
                         </a>
 
-                        <a href="#planes" class="px-3 py-3.5 text-xs font-semibold text-slate-500 hover:text-indigo-600 transition flex items-center gap-1">
+                        <a href="#planes" class="px-3 py-3.5 text-xs font-semibold text-slate-500 hover:text-emerald-600 transition flex items-center gap-1">
                             <span>Ver Planes B2B &darr;</span>
                         </a>
                     </div>
@@ -120,7 +122,7 @@
                             <span class="text-xs font-semibold text-slate-700">+95% Conversión</span>
                         </div>
                         <div class="flex items-center gap-2.5">
-                            <div class="w-6 h-6 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center text-xs font-bold">
+                            <div class="w-6 h-6 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xs font-bold">
                                 ✓
                             </div>
                             <span class="text-xs font-semibold text-slate-700">Sin papel ni planillas</span>
@@ -200,7 +202,7 @@
             <div class="max-w-7xl mx-auto">
                 
                 <div class="text-center max-w-3xl mx-auto mb-14">
-                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700 mb-3 shadow-xs">
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-3 shadow-xs">
                         ⚡ Demostración en Vivo
                     </span>
                     <h2 class="text-3xl sm:text-4xl font-bold text-slate-900 tracking-tight">El Ecosistema Completo en 4 Pasos</h2>
@@ -210,19 +212,19 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
 
                     <!-- Paso 1: Landing Mobile del Stand -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between hover:border-indigo-400 hover:shadow-sm transition-all group">
+                    <div class="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between hover:border-emerald-500 hover:shadow-sm transition-all group">
                         <div>
-                            <div class="w-11 h-11 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition">
+                            <div class="w-11 h-11 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition">
                                 📱
                             </div>
-                            <span class="text-[11px] font-semibold text-indigo-600 uppercase tracking-wider">Módulo 1</span>
+                            <span class="text-[11px] font-semibold text-emerald-700 uppercase tracking-wider">Módulo 1</span>
                             <h3 class="text-base sm:text-lg font-bold text-slate-900 mt-1">Landing Mobile del Stand</h3>
                             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
                                 Formulario ultra-rápido en celular con el logo y colores del stand. Pide Nombre, WhatsApp, Ciudad y Perfil productivo.
                             </p>
                         </div>
                         <div class="mt-6 pt-4 border-t border-slate-100">
-                            <a href="{{ route('expo.stand', $demoSlug) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-indigo-600 hover:text-indigo-800">
+                            <a href="{{ route('expo.stand', $demoSlug) }}" target="_blank" class="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-700 hover:text-emerald-900">
                                 <span>Abrir DEMO SotePass Expo</span>
                                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
                             </a>
@@ -254,7 +256,7 @@
                     </div>
 
                     <!-- Paso 3: Panel CRM del Stand -->
-                    <div class="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between hover:border-indigo-400 hover:shadow-sm transition-all group">
+                    <div class="bg-white border border-slate-200 rounded-lg p-6 flex flex-col justify-between hover:border-emerald-500 hover:shadow-sm transition-all group">
                         <div>
                             <div class="w-11 h-11 rounded-md bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl mb-4 group-hover:scale-105 transition">
                                 📊
@@ -301,7 +303,7 @@
         <!-- SECCIÓN: CÓMO FUNCIONA / BENEFICIOS -->
         <section id="solucion" class="py-20 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
             <div class="text-center max-w-3xl mx-auto mb-16">
-                <span class="text-xs font-semibold uppercase tracking-wider text-indigo-700 bg-indigo-50 px-3 py-1 rounded-md border border-indigo-100 shadow-xs">
+                <span class="text-xs font-semibold uppercase tracking-wider text-emerald-800 bg-emerald-50 px-3 py-1 rounded-md border border-emerald-200 shadow-xs">
                     Ventajas para tu Empresa
                 </span>
                 <h2 class="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight mt-3">
@@ -314,7 +316,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                 <div class="bg-white rounded-lg p-7 border border-slate-200 shadow-xs space-y-3">
-                    <div class="w-11 h-11 rounded-md bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl font-bold">
+                    <div class="w-11 h-11 rounded-md bg-emerald-50 text-emerald-700 flex items-center justify-center text-xl font-bold">
                         ⚡
                     </div>
                     <h3 class="text-base sm:text-lg font-bold text-slate-900">100% Autogestionable</h3>
@@ -349,7 +351,7 @@
         <section id="planes" class="py-20 bg-slate-50 border-t border-slate-200/80 px-4 sm:px-6 lg:px-8">
             <div class="max-w-7xl mx-auto">
                 <div class="text-center max-w-3xl mx-auto mb-16">
-                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700 mb-3 shadow-xs">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-3 shadow-xs">
                         <span>💼 Tarifas Planas B2B Soteweb</span>
                     </div>
                     <h2 class="text-3xl sm:text-5xl font-bold text-slate-900 tracking-tight">
@@ -362,9 +364,9 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                     @foreach($plans as $plan)
-                        <div class="bg-white border {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'border-indigo-600 shadow-sm ring-1 ring-indigo-600/30' : 'border-slate-200' }} rounded-lg p-6 sm:p-7 flex flex-col justify-between relative hover:shadow-sm transition-all">
+                        <div class="bg-white border {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'border-emerald-600 shadow-sm ring-1 ring-emerald-600/30' : 'border-slate-200' }} rounded-lg p-6 sm:p-7 flex flex-col justify-between relative hover:shadow-sm transition-all">
                             @if($plan->badge_text)
-                                <span class="absolute top-5 right-5 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                <span class="absolute top-5 right-5 text-[10px] font-semibold uppercase tracking-wider px-2.5 py-0.5 rounded-md bg-emerald-50 text-emerald-800 border border-emerald-200">
                                     {{ $plan->badge_text }}
                                 </span>
                             @endif
@@ -380,17 +382,17 @@
 
                                 <div class="space-y-3 pt-6 border-t border-slate-100">
                                     @foreach($plan->features as $feat)
-                                        <div class="flex items-start gap-2.5 text-xs text-slate-700">
-                                            <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
-                                            <span>{{ str_replace('Sorteo en TV 4K', 'Sorteo Final en Pantalla', $feat) }}</span>
-                                        </div>
+                                         <div class="flex items-start gap-2.5 text-xs text-slate-700">
+                                             <svg class="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+                                             <span>{{ str_replace('Sorteo en TV 4K', 'Sorteo Final en Pantalla', $feat) }}</span>
+                                         </div>
                                     @endforeach
                                 </div>
                             </div>
 
                             <div class="mt-8 pt-6 border-t border-slate-100">
                                 <a href="{{ route('register', ['plan' => $plan->slug]) }}" 
-                                   class="w-full py-3 px-4 rounded-md text-center font-semibold text-xs uppercase tracking-wider transition-all block {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-xs' : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs' }}">
+                                   class="w-full py-3 px-4 rounded-md text-center font-semibold text-xs uppercase tracking-wider transition-all block {{ $plan->slug === 'stand-pro-ruleta-touch' ? 'bg-emerald-600 hover:bg-emerald-700 text-white shadow-xs' : 'bg-slate-900 hover:bg-slate-800 text-white shadow-xs' }}">
                                     Registrar Empresa con este Plan &rarr;
                                 </a>
                             </div>
@@ -402,18 +404,18 @@
 
         <!-- BANNER DE CONVERSIÓN FINAL -->
         <section class="py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto w-full">
-            <div class="bg-gradient-to-r from-indigo-700 via-indigo-600 to-indigo-800 rounded-lg p-8 sm:p-12 text-center text-white relative overflow-hidden shadow-sm border border-indigo-500">
+            <div class="bg-gradient-to-r from-emerald-800 via-emerald-700 to-slate-900 rounded-lg p-8 sm:p-12 text-center text-white relative overflow-hidden shadow-sm border border-emerald-600/40">
                 <div class="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none"></div>
                 <h3 class="text-2xl sm:text-4xl font-bold tracking-tight relative z-10">
                     ¿Tu empresa va a estar presente en la Expo?
                 </h3>
-                <p class="text-indigo-100 text-xs sm:text-sm max-w-xl mx-auto mt-3 leading-relaxed relative z-10">
+                <p class="text-emerald-100 text-xs sm:text-sm max-w-xl mx-auto mt-3 leading-relaxed relative z-10">
                     Creá tu cuenta en 2 minutos, configurá tus premios y comenzá a captar clientes con ruleta interactiva y sorteo final desde el primer día de la feria.
                 </p>
                 <div class="mt-8 flex flex-wrap items-center justify-center gap-3 relative z-10">
                     <a href="{{ route('register') }}" class="px-6 py-3.5 bg-white hover:bg-slate-50 text-slate-950 font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all flex items-center gap-2 cursor-pointer border border-slate-200">
                         <span>Registrar Mi Empresa Ahora</span>
-                        <svg class="w-4 h-4 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
+                        <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
                     <a href="https://wa.me/595981123456" target="_blank" class="px-5 py-3.5 bg-white/15 hover:bg-white/25 text-white font-semibold text-xs uppercase tracking-wider rounded-md transition-all border border-white/20">
                         Hablar con un Asesor &rarr;
@@ -425,12 +427,22 @@
         <!-- FOOTER CLARO Y PROFESIONAL -->
         <footer class="mt-auto py-8 bg-white border-t border-slate-200 text-center text-xs text-slate-500">
             <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center gap-2">
+                    <div class="w-6 h-6 rounded-md bg-emerald-600 flex items-center justify-center text-white shadow-xs shrink-0">
+                        <svg class="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <span class="font-bold text-slate-900 text-sm tracking-tight">Sote<span class="text-emerald-600">Pass</span> <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Expo</span></span>
+                </div>
                 <p>
-                    <strong>SotePass Expo</strong> es una plataforma SaaS desarrollada por <a href="https://soteweb.com" target="_blank" class="text-indigo-600 font-bold hover:underline">Soteweb</a>.
+                    <strong>SotePass&reg; Expo</strong> es una plataforma SaaS desarrollada por <a href="https://soteweb.com" target="_blank" rel="noopener noreferrer" class="text-emerald-700 font-bold hover:underline">Soteweb Tecnología</a> &mdash; Paraguay 🇵🇾
                 </p>
-                <p class="text-slate-400">
-                    Infraestructura: <span class="text-slate-700 font-semibold">Laravel 11 • Livewire 3 • Alpine.js • PostgreSQL</span>
-                </p>
+                <div class="flex items-center gap-4 text-[11px] text-slate-400 font-medium">
+                    <a href="https://sotepass.com" target="_blank" class="hover:text-slate-700 transition">SotePass Principal</a>
+                    <span>•</span>
+                    <a href="{{ route('login') }}" class="hover:text-slate-700 transition">Acceso Expositor</a>
+                </div>
             </div>
         </footer>
 

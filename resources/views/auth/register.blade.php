@@ -5,14 +5,14 @@
         <!-- Brand Logo SotePass Expo -->
         <div class="mb-6 text-center">
             <a href="{{ route('expo.index') }}" class="inline-flex items-center gap-2.5 group transition-transform hover:scale-105">
-                <div class="w-10 h-10 bg-indigo-600 rounded-md flex items-center justify-center shadow-xs text-white font-bold">
+                <div class="w-10 h-10 bg-emerald-600 rounded-md flex items-center justify-center shadow-xs text-white font-bold">
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div class="text-xl font-bold text-slate-900 tracking-tight">
-                    Sote<span class="text-indigo-600">Pass</span>
-                    <span class="text-[10px] uppercase px-1.5 py-0.5 rounded-md bg-indigo-50 text-indigo-700 font-semibold tracking-wider ml-1 border border-indigo-200">
+                    Sote<span class="text-emerald-600">Pass</span>
+                    <span class="text-[10px] uppercase px-1.5 py-0.5 rounded-[4px] bg-emerald-50 text-emerald-800 font-semibold tracking-wider ml-1 border border-emerald-200">
                         Expo
                     </span>
                 </div>
@@ -81,7 +81,7 @@
 
                 <div class="pt-2">
                     <button type="submit" 
-                            class="w-full py-3 px-5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all duration-150 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer border border-indigo-500">
+                            class="w-full py-3 px-5 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all duration-150 active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer border border-emerald-500">
                         Crear Cuenta y Configurar Mi Stand &rarr;
                     </button>
                 </div>
@@ -91,7 +91,7 @@
             <div class="mt-6 pt-4 border-t border-slate-100 text-center">
                 <p class="text-xs text-slate-500 font-normal">
                     ¿Ya tienes una cuenta registrada?
-                    <a href="{{ route('login') }}" class="text-indigo-600 hover:text-indigo-700 font-semibold transition-colors">
+                    <a href="{{ route('login') }}" class="text-emerald-700 hover:text-emerald-800 font-semibold transition-colors">
                         Iniciar Sesión
                     </a>
                 </p>

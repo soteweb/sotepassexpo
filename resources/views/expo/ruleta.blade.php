@@ -122,7 +122,7 @@
         <main class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} flex-1 flex flex-col items-center justify-center py-1 sm:py-2 min-h-0">
 
             @if(session('repeat_notice') === 'already_played_event')
-                <div class="w-full mb-2.5 p-2.5 rounded-md bg-indigo-950/90 border border-indigo-500/40 text-center text-xs text-indigo-200 shadow-xs shrink-0">
+                <div class="w-full mb-2.5 p-2.5 rounded-md bg-emerald-950/90 border border-emerald-500/40 text-center text-xs text-emerald-200 shadow-xs shrink-0">
                     <span class="text-xs font-semibold text-white block mb-0.5">👋 ¡Qué bueno verte de nuevo, {{ $lead->full_name }}!</span>
                     Ya participaste de la ruleta en esta feria. Podés ver tu cupón abajo y <strong>seguís registrado para el Gran Sorteo en TV</strong>.
                 </div>

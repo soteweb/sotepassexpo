@@ -7,7 +7,7 @@
             
             <!-- Header Onboarding -->
             <div class="text-center max-w-2xl mx-auto">
-                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-indigo-50 border border-indigo-100 text-xs font-semibold text-indigo-700 mb-3 shadow-xs">
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-3 shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
                     <span>Paso 2 de 2: Alta de Stand y Selección de Plan</span>
                 </div>
@@ -50,14 +50,14 @@
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
                         @foreach($plans as $plan)
                             <div @click="selectedPlan = {{ $plan->id }}"
-                                 :class="selectedPlan === {{ $plan->id }} ? 'ring-1 ring-indigo-600 border-indigo-600 bg-white shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300 shadow-2xs'"
+                                 :class="selectedPlan === {{ $plan->id }} ? 'ring-1 ring-emerald-600 border-emerald-600 bg-white shadow-xs' : 'border-slate-200 bg-white hover:border-slate-300 shadow-2xs'"
                                  class="rounded-lg p-5 border transition-all duration-150 cursor-pointer flex flex-col justify-between relative overflow-hidden">
                                 
                                 <div>
                                     <div class="flex items-center justify-between gap-2 mb-2.5">
                                         <span class="text-xs font-semibold uppercase tracking-wider text-slate-500">{{ $plan->name }}</span>
                                         @if($plan->badge_text)
-                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-indigo-50 text-indigo-700 border border-indigo-200">
+                                            <span class="px-2 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-800 border border-emerald-200">
                                                 {{ $plan->badge_text }}
                                             </span>
                                         @endif
@@ -91,8 +91,8 @@
                                     <div class="flex items-center gap-2">
                                         <input type="radio" name="plan_id" value="{{ $plan->id }}" 
                                                :checked="selectedPlan === {{ $plan->id }}"
-                                               class="w-4 h-4 text-indigo-600 focus:ring-indigo-500 border-slate-300">
-                                        <span class="text-xs font-semibold" :class="selectedPlan === {{ $plan->id }} ? 'text-indigo-600' : 'text-slate-500'">
+                                               class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                                        <span class="text-xs font-semibold" :class="selectedPlan === {{ $plan->id }} ? 'text-emerald-700' : 'text-slate-500'">
                                             Seleccionar Plan
                                         </span>
                                     </div>
@@ -168,7 +168,7 @@
                             &larr; Volver al Portal Principal
                         </a>
                         <button type="submit" 
-                                class="w-full sm:w-auto px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all active:scale-[0.99] cursor-pointer border border-indigo-500">
+                                class="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs uppercase tracking-wider rounded-md shadow-xs transition-all active:scale-[0.99] cursor-pointer border border-emerald-500">
                             Activar Mi Stand y Entrar al Panel &rarr;
                         </button>
                     </div>
