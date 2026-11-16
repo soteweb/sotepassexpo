@@ -7,6 +7,11 @@
 
     <title>{{ $title ?? 'SotePass Expo' }}</title>
 
+    <!-- Favicon Oficial SotePass Expo -->
+    <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
+    <link rel="alternate icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+
     <!-- Google Fonts: Plus Jakarta Sans & Share Tech Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>

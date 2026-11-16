@@ -4,8 +4,8 @@
     <div class="min-h-screen bg-[#fcfbfa] text-slate-800 flex flex-col antialiased selection:bg-emerald-600 selection:text-white">
 
         <!-- Header / Navbar Propio de la Landing (Estilo SoteGym Dark SaaS) -->
-        <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-50 text-white">
-            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-18 flex items-center justify-between">
+        <header class="border-b border-slate-800 bg-slate-950/90 backdrop-blur-md sticky top-0 z-50 text-white py-3.5 sm:py-4">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
                 
                 <!-- Brand Logo SotePass Expo -->
                 <a href="{{ route('expo.index') }}" class="flex items-center gap-2.5 group">
@@ -57,7 +57,7 @@
         </header>
 
         <!-- HERO SECTION ESTILO SOTEGYM (FULL WIDTH, FONDO PANORÁMICO EXPO PARAGUAY CON OVERLAY OSCURO) -->
-        <section class="relative w-full overflow-hidden bg-slate-950 text-white py-20 sm:py-28 lg:py-32 flex items-center justify-center border-b border-slate-800">
+        <section class="relative w-full overflow-hidden bg-slate-950 text-white py-16 sm:py-24 lg:py-28 flex items-center justify-center border-b border-slate-800">
             
             <!-- Imagen de Fondo Full-Width con Overlay Gradiente Cinemático -->
             <div class="absolute inset-0 z-0">
@@ -69,7 +69,7 @@
             </div>
 
             <!-- Contenido Centrado de Gran Impacto -->
-            <div class="relative z-10 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-7">
+            <div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
                 
                 <!-- Badge de Feria / Novedad (Petición 3: Para Empresas en Exposiciones y Eventos) -->
                 <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-md border border-white/15 text-xs font-semibold text-emerald-300 shadow-sm">
@@ -77,8 +77,8 @@
                     <span>Para Empresas en Exposiciones y Eventos • SotePass Expo</span>
                 </div>
 
-                <!-- Titular de Gran Impacto -->
-                <h1 class="text-3xl sm:text-5xl lg:text-6xl font-bold text-white tracking-tight leading-[1.12]">
+                <!-- Titular de Gran Impacto (Ajustado a Escala SaaS Elegante) -->
+                <h1 class="text-2xl sm:text-4xl lg:text-[42px] font-bold text-white tracking-tight leading-[1.2] max-w-3xl mx-auto">
                     Dejá de regalar merchandising sin retorno.<br class="hidden sm:inline">
                     <span class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-emerald-200">
                         Captá clientes reales con Ruleta y Sorteo Final.
@@ -86,7 +86,7 @@
                 </h1>
 
                 <!-- Bajada Comercial Clara (Petición 2: perfil del visitante) -->
-                <p class="text-base sm:text-lg text-slate-300 max-w-3xl mx-auto leading-relaxed font-normal">
+                <p class="text-sm sm:text-base text-slate-300 max-w-2xl mx-auto leading-relaxed font-normal">
                     Cada visitante escanea el código QR de tu stand o interactúa con tu pantalla vertical, completa sus datos en 20 segundos para girar la ruleta y recibís al instante su <strong class="text-white">WhatsApp verificado, ciudad y perfil del visitante</strong> directo en tu CRM y Excel.
                 </p>
 
