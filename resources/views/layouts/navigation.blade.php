@@ -36,16 +36,16 @@
                class="flex items-center gap-2.5 group focus:outline-none" 
                :title="sidebarCollapsed ? 'SotePass Expo' : ''">
                 <!-- SotePass Gold/Indigo Badge -->
-                <div class="w-8 h-8 bg-gold-500 rounded-xl flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0 text-white">
+                <div class="w-8 h-8 bg-slate-900 rounded-md flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform shrink-0 text-white">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
                     </svg>
                 </div>
                 <div x-show="!sidebarCollapsed" class="flex items-center gap-1.5 whitespace-nowrap transition-opacity">
-                    <span class="text-base font-black text-slate-900 tracking-tight">
+                    <span class="text-base font-bold text-slate-900 tracking-tight">
                         Sote<span class="text-gold-700">Pass</span>
                     </span>
-                    <span class="px-1.5 py-0.5 rounded-md text-[9px] font-black uppercase tracking-wider bg-gold-50 text-gold-800 border border-gold-200">
+                    <span class="px-1.5 py-0.5 rounded-sm text-[9px] font-semibold uppercase tracking-wider bg-gold-50 text-gold-800 border border-gold-200">
                         Expo
                     </span>
                 </div>
@@ -54,7 +54,7 @@
             <!-- Close Button (X on mobile, Rail Toggle on Desktop) -->
             <button @click="toggleSidebar()" 
                     type="button"
-                    class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-[#f2f0eb] rounded-lg transition-colors cursor-pointer"
+                    class="p-1.5 text-slate-400 hover:text-slate-700 hover:bg-[#f2f0eb] rounded-md transition-colors cursor-pointer"
                     :class="sidebarCollapsed ? 'lg:hidden' : 'block'"
                     title="Cerrar / Contraer menú">
                 <svg class="w-5 h-5 lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -75,9 +75,9 @@
             @if($currentStand)
                 <div class="space-y-1">
                     <div x-show="!sidebarCollapsed" class="px-3 flex items-center justify-between mb-1.5">
-                        <p class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Mi Stand</p>
+                        <p class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Mi Stand</p>
                         @if($currentStand->plan)
-                            <span class="text-[9px] font-black uppercase tracking-wider text-gold-700 bg-gold-50 px-1.5 py-0.2 rounded border border-gold-200">
+                            <span class="text-[9px] font-semibold uppercase tracking-wider text-gold-700 bg-gold-50 px-1.5 py-0.2 rounded-sm border border-gold-200">
                                 {{ $currentStand->plan->name }}
                             </span>
                         @endif
@@ -85,9 +85,9 @@
 
                     @if($authUser && $authUser->stands->count() > 1)
                         <div x-show="!sidebarCollapsed" class="px-2 pb-2">
-                            <label class="block text-[10px] font-black uppercase tracking-wider text-slate-400 mb-1">Cambiar de Stand / Evento</label>
+                            <label class="block text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Cambiar de Stand / Evento</label>
                             <select onchange="if(this.value) window.location.href = this.value" 
-                                    class="w-full text-xs font-bold rounded-xl border-slate-200 bg-white py-1.5 px-2 focus:border-gold-500 focus:ring-gold-500 shadow-2xs cursor-pointer">
+                                    class="w-full text-xs font-semibold rounded-md border-slate-300 bg-white py-1.5 px-2 focus:border-slate-900 focus:ring-1 focus:ring-slate-900 shadow-xs cursor-pointer">
                                 @foreach($authUser->stands as $userStand)
                                     <option value="{{ route('expo.panel', $userStand->slug) }}" {{ (isset($currentStand) && $currentStand->id === $userStand->id) ? 'selected' : '' }}>
                                         {{ $userStand->name }} ({{ $userStand->stand_number }})
@@ -101,9 +101,9 @@
                     @php $isPanel = request()->routeIs('expo.panel') && request()->route('slug') === $currentStand->slug; @endphp
                     <a href="{{ route('expo.panel', $currentStand->slug) }}"
                        title="Panel del Stand"
-                       class="flex items-center rounded-xl text-[13px] transition-colors {{ $isPanel ? 'bg-[#edeae4] font-bold text-slate-900 shadow-2xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-semibold' }}"
+                       class="flex items-center rounded-md text-[13px] transition-colors {{ $isPanel ? 'bg-[#edeae4] font-semibold text-slate-900 shadow-xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-medium' }}"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'gap-2.5 px-3 py-2'">
-                        <div class="w-4 h-4 shrink-0 flex items-center justify-center font-black text-[10px] rounded" style="color: {{ $currentStand->primary_color }};">
+                        <div class="w-4 h-4 shrink-0 flex items-center justify-center font-bold text-[10px]" style="color: {{ $currentStand->primary_color }};">
                             ●
                         </div>
                         <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">{{ $currentStand->name }}</span>
@@ -113,7 +113,7 @@
                     @php $isPersonalizar = request()->routeIs('expo.stand.personalizar') && request()->route('slug') === $currentStand->slug; @endphp
                     <a href="{{ route('expo.stand.personalizar', $currentStand->slug) }}"
                        title="Personalizar Landing y Marca"
-                       class="flex items-center rounded-xl text-[13px] transition-colors {{ $isPersonalizar ? 'bg-[#edeae4] font-bold text-slate-900 shadow-2xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-semibold' }}"
+                       class="flex items-center rounded-md text-[13px] transition-colors {{ $isPersonalizar ? 'bg-[#edeae4] font-semibold text-slate-900 shadow-xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-medium' }}"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'gap-2.5 px-3 py-2'">
                         <div class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">
                             🎨
@@ -125,7 +125,7 @@
                     <a href="{{ route('expo.stand', $currentStand->slug) }}" 
                        target="_blank"
                        title="Página de Captación / QR Mostrador"
-                       class="flex items-center rounded-xl text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-semibold transition-colors"
+                       class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">📱</span>
@@ -140,7 +140,7 @@
                         <a href="{{ $firstLead ? route('expo.ruleta', ['slug' => $currentStand->slug, 'leadId' => $firstLead->id]) : route('expo.stand', $currentStand->slug) }}" 
                            target="_blank"
                            title="Ruleta de Premios (Pantalla Completa / Tótem)"
-                           class="flex items-center rounded-xl text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-semibold transition-colors"
+                           class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
                            :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                             <div class="flex items-center gap-2.5 min-w-0">
                                 <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">🎡</span>
@@ -154,7 +154,7 @@
                     <a href="{{ route('expo.sorteo', $currentStand->slug) }}" 
                        target="_blank"
                        title="Sorteo Oficial en Pantalla TV 4K"
-                       class="flex items-center rounded-xl text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-semibold transition-colors"
+                       class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                         <div class="flex items-center gap-2.5 min-w-0">
                             <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">📺</span>
@@ -167,7 +167,7 @@
                 <!-- Si el usuario no tiene stand todavía -->
                 <div class="space-y-1">
                     <a href="{{ route('stands.create') }}"
-                       class="flex items-center rounded-xl text-[13px] bg-gold-50 text-gold-800 font-bold p-3 border border-gold-200">
+                       class="flex items-center rounded-md text-[13px] bg-gold-50 text-gold-800 font-semibold p-3 border border-gold-200">
                         <span>+ Dar de Alta Mi Stand</span>
                     </a>
                 </div>
@@ -176,22 +176,22 @@
             <!-- SECCIÓN: ADMINISTRACIÓN SOTEWEB (Solo Admin) -->
             @if($authUser && $authUser->isAdmin())
                 <div class="pt-2 border-t border-[#f0eee9] space-y-1">
-                    <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                    <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
                         SuperAdmin Soteweb
                     </p>
 
                     @php $isAdmin = request()->routeIs('expo.admin'); @endphp
                     <a href="{{ route('expo.admin') }}"
                        title="Administración Global"
-                       class="flex items-center rounded-xl text-[13px] transition-colors {{ $isAdmin ? 'bg-[#edeae4] font-bold text-slate-900 shadow-2xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-semibold' }}"
+                       class="flex items-center rounded-md text-[13px] transition-colors {{ $isAdmin ? 'bg-[#edeae4] font-semibold text-slate-900 shadow-xs' : 'text-slate-700 hover:bg-[#f4f2ee] font-medium' }}"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                         <div class="flex items-center gap-2.5">
-                            <svg class="w-4 h-4 shrink-0 {{ $isAdmin ? 'text-gold-700' : 'text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <svg class="w-4 h-4 shrink-0 {{ $isAdmin ? 'text-slate-900' : 'text-slate-600' }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
                             </svg>
                             <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Panel Global</span>
                         </div>
-                        <span x-show="!sidebarCollapsed" class="px-1.5 py-0.5 text-[10px] font-black rounded-full bg-slate-100 text-slate-700 border border-slate-200">
+                        <span x-show="!sidebarCollapsed" class="px-1.5 py-0.5 text-[10px] font-bold rounded-sm bg-slate-100 text-slate-700 border border-slate-200">
                             {{ $allStands->count() }}
                         </span>
                     </a>
@@ -200,14 +200,14 @@
                 <!-- SECCIÓN: CAMBIAR DE STAND (Solo Admin puede ver todos) -->
                 @if($allStands->count() > 0)
                     <div class="pt-2 border-t border-[#f0eee9] space-y-1">
-                        <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">
+                        <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">
                             Todos los Expositores ({{ $allStands->count() }})
                         </p>
                         @foreach($allStands as $s)
                             @php $isActiveStand = $currentStand && $currentStand->id === $s->id; @endphp
                             <a href="{{ route('expo.panel', $s->slug) }}"
                                title="{{ $s->name }} ({{ $s->stand_number }})"
-                               class="flex items-center rounded-xl text-[12px] transition-colors {{ $isActiveStand ? 'bg-[#edeae4] font-bold text-slate-900' : 'text-slate-600 hover:bg-[#f4f2ee] font-medium' }}"
+                               class="flex items-center rounded-md text-[12px] transition-colors {{ $isActiveStand ? 'bg-[#edeae4] font-semibold text-slate-900' : 'text-slate-600 hover:bg-[#f4f2ee] font-normal' }}"
                                :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-1.5'">
                                 <div class="flex items-center gap-2 min-w-0">
                                     <span class="w-2 h-2 rounded-full shrink-0" style="background-color: {{ $s->primary_color }};"></span>
@@ -222,11 +222,11 @@
 
             <!-- SECCIÓN: AYUDA Y SOPORTE TÉCNICO -->
             <div class="pt-2 border-t border-[#f0eee9] space-y-1">
-                <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1">Soporte Técnico</p>
+                <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Soporte Técnico</p>
 
                 <a href="https://wa.me/595981123456?text={{ urlencode('Hola Soteweb, solicito asistencia técnica para SotePass Expo.') }}" target="_blank"
                    title="Mesa de Ayuda WhatsApp"
-                   class="flex items-center rounded-xl text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-semibold transition-colors group"
+                   class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors group"
                    :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                     <div class="flex items-center gap-2.5">
                         <svg class="w-4 h-4 shrink-0 text-slate-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">

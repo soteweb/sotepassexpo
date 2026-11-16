@@ -59,36 +59,36 @@
         }
     </style>
 
-    <div class="min-h-screen flex flex-col items-center justify-between p-3 sm:p-6 antialiased select-none">
+    <div class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 antialiased select-none overflow-x-hidden">
 
         <!-- Top Header con Identidad Corporativa y Atajos Rápidos -->
-        <header class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center py-2 relative flex items-center justify-between gap-3">
+        <header class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center py-1.5 sm:py-2 relative flex items-center justify-between gap-3 shrink-0">
             
             <!-- Botón Volver al Formulario de Registro (Flujo Rápido de Promotor) -->
             <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}"
                title="Volver al Formulario de Registro"
-               class="p-2 sm:px-3 sm:py-2 rounded-xl bg-slate-900/90 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
+               class="p-2 sm:px-3 sm:py-2 rounded-md bg-slate-900/90 border border-slate-800 text-slate-300 hover:text-white hover:bg-slate-800 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
                 <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                <span class="hidden sm:inline font-bold text-[11px]">Registro</span>
+                <span class="hidden sm:inline font-semibold text-[11px]">Registro</span>
             </a>
 
             <!-- Identidad de la Empresa: Logo + Nombre -->
             <div class="flex items-center justify-center gap-2.5 sm:gap-3 flex-1 min-w-0">
                 @if($stand->logo_url)
-                    <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-white p-1.5 shadow-md border-2 border-white flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-md bg-white p-1 shadow-xs border border-slate-700 flex items-center justify-center overflow-hidden shrink-0">
                         <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
                     </div>
                 @endif
                 <div class="text-left truncate">
-                    <h1 class="{{ $isTotem ? 'text-xl sm:text-3xl' : 'text-lg sm:text-xl' }} font-black text-white tracking-tight truncate">
+                    <h1 class="{{ $isTotem ? 'text-lg sm:text-2xl' : 'text-sm sm:text-base md:text-lg' }} font-bold text-white tracking-tight truncate">
                         {{ $stand->name }}
                     </h1>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[9px] sm:text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-slate-900 border border-slate-800 text-slate-300">
+                        <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-900 border border-slate-800 text-slate-300">
                             {{ $stand->stand_number }} &bull; {{ $stand->sector }}
                         </span>
                         @if($isTotem)
-                            <span class="text-[9px] sm:text-[10px] font-black uppercase text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-500/40">
+                            <span class="text-[9px] sm:text-[10px] font-semibold uppercase text-amber-400 bg-amber-950/80 px-2 py-0.5 rounded-md border border-amber-500/40">
                                 MODO TÓTEM TOUCH
                             </span>
                         @endif
@@ -100,41 +100,41 @@
             <div class="flex items-center gap-1.5 shrink-0">
                 <a href="{{ route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
                    title="Alternar Modo Tótem / TV Touch Vertical"
-                   class="p-2 rounded-xl border {{ $isTotem ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-slate-900 text-slate-400 border-slate-800' }} hover:text-white transition text-xs flex items-center gap-1">
+                   class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-500/20 text-amber-300 border-amber-500/40' : 'bg-slate-900 text-slate-400 border-slate-800' }} hover:text-white transition text-xs flex items-center gap-1">
                     <span class="text-xs">📺</span>
-                    <span class="hidden sm:inline font-bold text-[10px]">{{ $isTotem ? 'Tótem TV' : 'Modo TV' }}</span>
+                    <span class="hidden sm:inline font-semibold text-[10px]">{{ $isTotem ? 'Tótem TV' : 'Modo TV' }}</span>
                 </a>
                 <button onclick="toggleFullScreen()" title="Pantalla Completa (F11)"
-                        class="p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs cursor-pointer">
+                        class="p-2 rounded-md bg-slate-900 border border-slate-800 text-slate-400 hover:text-white transition text-xs cursor-pointer">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
             </div>
         </header>
 
         <!-- Barra Informativa del Participante -->
-        <div class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center my-1">
+        <div class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center my-0.5 shrink-0">
             <span class="text-xs sm:text-sm text-slate-400 font-medium">
-                Participante: <strong class="text-emerald-400 font-bold">{{ $lead->full_name }}</strong> ({{ $lead->city }})
+                Participante: <strong class="text-emerald-400 font-semibold">{{ $lead->full_name }}</strong> ({{ $lead->city }})
             </span>
         </div>
 
-        <!-- Área Principal de la Ruleta (Grande, Moderna y Centrada) -->
-        <main class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} flex flex-col items-center justify-center my-auto py-2">
+        <!-- Área Principal de la Ruleta (Grande, Moderna, Proporcional en Cualquier Pantalla) -->
+        <main class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} flex-1 flex flex-col items-center justify-center py-1 sm:py-2 min-h-0">
 
             @if(session('repeat_notice') === 'already_played_event')
-                <div class="w-full mb-3 p-3.5 rounded-2xl bg-indigo-950/90 border border-indigo-500/50 text-center text-xs text-indigo-200 shadow-lg">
-                    <span class="text-sm font-bold text-white block mb-0.5">👋 ¡Qué bueno verte de nuevo, {{ $lead->full_name }}!</span>
+                <div class="w-full mb-2.5 p-2.5 rounded-md bg-indigo-950/90 border border-indigo-500/40 text-center text-xs text-indigo-200 shadow-xs shrink-0">
+                    <span class="text-xs font-semibold text-white block mb-0.5">👋 ¡Qué bueno verte de nuevo, {{ $lead->full_name }}!</span>
                     Ya participaste de la ruleta en esta feria. Podés ver tu cupón abajo y <strong>seguís registrado para el Gran Sorteo en TV</strong>.
                 </div>
             @elseif(session('repeat_notice') === 'already_played_today')
-                <div class="w-full mb-3 p-3.5 rounded-2xl bg-amber-950/90 border border-amber-500/50 text-center text-xs text-amber-200 shadow-lg">
-                    <span class="text-sm font-bold text-white block mb-0.5">👋 ¡Hola de nuevo, {{ $lead->full_name }}!</span>
+                <div class="w-full mb-2.5 p-2.5 rounded-md bg-amber-950/90 border border-amber-500/40 text-center text-xs text-amber-200 shadow-xs shrink-0">
+                    <span class="text-xs font-semibold text-white block mb-0.5">👋 ¡Hola de nuevo, {{ $lead->full_name }}!</span>
                     Ya utilizaste tu giro de hoy. Podés volver a jugar mañana a partir de las 08:00 AM. ¡Seguís participando del Sorteo en TV!
                 </div>
             @endif
 
-            <!-- Contenedor de la Ruleta (Escalado Grande con Protagonismo Visual) -->
-            <div class="relative w-[320px] h-[320px] xs:w-[360px] xs:h-[360px] sm:w-[460px] sm:h-[460px] md:w-[540px] md:h-[540px] lg:w-[580px] lg:h-[580px] flex items-center justify-center transition-all duration-300 my-2">
+            <!-- Contenedor de la Ruleta (Escalado Fluido Inteligente con max-h-[50vh] para Garantizar Espacio) -->
+            <div class="relative w-[280px] h-[280px] xs:w-[320px] xs:h-[320px] sm:w-[420px] sm:h-[420px] md:w-[480px] md:h-[480px] lg:w-[540px] lg:h-[540px] max-h-[50vh] max-w-[50vh] flex items-center justify-center transition-all duration-300 my-1 sm:my-2">
                 
                 <!-- Puntero / Clapper Metálico con Sombra 3D -->
                 <div class="ruleta-pointer-wrap">
@@ -163,58 +163,56 @@
 
             </div>
 
-            <!-- Botón Principal de Giro -->
+            <!-- Botón Principal de Giro (Diseño B2B Rectangular con Radio Sutil) -->
             <div class="w-full mt-4 px-4 max-w-md sm:max-w-lg">
                 @if($existingSpin)
                     <button onclick="mostrarCuponExistente()"
-                        class="w-full py-4 sm:py-4.5 px-6 rounded-2xl font-black text-white text-base sm:text-lg shadow-xl shadow-emerald-500/20 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 transform transition active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
+                        class="w-full py-3.5 sm:py-4 px-6 rounded-md font-semibold text-white text-xs sm:text-sm uppercase tracking-wider shadow-xs bg-emerald-600 hover:bg-emerald-500 border border-emerald-500 active:scale-[0.99] transition-all flex items-center justify-center gap-2 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"></path></svg>
                         <span>Ver mi Cupón de Premio</span>
                     </button>
-                    <p class="text-center text-xs text-slate-400 mt-2">Ya giraste la ruleta en esta visita. Podés volver a ver tu pase de canje.</p>
+                    <p class="text-center text-[11px] text-slate-400 mt-2">Ya giraste la ruleta en esta visita. Podés volver a ver tu pase de canje.</p>
                 @else
                     <button id="btnGirar" onclick="ejecutarGiro()"
-                        class="w-full py-4 sm:py-5 px-6 rounded-2xl font-black text-white text-lg sm:text-xl md:text-2xl tracking-wide uppercase shadow-2xl shadow-amber-500/30 bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 hover:brightness-110 transform transition active:scale-95 flex items-center justify-center gap-3 cursor-pointer">
-                        <span class="text-2xl sm:text-3xl animate-bounce">🎯</span>
+                        class="w-full py-3.5 sm:py-4 px-6 rounded-md font-semibold text-white text-xs sm:text-sm tracking-widest uppercase shadow-xs bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 border border-amber-400/30 active:scale-[0.99] transition-all flex items-center justify-center gap-2.5 cursor-pointer">
+                        <span class="text-base sm:text-lg">🎯</span>
                         <span>¡TOCÁ AQUÍ PARA GIRAR!</span>
                     </button>
-                    <p id="spinNotice" class="text-center text-xs sm:text-sm text-slate-400 mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
+                    <p id="spinNotice" class="text-center text-[11px] sm:text-xs text-slate-400 mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
                 @endif
             </div>
 
         </main>
 
         <!-- Footer -->
-        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-xs text-slate-600 border-t border-slate-900/80">
+        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-[11px] text-slate-500 border-t border-slate-900">
             SotePass Expo &bull; Certificación de Ruletas y Sorteos en Tiempo Real
         </footer>
 
         <!-- MODAL: PASE DIGITAL SOTEPASS (CUPÓN DE PREMIO Y FLUJO DE PROMOTOR) -->
-        <div id="modalPremio" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4 hidden">
-            <div class="w-full max-w-sm sm:max-w-md bg-slate-900 border-2 border-emerald-500/50 rounded-3xl shadow-2xl p-6 sm:p-7 text-center relative overflow-hidden transform transition-all scale-95 duration-300" id="modalCard">
+        <div id="modalPremio" class="fixed inset-0 z-50 bg-black/80 backdrop-blur-xs flex items-center justify-center p-4 hidden">
+            <div class="w-full max-w-sm sm:max-w-md bg-slate-900 border border-slate-800 rounded-lg shadow-xl p-6 sm:p-7 text-center relative overflow-hidden transform transition-all scale-95 duration-200" id="modalCard">
                 
-                <div class="absolute -top-12 -right-12 w-32 h-32 bg-emerald-500/20 rounded-full blur-3xl pointer-events-none"></div>
-
-                <div class="w-16 h-16 sm:w-18 sm:h-18 mx-auto mb-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-3xl sm:text-4xl shadow-inner" id="modalEmoji">
+                <div class="w-14 h-14 mx-auto mb-3 rounded-md bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-2xl shadow-inner" id="modalEmoji">
                     🎁
                 </div>
 
-                <span class="text-[11px] font-black uppercase tracking-widest text-emerald-400 bg-emerald-950/80 px-3 py-1 rounded-full border border-emerald-800">
+                <span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-400 bg-emerald-950/80 px-2.5 py-0.5 rounded-md border border-emerald-800">
                     Pase Digital de Canje
                 </span>
 
-                <h3 class="text-2xl sm:text-3xl font-black text-white mt-3 leading-snug" id="modalTituloPremio">
+                <h3 class="text-xl sm:text-2xl font-bold text-white mt-3 leading-snug" id="modalTituloPremio">
                     Premio
                 </h3>
 
-                <p class="text-xs sm:text-sm text-slate-300 mt-2 px-2" id="modalDescPremio">
-                    ¡Felicidades <strong class="text-white">{{ $lead->full_name }}</strong>! Presentá este código en el mostrador para retirar tu premio.
+                <p class="text-xs text-slate-300 mt-2 px-2" id="modalDescPremio">
+                    ¡Felicidades <strong class="text-white font-semibold">{{ $lead->full_name }}</strong>! Presentá este código en el mostrador para retirar tu premio.
                 </p>
 
                 <!-- Ticket / Código Cupón con estilo SotePass -->
-                <div class="my-5 p-4 rounded-2xl bg-slate-950 border border-slate-800 relative shadow-inner">
-                    <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Código de Verificación Antifraude</p>
-                    <div class="text-3xl sm:text-4xl font-digital font-black text-emerald-400 tracking-widest mt-1" id="modalCodigo">
+                <div class="my-4 p-4 rounded-md bg-slate-950 border border-slate-800 relative shadow-inner">
+                    <p class="text-[10px] text-slate-500 font-semibold uppercase tracking-wider">Código de Verificación Antifraude</p>
+                    <div class="text-2xl sm:text-3xl font-digital font-bold text-emerald-400 tracking-wider mt-1" id="modalCodigo">
                         SP-XX-0000
                     </div>
                     <div class="flex items-center justify-between text-[11px] text-slate-400 border-t border-slate-800/80 mt-3 pt-2">
@@ -224,17 +222,17 @@
                 </div>
 
                 <!-- ACCIONES Y FLUJO HÍBRIDO DE PROMOTOR (OPCIÓN C) -->
-                <div class="space-y-2.5 mt-4">
+                <div class="space-y-2 mt-4">
                     
                     <!-- Botón Principal: Volver Inmediatamente al Registro para el Siguiente Cliente -->
                     <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" 
                        id="btnSiguienteRegistro"
-                       class="w-full py-4 px-5 rounded-2xl bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:brightness-110 active:scale-95 text-slate-950 font-black text-base sm:text-lg shadow-xl shadow-emerald-500/30 transition-all flex items-center justify-between gap-3 cursor-pointer">
+                       class="w-full py-3 px-4 rounded-md bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider shadow-xs border border-emerald-500 transition-all flex items-center justify-between gap-3 cursor-pointer">
                         <div class="flex items-center gap-2">
-                            <span class="text-xl">🚀</span>
+                            <span>🚀</span>
                             <span>¡Siguiente Visitante!</span>
                         </div>
-                        <span id="registroCountDown" class="text-xs font-mono font-black bg-slate-950/25 text-slate-950 px-2.5 py-1 rounded-xl">
+                        <span id="registroCountDown" class="text-xs font-mono font-bold bg-black/20 text-white px-2 py-0.5 rounded-md">
                             15s
                         </span>
                     </a>
@@ -243,18 +241,19 @@
                     <div class="grid grid-cols-2 gap-2">
                         <button type="button" onclick="pausarAutoRedireccion()" 
                                 id="btnPausarTimer"
-                                class="py-2.5 px-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <span>📸 Pausar (Tomar Foto)</span>
+                                class="py-2.5 px-3 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                            <span>📸 Pausar Foto</span>
                         </button>
 
                         <button type="button" onclick="cerrarModal()" 
-                                class="py-2.5 px-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-bold transition flex items-center justify-center gap-1 cursor-pointer">
+                                id="btnCerrarModal"
+                                class="py-2.5 px-3 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1 cursor-pointer">
                             <span>✕ Cerrar Pase</span>
                         </button>
                     </div>
                 </div>
 
-                <div class="mt-4 pt-3 border-t border-slate-800/60 text-[10px] text-slate-500">
+                <div class="mt-4 pt-3 border-t border-slate-800/80 text-[10px] text-slate-500">
                     Verificado por SotePass Expo &bull; Uso único e intransferible
                 </div>
 
@@ -341,18 +340,29 @@
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            const fallbackPalette = ['#4f46e5', '#16a34a', '#d97706', '#2563eb', '#9333ea', '#0891b2', '#ea580c', '#475569'];
+            // Paleta vibrante corporativa de alta distinción
+            const vibrantPalette = ['#16a34a', '#2563eb', '#d97706', '#7c3aed', '#0891b2', '#ea580c', '#db2777', '#4f46e5'];
+            
+            // Asignación garantizada: sectores contiguos NUNCA comparten el mismo color
+            const assignedColors = [];
+            for (let i = 0; i < numSlices; i++) {
+                let color = prizes[i].color;
+                const prev = i > 0 ? assignedColors[i - 1] : null;
+                if (!color || color === prev) {
+                    color = vibrantPalette.find(c => c !== prev && c !== color) || vibrantPalette[i % vibrantPalette.length];
+                }
+                if (i === numSlices - 1 && numSlices > 2 && color === assignedColors[0]) {
+                    color = vibrantPalette.find(c => c !== prev && c !== assignedColors[0]) || vibrantPalette[(i + 1) % vibrantPalette.length];
+                }
+                assignedColors.push(color);
+            }
 
             // 1. Dibujar cada sector con gradiente 3D
             for (let i = 0; i < numSlices; i++) {
                 const startAngle = currentAngle + i * sliceAngle;
                 const endAngle = startAngle + sliceAngle;
                 const p = prizes[i];
-
-                let baseColor = p.color;
-                if (!baseColor || (i > 0 && baseColor === prizes[i - 1].color)) {
-                    baseColor = fallbackPalette[i % fallbackPalette.length];
-                }
+                const baseColor = assignedColors[i];
 
                 ctx.beginPath();
                 ctx.moveTo(centerX, centerY);
@@ -373,21 +383,25 @@
                 ctx.strokeStyle = '#ffffff';
                 ctx.stroke();
 
-                // 2. Texto del Premio
+                // 2. Texto del Premio (Calculado con margen de seguridad respecto al centro)
                 ctx.save();
                 ctx.translate(centerX, centerY);
                 ctx.rotate(startAngle + sliceAngle / 2);
                 ctx.textAlign = 'right';
                 ctx.fillStyle = p.text_color || '#ffffff';
                 
-                let fontSize = numSlices > 10 ? 13 : (numSlices > 6 ? 15 : 17);
+                let fontSize = numSlices > 10 ? 12 : (numSlices > 6 ? 14 : 16);
                 ctx.font = `bold ${fontSize}px "Plus Jakarta Sans", sans-serif`;
                 ctx.shadowColor = 'rgba(0,0,0,0.85)';
-                ctx.shadowBlur = 8;
+                ctx.shadowBlur = 6;
                 
-                let text = p.name;
-                if (text.length > 18) text = text.substring(0, 16) + '...';
-                ctx.fillText(text, radius - 35, 6);
+                let text = p.name || '';
+                // Espacio radial máximo antes de tocar la tapa central (dejar al menos 120px desde el centro)
+                const maxTextWidth = radius - 130;
+                while (ctx.measureText(text).width > maxTextWidth && text.length > 4) {
+                    text = text.substring(0, text.length - 2) + '…';
+                }
+                ctx.fillText(text, radius - 30, 5);
                 ctx.restore();
 
                 // 3. Remache / Clavija Dorada en el perímetro (Pin mecánico 3D)
