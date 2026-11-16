@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }}</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -26,16 +26,29 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
+                <!-- Switch Modo Ruleta / Solo Datos -->
+                <form action="{{ route('expo.stand.toggle-ruleta', $stand->slug) }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" 
+                            class="inline-flex items-center gap-2 px-3 py-2 rounded-xl text-xs font-bold transition-all shadow-2xs border cursor-pointer {{ $stand->allow_spins ? 'bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100' : 'bg-slate-100 text-slate-700 border-slate-300 hover:bg-slate-200' }}"
+                            title="Haz clic para activar o desactivar la Ruleta interactiva">
+                        <span>{{ $stand->allow_spins ? '🎡 Ruleta: ACTIVADA' : '📋 Ruleta: DESACTIVADA (Solo Sorteo)' }}</span>
+                        <span class="text-[10px] px-1.5 py-0.5 rounded font-black bg-white border {{ $stand->allow_spins ? 'border-emerald-300 text-emerald-700' : 'border-slate-300 text-slate-600' }}">
+                            Cambiar
+                        </span>
+                    </button>
+                </form>
+
                 <!-- QR Mostrador -->
                 <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
-                   class="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-xl text-xs font-bold transition-colors shadow-2xs">
                     <span>📱 QR Mostrador</span>
                 </a>
 
                 <!-- Ruleta Móvil/Tótem -->
                 @if($stand->allow_spins)
                     <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => 1]) }}" target="_blank"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+                       class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-xl text-xs font-bold transition-colors shadow-2xs">
                         <span>🎡 Tótem Ruleta</span>
                     </a>
                 @endif
@@ -43,16 +56,19 @@
                 <!-- Pantalla TV 4K -->
                 @if($stand->plan?->has_tv_draw ?? true)
                     <a href="{{ route('expo.sorteo', $stand->slug) }}" target="_blank"
-                       class="inline-flex items-center gap-2 px-4 py-2 bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 rounded-xl text-xs font-bold transition-colors shadow-2xs">
+                       class="inline-flex items-center gap-2 px-3.5 py-2 bg-amber-50 border border-amber-200 text-amber-800 hover:bg-amber-100 rounded-xl text-xs font-bold transition-colors shadow-2xs">
                         <span>📺 Sorteo TV 4K</span>
                     </a>
                 @endif
 
                 <!-- Exportar CSV / Excel -->
                 <a href="{{ route('expo.export', $stand->slug) }}"
-                   class="inline-flex items-center gap-2 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-500/20">
+                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold transition-all shadow-sm shadow-emerald-500/20">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-                    <span>Descargar Excel</span>
+                    <span>Excel</span>
+                </a>
+            </div>
+        </div>
                 </a>
             </div>
         </div>
@@ -186,14 +202,19 @@
 
             <!-- GESTOR DE PREMIOS Y STOCK (COLUMNA 2 & 3) -->
             <div class="lg:col-span-2 bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
-                <div class="flex items-center justify-between mb-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                     <div class="flex items-center gap-2">
                         <span class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center font-bold text-sm">🎁</span>
                         <div>
-                            <h2 class="text-base font-black text-slate-900">Premios y Stock de la Ruleta</h2>
-                            <p class="text-xs text-slate-500">Ajusta el stock y las probabilidades según el flujo de la feria.</p>
+                            <h2 class="text-base font-black text-slate-900">Premios y Sectores de la Ruleta</h2>
+                            <p class="text-xs text-slate-500">Ajusta el stock, probabilidades o agrega más regalos y sectores de 'Seguí Participando'.</p>
                         </div>
                     </div>
+                    <button type="button" @click="showNewPrizeModal = true"
+                            class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-gold-500 hover:bg-gold-600 text-white font-bold text-xs shadow-xs transition-all cursor-pointer shrink-0">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+                        <span>+ Agregar Premio / Sector</span>
+                    </button>
                 </div>
 
                 <div class="overflow-x-auto">
@@ -204,7 +225,7 @@
                                 <th class="pb-3 text-center">Stock Restante</th>
                                 <th class="pb-3 text-center">Peso (%)</th>
                                 <th class="pb-3 text-center">Tipo</th>
-                                <th class="pb-3 text-right">Acción</th>
+                                <th class="pb-3 text-right">Acciones</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-slate-100 font-semibold text-slate-700">
@@ -234,18 +255,73 @@
                                                 <span class="px-2 py-0.5 rounded-md text-[10px] font-black uppercase bg-slate-100 text-slate-500">Consuelo</span>
                                             @endif
                                         </td>
-                                        <td class="py-3 text-right">
-                                            <button type="submit" class="px-3 py-1 bg-slate-100 hover:bg-gold-500 hover:text-white text-slate-700 rounded-lg font-bold text-[11px] transition-colors cursor-pointer">
+                                        <td class="py-3 text-right space-x-1 whitespace-nowrap">
+                                            <button type="submit" class="px-2.5 py-1 bg-slate-100 hover:bg-gold-500 hover:text-white text-slate-700 rounded-lg font-bold text-[11px] transition-colors cursor-pointer">
                                                 Guardar
                                             </button>
-                                        </td>
                                     </form>
+                                            <form action="{{ route('expo.prize.destroy', ['slug' => $stand->slug, 'prizeId' => $prize->id]) }}" method="POST" class="inline" onsubmit="return confirm('¿Eliminar este sector de la ruleta?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors cursor-pointer" title="Eliminar premio">
+                                                    🗑️
+                                                </button>
+                                            </form>
+                                        </td>
                                 </tr>
                             @endforeach
                         </tbody>
                     </table>
                 </div>
             </div>
+
+        </div>
+
+        <!-- CONFIGURACIÓN DEL SORTEO EN PANTALLA GIGANTE TV 4K (PREMIO PRINCIPAL) -->
+        <div class="bg-white rounded-3xl p-6 border border-slate-100 shadow-sm">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4 pb-4 border-b border-slate-100">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center font-bold text-lg">
+                        📺
+                    </div>
+                    <div>
+                        <h2 class="text-base font-black text-slate-900">Gran Sorteo Oficial en Pantalla TV 4K</h2>
+                        <p class="text-xs text-slate-500">Configura el título y el premio principal que se proyectará en la televisión de tu stand.</p>
+                    </div>
+                </div>
+                @if($stand->plan?->has_tv_draw ?? true)
+                    <a href="{{ route('expo.sorteo', $stand->slug) }}" target="_blank"
+                       class="inline-flex items-center gap-2 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition-all cursor-pointer">
+                        <span>Lanzar Pantalla de Sorteo 4K &rarr;</span>
+                    </a>
+                @endif
+            </div>
+
+            @php
+                $currentDraw = $stand->draws()->where('status', 'pending')->latest()->first()
+                    ?? $stand->draws()->latest()->first();
+            @endphp
+
+            <form action="{{ route('expo.draw.update', $stand->slug) }}" method="POST" class="grid grid-cols-1 sm:grid-cols-3 gap-4 text-xs">
+                @csrf
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Título del Sorteo</label>
+                    <input type="text" name="title" value="{{ old('title', $currentDraw?->title ?? 'Gran Sorteo Oficial ' . $stand->name) }}" required
+                           class="w-full font-bold text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50/50 py-2.5 px-3">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Premio Principal en Juego *</label>
+                    <input type="text" name="prize_description" value="{{ old('prize_description', $currentDraw?->prize_description ?? 'Premio Principal del Stand en Pantalla TV 4K') }}" required placeholder="Ej. Generador Solar 5kVA o Termo Grabado"
+                           class="w-full font-bold text-xs rounded-xl border-slate-200 focus:border-indigo-500 focus:ring-indigo-500 bg-slate-50/50 py-2.5 px-3">
+                </div>
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full py-2.5 px-4 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-sm cursor-pointer">
+                        Guardar Premio Principal
+                    </button>
+                </div>
+            </form>
+        </div>
 
         </div>
 
@@ -343,6 +419,83 @@
                     {{ $leads->links() }}
                 </div>
             @endif
+        </div>
+
+        <!-- MODAL: AGREGAR NUEVO PREMIO / SECTOR A LA RULETA -->
+        <div x-show="showNewPrizeModal" 
+             x-cloak 
+             class="fixed inset-0 z-50 overflow-y-auto" 
+             role="dialog" 
+             aria-modal="true">
+            <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity" @click="showNewPrizeModal = false"></div>
+
+            <div class="flex min-h-full items-center justify-center p-4">
+                <div class="relative w-full max-w-md bg-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-slate-100 space-y-6"
+                     @click.stop>
+                    
+                    <div class="flex items-center justify-between pb-3 border-b border-slate-100">
+                        <div>
+                            <span class="text-[10px] font-black uppercase tracking-wider text-gold-700">Ruleta de la Suerte</span>
+                            <h3 class="text-lg font-black text-slate-900">Agregar Premio / Sector</h3>
+                        </div>
+                        <button type="button" @click="showNewPrizeModal = false" class="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-500 flex items-center justify-center text-sm font-bold cursor-pointer">
+                            ✕
+                        </button>
+                    </div>
+
+                    <form action="{{ route('expo.prize.store', $stand->slug) }}" method="POST" class="space-y-4 text-xs">
+                        @csrf
+
+                        <div>
+                            <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Nombre del Premio o Sector *</label>
+                            <input type="text" name="name" required placeholder="Ej. Mochila Oficial, o ¡Seguí Participando!"
+                                   class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-gold-500 focus:ring-gold-500 py-2.5 px-3">
+                            <p class="text-[10px] text-slate-400 mt-1">Si escribes 'Seguí Participando', no generará cupón de canje en mostrador.</p>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Stock Inicial *</label>
+                                <input type="number" name="remaining_stock" value="20" min="0" required
+                                       class="w-full text-xs font-mono font-bold rounded-xl border-slate-200 focus:border-gold-500 focus:ring-gold-500 py-2.5 px-3">
+                                <span class="text-[10px] text-slate-400">Usa 9999 para consuelo.</span>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Probabilidad / Peso (%) *</label>
+                                <input type="number" name="probability_weight" value="15" min="0" max="100" required
+                                       class="w-full text-xs font-mono font-bold rounded-xl border-slate-200 focus:border-gold-500 focus:ring-gold-500 py-2.5 px-3">
+                                <span class="text-[10px] text-slate-400">Mayor peso = más chances.</span>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Color del Sector</label>
+                                <div class="flex items-center gap-2">
+                                    <input type="color" name="color" value="#16a34a" class="h-9 w-12 rounded-xl border border-slate-200 cursor-pointer p-0.5">
+                                    <span class="text-[11px] text-slate-500 font-mono">Selector</span>
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-[11px] font-black uppercase tracking-wider text-slate-400 mb-1">Tipo de Sector</label>
+                                <select name="is_real_prize" class="w-full text-xs font-bold rounded-xl border-slate-200 focus:border-gold-500 py-2 px-2.5">
+                                    <option value="1">Premio Real (Con Cupón)</option>
+                                    <option value="0">Consuelo (Seguí Participando)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-100 flex items-center justify-end gap-3">
+                            <button type="button" @click="showNewPrizeModal = false" class="px-4 py-2.5 rounded-xl border border-slate-200 text-slate-600 font-bold hover:bg-slate-50 transition cursor-pointer">
+                                Cancelar
+                            </button>
+                            <button type="submit" class="px-5 py-2.5 rounded-xl bg-gold-500 hover:bg-gold-600 text-white font-bold shadow-md transition cursor-pointer">
+                                + Agregar a la Ruleta
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
         </div>
 
     </div>

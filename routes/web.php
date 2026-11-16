@@ -37,7 +37,11 @@ Route::middleware('auth')->group(function () {
     // Panel CRM del Stand (Aislado por empresa / multitenant)
     Route::get('/panel/{slug}', [ExpoController::class, 'panel'])->name('expo.panel');
     Route::post('/panel/{slug}/canjear-cupon', [ExpoController::class, 'redeemCoupon'])->name('expo.redeem');
+    Route::post('/panel/{slug}/premios', [ExpoController::class, 'storePrize'])->name('expo.prize.store');
     Route::post('/panel/{slug}/premios/{prizeId}', [ExpoController::class, 'updatePrize'])->name('expo.prize.update');
+    Route::delete('/panel/{slug}/premios/{prizeId}', [ExpoController::class, 'destroyPrize'])->name('expo.prize.destroy');
+    Route::post('/panel/{slug}/toggle-ruleta', [ExpoController::class, 'toggleRuleta'])->name('expo.stand.toggle-ruleta');
+    Route::post('/panel/{slug}/sorteo-config', [ExpoController::class, 'updateDrawConfig'])->name('expo.draw.update');
     Route::get('/export/{slug}', [ExpoController::class, 'exportLeads'])->name('expo.export');
 });
 

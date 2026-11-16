@@ -636,19 +636,49 @@ class ExpoController extends Controller
     }
 
     /**
+     * Crear un Nuevo Premio o Sector de Ruleta (Gorra, Termo, Descuento o Seguí Participando)
+     */
+    public function storePrize(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $validated = $request->validate([
+            'name' => 'required|string|max:100',
+            'remaining_stock' => 'required|integer|min:0',
+            'probability_weight' => 'required|integer|min:0|max:100',
+            'color' => 'nullable|string|max:20',
+            'is_real_prize' => 'nullable|boolean',
+        ]);
+
+        $colors = ['#16a34a', '#2563eb', '#d97706', '#7c3aed', '#db2777', '#0891b2', '#ea580c', '#64748b'];
+        $chosenColor = $validated['color'] ?? $colors[array_rand($colors)];
+        $isReal = $request->boolean('is_real_prize', true);
+
+        // Si es "Seguí Participando" o "Sin Premio", marcar automáticamente como no real
+        if (str_contains(strtolower($validated['name']), 'participando') || str_contains(strtolower($validated['name']), 'gracias') || str_contains(strtolower($validated['name']), 'suerte')) {
+            $isReal = false;
+        }
+
+        $stand->prizes()->create([
+            'name' => $validated['name'],
+            'remaining_stock' => $validated['remaining_stock'],
+            'total_stock' => $validated['remaining_stock'],
+            'probability_weight' => $validated['probability_weight'],
+            'color' => $chosenColor,
+            'is_real_prize' => $isReal,
+        ]);
+
+        return back()->with('success', "¡Sector '{$validated['name']}' agregado exitosamente a la ruleta!");
+    }
+
+    /**
      * Actualizar Configuración y Stock de un Premio
      */
     public function updatePrize(Request $request, string $slug, int $prizeId): RedirectResponse
     {
         $stand = Stand::where('slug', $slug)->firstOrFail();
-
-        if (! Auth::check()) {
-            abort(403);
-        }
-        $user = Auth::user();
-        if (! $user->isAdmin() && $stand->user_id !== $user->id) {
-            abort(403);
-        }
+        $this->authorizeStandOwner($stand);
 
         $prize = $stand->prizes()->findOrFail($prizeId);
 
@@ -656,11 +686,103 @@ class ExpoController extends Controller
             'name' => 'required|string|max:100',
             'remaining_stock' => 'required|integer|min:0',
             'probability_weight' => 'required|integer|min:0|max:100',
+            'color' => 'nullable|string|max:20',
+            'is_real_prize' => 'nullable|boolean',
         ]);
 
-        $prize->update($validated);
+        if ($request->has('color') && ! empty($validated['color'])) {
+            $prize->color = $validated['color'];
+        }
+        if ($request->has('is_real_prize')) {
+            $prize->is_real_prize = $request->boolean('is_real_prize');
+        }
+
+        $prize->name = $validated['name'];
+        $prize->remaining_stock = $validated['remaining_stock'];
+        $prize->probability_weight = $validated['probability_weight'];
+        $prize->save();
 
         return back()->with('success', "Premio '{$prize->name}' actualizado correctamente.");
+    }
+
+    /**
+     * Eliminar un Premio / Sector de la Ruleta
+     */
+    public function destroyPrize(Request $request, string $slug, int $prizeId): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        if ($stand->prizes()->count() <= 2) {
+            return back()->with('error', 'La ruleta necesita al menos 2 sectores para poder girar.');
+        }
+
+        $prize = $stand->prizes()->findOrFail($prizeId);
+        $name = $prize->name;
+        $prize->delete();
+
+        return back()->with('success', "Sector '{$name}' eliminado de la ruleta.");
+    }
+
+    /**
+     * Alternar Habilitación de la Ruleta (Permite modo 'Solo Captación' opcional)
+     */
+    public function toggleRuleta(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $stand->update([
+            'allow_spins' => ! $stand->allow_spins,
+        ]);
+
+        $msg = $stand->allow_spins
+            ? '¡Ruleta ACTIVADA! Los visitantes girarán la ruleta luego de registrarse en el mostrador.'
+            : "Ruleta DESACTIVADA. El stand ahora opera en modo 'Solo Captación de Datos para Sorteo Final'.";
+
+        return back()->with('success', $msg);
+    }
+
+    /**
+     * Actualizar Configuración del Gran Sorteo en TV 4K (Premio Principal y Título)
+     */
+    public function updateDrawConfig(Request $request, string $slug): RedirectResponse
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $validated = $request->validate([
+            'title' => 'required|string|max:150',
+            'prize_description' => 'required|string|max:200',
+        ]);
+
+        $draw = $stand->draws()->where('status', 'pending')->latest()->first()
+            ?: $stand->draws()->create([
+                'title' => $validated['title'],
+                'prize_description' => $validated['prize_description'],
+                'status' => 'pending',
+            ]);
+
+        $draw->update([
+            'title' => $validated['title'],
+            'prize_description' => $validated['prize_description'],
+        ]);
+
+        return back()->with('success', "¡Premio Principal del Sorteo actualizado a '{$validated['prize_description']}'!");
+    }
+
+    /**
+     * Helper de Autorización Multitenant para Dueño de Stand y SuperAdmin
+     */
+    protected function authorizeStandOwner(Stand $stand): void
+    {
+        if (! Auth::check()) {
+            abort(403);
+        }
+        $user = Auth::user();
+        if (! $user->isAdmin() && $stand->user_id !== $user->id) {
+            abort(403, 'Acceso denegado: No tienes autorización para administrar este stand.');
+        }
     }
 
     /**

@@ -256,4 +256,75 @@ class SaaSSystemTest extends TestCase
         $this->assertEquals('Plan Ajustado SuperAdmin', $plan->name);
         $this->assertEquals('OFERTA ESPECIAL', $plan->badge_text);
     }
+
+    public function test_stand_owner_can_manage_prizes_toggle_ruleta_and_update_draw_config(): void
+    {
+        $user = User::create([
+            'name' => 'Owner Custom',
+            'email' => 'owner_custom_'.rand(100, 999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'custom-stand-'.rand(100, 999);
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Custom Stand',
+            'slug' => $slug,
+            'stand_number' => 'C-01',
+            'sector' => 'Agro',
+            'primary_color' => '#16a34a',
+            'secondary_color' => '#0f172a',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'status' => 'active',
+            'is_active' => true,
+        ]);
+
+        // Crear 3 premios iniciales
+        $prize1 = $stand->prizes()->create(['name' => 'Gorra', 'total_stock' => 10, 'remaining_stock' => 10, 'probability_weight' => 30]);
+        $prize2 = $stand->prizes()->create(['name' => 'Termo', 'total_stock' => 5, 'remaining_stock' => 5, 'probability_weight' => 20]);
+        $prize3 = $stand->prizes()->create(['name' => '¡Seguí Participando!', 'total_stock' => 9999, 'remaining_stock' => 9999, 'probability_weight' => 50, 'is_real_prize' => false]);
+
+        // 1. Agregar nuevo premio
+        $this->actingAs($user)->post(route('expo.prize.store', $slug), [
+            'name' => 'Mochila Especial',
+            'remaining_stock' => 15,
+            'probability_weight' => 10,
+            'color' => '#2563eb',
+            'is_real_prize' => 1,
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('prizes', [
+            'stand_id' => $stand->id,
+            'name' => 'Mochila Especial',
+            'remaining_stock' => 15,
+        ]);
+
+        // 2. Eliminar un premio
+        $this->actingAs($user)->delete(route('expo.prize.destroy', ['slug' => $slug, 'prizeId' => $prize1->id]))
+            ->assertRedirect();
+        $this->assertDatabaseMissing('prizes', ['id' => $prize1->id]);
+
+        // 3. Alternar Ruleta (Activar/Desactivar)
+        $this->actingAs($user)->post(route('expo.stand.toggle-ruleta', $slug))->assertRedirect();
+        $stand->refresh();
+        $this->assertFalse($stand->allow_spins);
+
+        $this->actingAs($user)->post(route('expo.stand.toggle-ruleta', $slug))->assertRedirect();
+        $stand->refresh();
+        $this->assertTrue($stand->allow_spins);
+
+        // 4. Actualizar Premio Principal del Sorteo TV 4K
+        $this->actingAs($user)->post(route('expo.draw.update', $slug), [
+            'title' => 'Sorteo Estelar Aniversario',
+            'prize_description' => 'Dron Agrícola DJI Phantom Pro',
+        ])->assertRedirect();
+
+        $this->assertDatabaseHas('draws', [
+            'stand_id' => $stand->id,
+            'title' => 'Sorteo Estelar Aniversario',
+            'prize_description' => 'Dron Agrícola DJI Phantom Pro',
+        ]);
+    }
 }
