@@ -22,8 +22,9 @@ Documento de referencia rápida con las credenciales de acceso, configuración d
 ### A. SuperAdmin (Soteweb)
 Acceso total a la administración global de expositores, supervisión de métricas de todos los stands y configuración de planes.
 - **URL de Login:** `/login` o directo en `/admin`
-- **Correo:** `admin@soteweb.com`
-- **Contraseña:** `admin123`
+- **Correo Principal:** `developer@sotepass.com`
+- **Contraseña:** `S0tel0.1202`
+- **Correo Alternativo:** `admin@soteweb.com` (pass: `admin123`)
 - **Rol:** `admin`
 
 ---
