@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="40" fill="#367c2b"/>
+  <!-- John Deere inspired leaping deer silhouette in signature yellow -->
+  <path d="M145 65 C140 55, 128 50, 115 54 C108 56, 102 62, 98 68 C92 65, 84 66, 78 72 C70 80, 72 94, 80 102 L95 118 C92 124, 86 132, 75 138 C68 142, 60 144, 52 144 C50 144, 50 148, 52 149 C65 152, 82 148, 96 136 C106 127, 114 116, 120 106 L138 98 C144 95, 148 90, 150 82 C152 74, 150 68, 145 65 Z" fill="#ffde00"/>
+  <circle cx="128" cy="66" r="4" fill="#367c2b"/>
+  <!-- Antlers -->
+  <path d="M125 52 C120 40, 130 32, 138 28 C135 34, 130 38, 132 44 M132 38 C142 34, 146 26, 150 20 C146 26, 142 32, 138 36" stroke="#ffde00" stroke-width="4" stroke-linecap="round" fill="none"/>
+</svg>
+

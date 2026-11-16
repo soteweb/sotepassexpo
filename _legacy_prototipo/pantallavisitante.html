@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Pasaporte | Agrodinámica 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agro: { 50: '#f0fdf4', 100: '#dcfce7', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center font-sans antialiased">
+
+    <!-- Contenedor App Móvil -->
+    <div class="w-full max-w-md bg-gray-50 min-h-screen sm:min-h-[850px] sm:rounded-[2.5rem] sm:shadow-2xl overflow-hidden relative flex flex-col border-gray-800 sm:border-[8px]">
+        
+        <!-- Header -->
+        <header class="bg-agro-700 px-6 pt-10 pb-24 text-white relative rounded-b-[2.5rem]">
+            <!-- Patrón de fondo -->
+            <div class="absolute inset-0 opacity-10" style="background-image: radial-gradient(circle at 2px 2px, white 1px, transparent 0); background-size: 20px 20px;"></div>
+            
+            <div class="relative z-10 flex justify-between items-center">
+                <div>
+                    <p class="text-agro-100 text-sm font-medium">Hola,</p>
+                    <h1 class="text-2xl font-bold">Juan Pérez</h1>
+                </div>
+                <div class="bg-white/20 p-2 rounded-full backdrop-blur-sm">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </div>
+            </div>
+        </header>
+
+        <!-- Tarjeta Flotante del QR -->
+        <main class="flex-1 px-4 -mt-20 relative z-20 pb-20">
+            
+            <!-- El Pasaporte / Código QR -->
+            <div class="bg-white rounded-3xl shadow-xl p-6 mb-6 border border-gray-100 flex flex-col items-center text-center relative overflow-hidden">
+                <!-- Cinta de Perfil -->
+                <div class="absolute top-0 right-0 bg-green-100 text-green-700 text-xs font-bold px-4 py-1 rounded-bl-xl">
+                    PRODUCTOR
+                </div>
+
+                <p class="text-gray-500 text-sm font-medium mb-4 mt-2">Tu Credencial de Acceso</p>
+                
+                <!-- Contenedor del QR Mockup -->
+                <div class="bg-white border-4 border-agro-50 p-3 rounded-2xl shadow-inner mb-4">
+                    <!-- SVG simulando un código QR -->
+                    <svg class="w-48 h-48 text-gray-900" viewBox="0 0 100 100" fill="currentColor">
+                        <rect x="10" y="10" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                        <rect x="65" y="10" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                        <rect x="10" y="65" width="25" height="25" fill="none" stroke="currentColor" stroke-width="5"/>
+                        <rect x="15" y="15" width="15" height="15"/>
+                        <rect x="70" y="15" width="15" height="15"/>
+                        <rect x="15" y="70" width="15" height="15"/>
+                        <rect x="45" y="10" width="10" height="10"/>
+                        <rect x="45" y="80" width="10" height="10"/>
+                        <rect x="80" y="45" width="10" height="10"/>
+                        <rect x="10" y="45" width="10" height="10"/>
+                        <rect x="25" y="45" width="45" height="10"/>
+                        <rect x="45" y="25" width="10" height="10"/>
+                        <rect x="65" y="65" width="25" height="25"/>
+                    </svg>
+                </div>
+
+                <p class="text-xl font-mono font-bold tracking-widest text-gray-800">AGRO-8472-X</p>
+                <p class="text-sm text-gray-400 mt-1">Muestra este código en los stands</p>
+                
+                <button class="mt-5 w-full bg-gray-50 hover:bg-gray-100 text-gray-700 font-medium py-2.5 rounded-xl border border-gray-200 transition flex justify-center items-center gap-2 text-sm">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"></path></svg>
+                    Descargar como Imagen
+                </button>
+            </div>
+
+            <!-- Gamificación: Estado de Misiones -->
+            <div class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="font-bold text-gray-800">Sorteo Principal CCU</h3>
+                    <span class="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-1 rounded-lg flex items-center gap-1">
+                        <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path></svg>
+                        Premio Moto 0km
+                    </span>
+                </div>
+                
+                <p class="text-sm text-gray-600 mb-3">Visita 5 stands de maquinarias para desbloquear tu ticket digital.</p>
+                
+                <!-- Barra de Progreso -->
+                <div class="mb-2 flex justify-between text-xs font-semibold text-gray-500">
+                    <span>Progreso</span>
+                    <span class="text-agro-600">3/5 Stands</span>
+                </div>
+                <div class="w-full bg-gray-100 rounded-full h-3 mb-5">
+                    <div class="bg-agro-500 h-3 rounded-full transition-all duration-1000" style="width: 60%"></div>
+                </div>
+
+                <!-- Historial Reciente de Escaneos -->
+                <h4 class="text-xs font-bold text-gray-400 uppercase tracking-wider mb-3">Stands Visitados</h4>
+                <div class="space-y-3">
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-full">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-800">Kurosu & Cia.</p>
+                            <p class="text-xs text-gray-400">Hoy, 11:45 AM</p>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="bg-green-100 text-green-600 p-2 rounded-full">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                        </div>
+                        <div class="flex-1">
+                            <p class="text-sm font-semibold text-gray-800">Somax Agro</p>
+                            <p class="text-xs text-gray-400">Hoy, 10:20 AM</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Espacio para Soteweb -->
+            <div class="mt-6 text-center pb-6">
+                <p class="text-xs text-gray-400">Desarrollado por <span class="font-bold text-gray-600">Soteweb</span></p>
+            </div>
+
+        </main>
+
+        <!-- Bottom Navigation Bar Móvil -->
+        <nav class="absolute bottom-0 w-full bg-white border-t border-gray-200 flex justify-around items-center h-16 z-30 pb-safe sm:rounded-b-[2rem]">
+            <a href="#" class="flex flex-col items-center justify-center text-gray-400 hover:text-agro-600 transition w-full h-full">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                <span class="text-[10px] font-medium">Inicio</span>
+            </a>
+            <a href="#" class="flex flex-col items-center justify-center text-agro-600 w-full h-full relative">
+                <!-- Indicador activo -->
+                <div class="absolute top-0 w-8 h-1 bg-agro-600 rounded-b-full"></div>
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                <span class="text-[10px] font-medium">Mi QR</span>
+            </a>
+            <a href="#" class="flex flex-col items-center justify-center text-gray-400 hover:text-agro-600 transition w-full h-full">
+                <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                <span class="text-[10px] font-medium">Croquis</span>
+            </a>
+        </nav>
+
+    </div>
+</body>
+</html>

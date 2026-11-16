@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <rect width="200" height="200" rx="40" fill="#1e40af"/>
+  <!-- Leaf and tech drop in cyan / white -->
+  <path d="M100 35 C60 70, 50 120, 85 155 C115 185, 165 170, 165 125 C165 80, 130 50, 100 35 Z" fill="#38bdf8"/>
+  <path d="M100 55 C80 80, 75 110, 95 135 C115 160, 145 150, 145 120 C145 90, 120 70, 100 55 Z" fill="#ffffff"/>
+  <path d="M100 65 L100 135" stroke="#1e40af" stroke-width="4" stroke-linecap="round"/>
+</svg>
+

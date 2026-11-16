@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin | Agrodinámica 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agro: { 50: '#f0fdf4', 500: '#22c55e', 600: '#16a34a', 700: '#15803d', 900: '#14532d' },
+                        zona: { 500: '#3b82f6', 600: '#2563eb' } // Para acentos
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 font-sans antialiased text-gray-900">
+
+    <div class="flex h-screen overflow-hidden">
+        
+        <!-- Sidebar -->
+        <aside class="w-64 bg-gray-900 text-white flex flex-col hidden md:flex">
+            <div class="h-16 flex items-center px-6 bg-gray-950 font-bold text-xl tracking-wider">
+                <span class="text-agro-500 mr-2">✦</span> AGRO<span class="text-gray-400 font-light">DATA</span>
+            </div>
+            <nav class="flex-1 px-4 py-6 space-y-2">
+                <a href="#" class="flex items-center px-4 py-3 bg-agro-600 text-white rounded-lg">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    Resumen General
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+                    Directorio de Asistentes
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    Expositores y Leads
+                </a>
+                <a href="#" class="flex items-center px-4 py-3 text-gray-300 hover:bg-gray-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    Reportes y Exportación
+                </a>
+            </nav>
+            <div class="p-4 bg-gray-950 text-xs text-gray-500 text-center">
+                Módulo Administrativo<br>Powered by <span class="text-white font-semibold">Soteweb</span>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 flex flex-col h-screen overflow-y-auto">
+            
+            <!-- Top Header -->
+            <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 lg:px-10">
+                <h2 class="text-xl font-semibold text-gray-800">Panel de Control General</h2>
+                <div class="flex items-center gap-4">
+                    <span class="flex items-center text-sm font-medium text-green-600 bg-green-50 px-3 py-1 rounded-full">
+                        <span class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></span> Sistema En Línea
+                    </span>
+                    <div class="w-10 h-10 rounded-full bg-agro-700 text-white flex items-center justify-center font-bold">
+                        CCU
+                    </div>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="p-6 lg:p-10 flex-1">
+                
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    <!-- Tarjeta 1 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Total Registrados</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-1">12,450</h3>
+                            </div>
+                            <div class="p-2 bg-blue-50 rounded-lg text-blue-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-green-600 flex items-center">
+                            <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                            <span>+850 esta hora</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 2 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Aforo Actual (Predio)</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-1">8,102</h3>
+                            </div>
+                            <div class="p-2 bg-agro-50 rounded-lg text-agro-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-500 flex items-center">
+                            <span>Ingresos netos menos salidas</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 3 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Pasaportes Escaneados</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-1">45,890</h3>
+                            </div>
+                            <div class="p-2 bg-purple-50 rounded-lg text-purple-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-500 flex items-center">
+                            <span>Interacciones en stands</span>
+                        </div>
+                    </div>
+
+                    <!-- Tarjeta 4 -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <p class="text-sm font-medium text-gray-500">Expositores Activos</p>
+                                <h3 class="text-3xl font-bold text-gray-900 mt-1">142</h3>
+                            </div>
+                            <div class="p-2 bg-orange-50 rounded-lg text-orange-600">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                            </div>
+                        </div>
+                        <div class="mt-4 text-sm text-gray-500 flex items-center">
+                            <span>Capturando Leads ahora</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Charts Section (Mockup) -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    <!-- Segmentación Demográfica -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:col-span-1">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Segmentación Demográfica</h3>
+                        <div class="space-y-4">
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-gray-700">Productores / Agricultores</span>
+                                    <span class="text-gray-500">45%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-agro-600 h-2 rounded-full" style="width: 45%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-gray-700">Público General</span>
+                                    <span class="text-gray-500">30%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-blue-500 h-2 rounded-full" style="width: 30%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-gray-700">Estudiantes</span>
+                                    <span class="text-gray-500">15%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-yellow-500 h-2 rounded-full" style="width: 15%"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-sm mb-1">
+                                    <span class="font-medium text-gray-700">Representantes de Empresas</span>
+                                    <span class="text-gray-500">10%</span>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-2">
+                                    <div class="bg-purple-500 h-2 rounded-full" style="width: 10%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Stands -->
+                    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 lg:col-span-2">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Stands con Mayor Tracción (Top 5)</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr>
+                                        <th class="py-3 px-4 bg-gray-50 text-xs font-semibold text-gray-500 uppercase rounded-l-lg">Empresa Expositora</th>
+                                        <th class="py-3 px-4 bg-gray-50 text-xs font-semibold text-gray-500 uppercase">Sector</th>
+                                        <th class="py-3 px-4 bg-gray-50 text-xs font-semibold text-gray-500 uppercase text-right rounded-r-lg">Leads Capturados</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="text-sm divide-y divide-gray-100">
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-3 px-4 font-medium text-gray-800">Kurosu & Cia.</td>
+                                        <td class="py-3 px-4 text-gray-600">Maquinarias</td>
+                                        <td class="py-3 px-4 text-right font-bold text-agro-600">1,245</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-3 px-4 font-medium text-gray-800">Somax Agro</td>
+                                        <td class="py-3 px-4 text-gray-600">Insumos</td>
+                                        <td class="py-3 px-4 text-right font-bold text-agro-600">980</td>
+                                    </tr>
+                                    <tr class="hover:bg-gray-50 transition-colors">
+                                        <td class="py-3 px-4 font-medium text-gray-800">Banco Continental</td>
+                                        <td class="py-3 px-4 text-gray-600">Servicios Financieros</td>
+                                        <td class="py-3 px-4 text-right font-bold text-agro-600">854</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Últimos Movimientos -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lg font-semibold text-gray-800">Monitor de Tráfico en Vivo</h3>
+                        <button class="text-sm text-agro-600 font-medium hover:text-agro-700">Ver todo el registro &rarr;</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead>
+                                <tr>
+                                    <th class="py-2 text-xs font-semibold text-gray-500 uppercase">Hora</th>
+                                    <th class="py-2 text-xs font-semibold text-gray-500 uppercase">Visitante</th>
+                                    <th class="py-2 text-xs font-semibold text-gray-500 uppercase">Perfil</th>
+                                    <th class="py-2 text-xs font-semibold text-gray-500 uppercase">Ubicación / Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y divide-gray-100">
+                                <tr>
+                                    <td class="py-3 text-gray-500">11:28:45 AM</td>
+                                    <td class="py-3 font-medium text-gray-800">Carlos Giménez</td>
+                                    <td class="py-3"><span class="px-2 py-1 bg-green-100 text-green-700 rounded text-xs">Productor</span></td>
+                                    <td class="py-3 text-gray-600">Escaneo en Stand "AgroSil"</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-gray-500">11:28:30 AM</td>
+                                    <td class="py-3 font-medium text-gray-800">Laura Bogado</td>
+                                    <td class="py-3"><span class="px-2 py-1 bg-blue-100 text-blue-700 rounded text-xs">Público</span></td>
+                                    <td class="py-3 text-gray-600">Ingreso Portón Principal (Registro Nuevo)</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 text-gray-500">11:28:12 AM</td>
+                                    <td class="py-3 font-medium text-gray-800">Diego Amarilla</td>
+                                    <td class="py-3"><span class="px-2 py-1 bg-yellow-100 text-yellow-700 rounded text-xs">Estudiante</span></td>
+                                    <td class="py-3 text-gray-600">Escaneo en Stand "UCA"</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

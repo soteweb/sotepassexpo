@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sorteo en Vivo | Agrodinámica 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Librería externa para el efecto de confeti al ganar -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        agro: { 500: '#22c55e', 600: '#16a34a', 900: '#14532d' },
+                        gold: { 400: '#fbbf24', 500: '#f59e0b' }
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Tipografía digital para los números/nombres */
+        @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap');
+        .font-digital { font-family: 'Share Tech Mono', monospace; }
+        
+        /* Efecto de resplandor para el ganador */
+        .glow-text { text-shadow: 0 0 20px rgba(34, 197, 94, 0.6), 0 0 40px rgba(34, 197, 94, 0.4); }
+    </style>
+</head>
+<body class="bg-gray-950 h-screen overflow-hidden flex flex-col font-sans text-white relative selection:bg-none">
+
+    <!-- Patrón de fondo (estilo tecnológico/agrícola) -->
+    <div class="absolute inset-0 opacity-20 pointer-events-none" 
+         style="background-image: linear-gradient(#16a34a 1px, transparent 1px), linear-gradient(90deg, #16a34a 1px, transparent 1px); background-size: 50px 50px;">
+    </div>
+    
+    <!-- Gradiente radial para enfocar el centro -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_0%,#030712_80%)] pointer-events-none"></div>
+
+    <!-- HEADER -->
+    <header class="relative z-10 w-full p-8 flex justify-between items-start">
+        <div>
+            <h2 class="text-3xl font-bold tracking-widest text-gray-400 uppercase">Agrodinámica <span class="text-white">2026</span></h2>
+            <p class="text-agro-500 font-medium tracking-widest mt-1">SISTEMA DE SORTEOS CERTIFICADO</p>
+        </div>
+        <div class="text-right">
+            <div class="text-5xl font-bold text-white tracking-tighter" id="reloj">00:00:00</div>
+            <p class="text-gray-500 uppercase tracking-widest text-sm mt-1">Hohenau, Itapúa</p>
+        </div>
+    </header>
+
+    <!-- ÁREA CENTRAL DEL SORTEO -->
+    <main class="flex-1 relative z-10 flex flex-col items-center justify-center -mt-10">
+        
+        <!-- Premio -->
+        <div class="mb-10 text-center animate-pulse-fast" id="premio-container">
+            <span class="bg-gold-500 text-gray-900 px-6 py-2 rounded-full text-xl font-bold uppercase tracking-widest mb-4 inline-block">
+                Gran Premio Final
+            </span>
+            <h1 class="text-6xl md:text-8xl font-black uppercase tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-gold-400 to-yellow-200">
+                Tractor John Deere 5075E
+            </h1>
+        </div>
+
+        <!-- Ruleta Digital -->
+        <div class="w-full max-w-6xl bg-gray-900/80 backdrop-blur-md border border-gray-800 rounded-[3rem] p-12 text-center shadow-2xl relative overflow-hidden" id="ruleta-container">
+            <!-- Línea de escaneo láser (Efecto visual) -->
+            <div id="laser" class="absolute left-0 right-0 h-1 bg-agro-500 shadow-[0_0_15px_#22c55e] hidden top-1/2 -translate-y-1/2 z-20"></div>
+            
+            <p class="text-gray-400 text-2xl uppercase tracking-widest mb-4">Buscando Pasaporte Ganador...</p>
+            
+            <!-- Contenedor del nombre -->
+            <div class="h-40 flex items-center justify-center">
+                <div id="nombre-display" class="font-digital text-7xl md:text-8xl text-white tracking-wider">
+                    --- --- ---
+                </div>
+            </div>
+            
+            <!-- Datos extra (Ocultos hasta que gane) -->
+            <div id="datos-ganador" class="mt-6 opacity-0 transition-opacity duration-1000 flex justify-center gap-6">
+                <span class="bg-agro-900/50 border border-agro-500 text-agro-400 px-6 py-2 rounded-xl text-2xl font-bold" id="ciudad-display">
+                    CIUDAD
+                </span>
+                <span class="bg-blue-900/50 border border-blue-500 text-blue-400 px-6 py-2 rounded-xl text-2xl font-bold" id="perfil-display">
+                    PERFIL
+                </span>
+                <span class="bg-gray-800 border border-gray-600 text-gray-300 px-6 py-2 rounded-xl text-2xl font-mono" id="qr-display">
+                    AGRO-XXXX
+                </span>
+            </div>
+        </div>
+
+        <!-- Controles del Operador (Esto podría estar en otra pantalla en producción) -->
+        <div class="mt-12 opacity-50 hover:opacity-100 transition-opacity">
+            <button id="btn-sortear" onclick="iniciarSorteo()" class="bg-white text-gray-950 font-black text-2xl px-12 py-5 rounded-2xl hover:bg-agro-500 hover:text-white transition-colors uppercase tracking-widest shadow-[0_0_30px_rgba(255,255,255,0.2)]">
+                Iniciar Sorteo
+            </button>
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="relative z-10 w-full p-8 flex justify-between items-end">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 bg-white rounded-2xl flex items-center justify-center font-black text-gray-900 text-2xl">
+                CCU
+            </div>
+            <div>
+                <p class="text-gray-400 text-sm">Organiza</p>
+                <p class="text-xl font-bold">Cooperativa Colonias Unidas</p>
+            </div>
+        </div>
+        <div class="text-right">
+            <p class="text-gray-500 text-sm mb-1">Tecnología de Datos Provista por</p>
+            <p class="text-3xl font-black text-gray-300 tracking-tighter">Soteweb<span class="text-agro-500">.</span></p>
+        </div>
+    </footer>
+
+    <!-- LÓGICA DEL SORTEO -->
+    <script>
+        // Actualizar Reloj
+        setInterval(() => {
+            document.getElementById('reloj').innerText = new Date().toLocaleTimeString('es-PY', { hour12: false });
+        }, 1000);
+
+        // Base de datos simulada de participantes
+        const participantes = [
+            "GABRIEL SOTELO", "DIEGO AMARILLA", "HUGO BENÍTEZ", "MARTINA ROJAS", 
+            "CARLOS GIMÉNEZ", "LAURA BOGADO", "ESTEBAN DUARTE", "MARÍA GONZÁLEZ",
+            "JORGE BÁEZ", "ANA MARTÍNEZ", "PEDRO RUIZ", "LUCÍA FERNÁNDEZ",
+            "ROBERTO AQUINO", "SILVIA ORTIZ", "MARIO VILLALBA", "CARMEN VERA"
+        ];
+
+        // El ganador predefinido (En la vida real vendría de tu base de datos TALL/React por API)
+        const ganadorReal = {
+            nombre: "GABRIEL SOTELO LUGO",
+            ciudad: "ENCARNACIÓN",
+            perfil: "PRODUCTOR",
+            qr: "AGRO-8472-X"
+        };
+
+        let intervalo;
+        let tiempoSorteo = 0;
+        const duracionSorteo = 4000; // 4 segundos de suspenso
+
+        function iniciarSorteo() {
+            const btn = document.getElementById('btn-sortear');
+            const display = document.getElementById('nombre-display');
+            const datosGanador = document.getElementById('datos-ganador');
+            const laser = document.getElementById('laser');
+            
+            // Reset de UI
+            btn.disabled = true;
+            btn.classList.add('opacity-50', 'cursor-not-allowed');
+            datosGanador.classList.add('opacity-0');
+            display.classList.remove('glow-text', 'text-agro-500');
+            display.classList.add('text-white');
+            laser.classList.remove('hidden');
+            
+            // Animación del láser subiendo y bajando
+            laser.animate([
+                { top: '10%' },
+                { top: '90%' },
+                { top: '10%' }
+            ], { duration: 500, iterations: Infinity });
+
+            tiempoSorteo = 0;
+            
+            // Ruleta súper rápida
+            intervalo = setInterval(() => {
+                tiempoSorteo += 50;
+                // Mostrar un nombre al azar
+                const randomName = participantes[Math.floor(Math.random() * participantes.length)];
+                display.innerText = randomName;
+
+                // Detener el sorteo
+                if (tiempoSorteo >= duracionSorteo) {
+                    clearInterval(intervalo);
+                    mostrarGanador();
+                }
+            }, 50); // Cambia cada 50ms
+        }
+
+        function mostrarGanador() {
+            const display = document.getElementById('nombre-display');
+            const datosGanador = document.getElementById('datos-ganador');
+            const laser = document.getElementById('laser');
+            const btn = document.getElementById('btn-sortear');
+
+            // Setear datos del ganador real
+            display.innerText = ganadorReal.nombre;
+            document.getElementById('ciudad-display').innerText = ganadorReal.ciudad;
+            document.getElementById('perfil-display').innerText = ganadorReal.perfil;
+            document.getElementById('qr-display').innerText = ganadorReal.qr;
+
+            // Efectos visuales de victoria
+            laser.classList.add('hidden');
+            display.classList.remove('text-white');
+            display.classList.add('text-agro-500', 'glow-text', 'scale-110');
+            display.style.transition = "all 0.5s ease-out";
+            
+            // Mostrar datos extra
+            setTimeout(() => {
+                datosGanador.classList.remove('opacity-0');
+                dispararConfeti();
+                
+                // Rehabilitar botón
+                btn.disabled = false;
+                btn.classList.remove('opacity-50', 'cursor-not-allowed');
+                btn.innerText = "Sortear Siguiente";
+            }, 500);
+        }
+
+        function dispararConfeti() {
+            var duration = 3000;
+            var end = Date.now() + duration;
+
+            (function frame() {
+                confetti({
+                    particleCount: 5,
+                    angle: 60,
+                    spread: 55,
+                    origin: { x: 0 },
+                    colors: ['#22c55e', '#fbbf24', '#ffffff']
+                });
+                confetti({
+                    particleCount: 5,
+                    angle: 120,
+                    spread: 55,
+                    origin: { x: 1 },
+                    colors: ['#22c55e', '#fbbf24', '#ffffff']
+                });
+
+                if (Date.now() < end) {
+                    requestAnimationFrame(frame);
+                }
+            }());
+        }
+    </script>
+</body>
+</html>
