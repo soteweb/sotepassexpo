@@ -637,12 +637,12 @@ class SaaSSystemTest extends TestCase
     {
         $user = User::create([
             'name' => 'Owner Reset Test',
-            'email' => 'reset_'.rand(100, 999).'@test.com',
+            'email' => 'reset_'.uniqid().'@test.com',
             'role' => 'expositor',
             'password' => Hash::make('secret123'),
         ]);
 
-        $slug = 'stand-reset-'.rand(100, 999);
+        $slug = 'stand-reset-'.uniqid();
         $stand = Stand::create([
             'user_id' => $user->id,
             'name' => 'Stand Reset Co.',

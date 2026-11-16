@@ -121,39 +121,79 @@
                             </div>
                         </div>
 
-                        <!-- Paletas Rápidas Inspiradas en el Agro -->
+                        <!-- Paleta de Colores Sugerida -->
                         <div class="pt-2">
-                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">Paletas de Referencia Agroindustrial:</span>
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">Paleta de colores:</span>
                             <div class="flex flex-wrap gap-2">
                                 <button type="button" @click="previewPrimary = '#16a34a'; previewSecondary = '#14532d'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#16a34a]"></span>
-                                    <span>John Deere</span>
-                                </button>
-                                <button type="button" @click="previewPrimary = '#dc2626'; previewSecondary = '#7f1d1d'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#dc2626]"></span>
-                                    <span>Case IH / Massey</span>
-                                </button>
-                                <button type="button" @click="previewPrimary = '#003399'; previewSecondary = '#001a4d'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#003399]"></span>
-                                    <span>New Holland</span>
-                                </button>
-                                <button type="button" @click="previewPrimary = '#ea580c'; previewSecondary = '#7c2d12'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#ea580c]"></span>
-                                    <span>Stara</span>
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #16a34a 50%, #14532d 50%);"></span>
+                                    <span>Verde Esmeralda</span>
                                 </button>
                                 <button type="button" @click="previewPrimary = '#65a30d'; previewSecondary = '#365314'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#65a30d]"></span>
-                                    <span>Claas</span>
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #65a30d 50%, #365314 50%);"></span>
+                                    <span>Verde Pradera</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#059669'; previewSecondary = '#064e3b'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #059669 50%, #064e3b 50%);"></span>
+                                    <span>Verde Botánico</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#0284c7'; previewSecondary = '#075985'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #0284c7 50%, #075985 50%);"></span>
+                                    <span>Azul Océano</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#1d4ed8'; previewSecondary = '#1e3a8a'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #1d4ed8 50%, #1e3a8a 50%);"></span>
+                                    <span>Azul Real</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#003399'; previewSecondary = '#001a4d'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #003399 50%, #001a4d 50%);"></span>
+                                    <span>Azul Marino</span>
                                 </button>
                                 <button type="button" @click="previewPrimary = '#4338ca'; previewSecondary = '#1e1b4b'" 
-                                        class="px-2.5 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition">
-                                    <span class="w-2.5 h-2.5 rounded-sm bg-[#4338ca]"></span>
-                                    <span>SotePass Indigo</span>
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #4338ca 50%, #1e1b4b 50%);"></span>
+                                    <span>Índigo Ejecutivo</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#dc2626'; previewSecondary = '#7f1d1d'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #dc2626 50%, #7f1d1d 50%);"></span>
+                                    <span>Rojo Escarlata</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#b91c1c'; previewSecondary = '#450a0a'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #b91c1c 50%, #450a0a 50%);"></span>
+                                    <span>Rojo Carmesí</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#ea580c'; previewSecondary = '#7c2d12'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #ea580c 50%, #7c2d12 50%);"></span>
+                                    <span>Naranja Ámbar</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#d97706'; previewSecondary = '#78350f'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #d97706 50%, #78350f 50%);"></span>
+                                    <span>Dorado Solar</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#0d9488'; previewSecondary = '#134e4a'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #0d9488 50%, #134e4a 50%);"></span>
+                                    <span>Verde Petróleo</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#7c3aed'; previewSecondary = '#4c1d95'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #7c3aed 50%, #4c1d95 50%);"></span>
+                                    <span>Púrpura Noble</span>
+                                </button>
+                                <button type="button" @click="previewPrimary = '#334155'; previewSecondary = '#0f172a'" 
+                                        class="px-2.5 py-1.5 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                    <span class="w-3 h-3 rounded-xs shrink-0 border border-black/10" style="background: linear-gradient(135deg, #334155 50%, #0f172a 50%);"></span>
+                                    <span>Grafito Titán</span>
                                 </button>
                             </div>
                         </div>

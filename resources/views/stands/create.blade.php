@@ -113,7 +113,7 @@
                         <!-- Nombre del Stand -->
                         <div>
                             <x-input-label value="Nombre de la Empresa o Marca *" />
-                            <x-text-input type="text" name="name" :value="old('name', $user->company_name)" required placeholder="Ej. Kurosu & Cia. | John Deere" class="w-full" />
+                            <x-text-input type="text" name="name" :value="old('name', $user->company_name)" required placeholder="Ej. AgroInsumos del Este S.A. | Soluciones Industriales" class="w-full" />
                         </div>
 
                         <!-- Slug URL -->
@@ -141,17 +141,80 @@
                         </div>
 
                         <!-- Color Corporativo -->
-                        <div>
+                        <div class="sm:col-span-2" x-data="{ selectedColor: '{{ old('primary_color', '#059669') }}' }">
                             <x-input-label value="Color Corporativo Principal *" />
-                            <div class="flex gap-2">
-                                <input type="color" name="primary_color" value="{{ old('primary_color', '#059669') }}"
+                            <div class="flex gap-2 max-w-xs">
+                                <input type="color" name="primary_color" x-model="selectedColor"
                                        class="h-9 w-12 rounded-md bg-slate-50 border border-slate-300 cursor-pointer p-0.5">
-                                <x-text-input type="text" name="primary_color_text" value="{{ old('primary_color', '#059669') }}" readonly class="flex-1 font-mono text-xs" />
+                                <x-text-input type="text" name="primary_color_text" x-model="selectedColor" readonly class="flex-1 font-mono text-xs" />
+                            </div>
+
+                            <!-- Paleta de Colores Sugerida -->
+                            <div class="mt-2.5">
+                                <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1.5">Paleta de colores:</span>
+                                <div class="flex flex-wrap gap-1.5">
+                                    <button type="button" @click="selectedColor = '#16a34a'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#16a34a]"></span>
+                                        <span>Verde Esmeralda</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#65a30d'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#65a30d]"></span>
+                                        <span>Verde Pradera</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#059669'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#059669]"></span>
+                                        <span>Verde Botánico</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#0284c7'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#0284c7]"></span>
+                                        <span>Azul Océano</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#1d4ed8'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#1d4ed8]"></span>
+                                        <span>Azul Real</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#003399'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#003399]"></span>
+                                        <span>Azul Marino</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#4338ca'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#4338ca]"></span>
+                                        <span>Índigo Ejecutivo</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#dc2626'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#dc2626]"></span>
+                                        <span>Rojo Escarlata</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#b91c1c'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#b91c1c]"></span>
+                                        <span>Rojo Carmesí</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#ea580c'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#ea580c]"></span>
+                                        <span>Naranja Ámbar</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#d97706'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#d97706]"></span>
+                                        <span>Dorado Solar</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#0d9488'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#0d9488]"></span>
+                                        <span>Verde Petróleo</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#7c3aed'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#7c3aed]"></span>
+                                        <span>Púrpura Noble</span>
+                                    </button>
+                                    <button type="button" @click="selectedColor = '#334155'" class="px-2 py-1 rounded-md border border-slate-200 bg-white hover:bg-slate-50 flex items-center gap-1.5 font-semibold text-[10px] text-slate-700 transition shadow-2xs hover:border-slate-300 cursor-pointer">
+                                        <span class="w-2.5 h-2.5 rounded-xs bg-[#334155]"></span>
+                                        <span>Grafito Titán</span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
 
                         <!-- PIN Mostrador -->
-                        <div>
+                        <div class="sm:col-span-2">
                             <x-input-label value="PIN de Seguridad del Mostrador (4 dígitos) *" />
                             <x-text-input type="text" name="access_pin" value="{{ old('access_pin', '1234') }}" required placeholder="1234" class="w-full font-mono text-xs" />
                             <p class="text-[10px] text-slate-400 mt-1">Sirve para que tus promotoras validen cupones y descarguen el Excel.</p>
