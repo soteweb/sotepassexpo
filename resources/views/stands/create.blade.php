@@ -114,7 +114,7 @@
                         <!-- Nombre del Stand -->
                         <div>
                             <x-input-label value="Nombre de la Empresa o Marca *" />
-                            <x-text-input type="text" name="name" :value="old('name', $user->company_name)" required placeholder="Ej. AgroInsumos del Este S.A. | Soluciones Industriales" class="w-full" />
+                            <x-text-input type="text" name="name" :value="old('name', $user->company_name)" required placeholder="Ej. SotePass Expo" class="w-full" />
                         </div>
 
                         <!-- Slug URL -->

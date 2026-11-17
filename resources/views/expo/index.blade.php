@@ -205,7 +205,7 @@
                             </div>
                             <div>
                                 <span class="text-[9px] font-semibold text-slate-400 uppercase tracking-wider block">Nuevo Contacto</span>
-                                <span class="text-xs font-bold text-slate-900 block">Carlos Ferreira</span>
+                                <span class="text-xs font-bold text-slate-900 block">Juan Pérez</span>
                                 <span class="text-[10px] text-emerald-700 font-semibold font-mono">+595 981 • Alto Paraná</span>
                             </div>
                         </div>

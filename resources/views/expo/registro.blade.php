@@ -132,7 +132,7 @@
                     <div>
                         <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">Nombre y Apellido *</label>
                         <input type="text" name="full_name" required value="{{ old('full_name') }}" 
-                               placeholder="Ej. Carlos Ferreira" 
+                               placeholder="Ej. Juan Pérez" 
                                class="w-full px-3 py-2 text-xs font-medium border rounded-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                         <x-input-error :messages="$errors->get('full_name')" class="mt-1" />
                     </div>

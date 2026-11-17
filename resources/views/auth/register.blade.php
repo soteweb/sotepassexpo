@@ -37,14 +37,14 @@
                     <!-- Nombre del Responsable -->
                     <div>
                         <x-input-label for="name" value="Nombre del Responsable *" />
-                        <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus placeholder="Ej. Ing. Carlos Ferreira" class="w-full" />
+                        <x-text-input id="name" type="text" name="name" :value="old('name')" required autofocus placeholder="Ej. Juan Pérez" class="w-full" />
                         <x-input-error :messages="$errors->get('name')" class="mt-1" />
                     </div>
 
                     <!-- Nombre de la Empresa -->
                     <div>
                         <x-input-label for="company_name" value="Nombre de la Empresa / Marca *" />
-                        <x-text-input id="company_name" type="text" name="company_name" :value="old('company_name')" required placeholder="Ej. AgroInsumos del Este S.A." class="w-full" />
+                        <x-text-input id="company_name" type="text" name="company_name" :value="old('company_name')" required placeholder="Ej. SotePass Expo" class="w-full" />
                         <x-input-error :messages="$errors->get('company_name')" class="mt-1" />
                     </div>
                 </div>
