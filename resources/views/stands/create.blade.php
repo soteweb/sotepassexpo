@@ -10,14 +10,29 @@
             <div class="text-center max-w-2xl mx-auto">
                 <div class="inline-flex items-center gap-2 px-3 py-1 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 mb-3 shadow-xs">
                     <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                    <span>Paso 2 de 2: Alta de Stand y Selección de Plan</span>
+                    <span>Paso 2 de 2: Activación de Prueba Gratuita</span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 tracking-tight">
                     Configura tu Stand para la Expo
                 </h1>
                 <p class="text-xs sm:text-sm text-slate-500 mt-1 font-normal">
-                    Hola <strong>{{ $user->name }}</strong> ({{ $user->company_name }}). Elige el paquete que mejor se adapta a tus objetivos comerciales durante la feria.
+                    Hola <strong>{{ $user->name }}</strong> ({{ $user->company_name }}). Configura tu stand para habilitar tu acceso de prueba gratuita al sistema.
                 </p>
+            </div>
+
+            <!-- Aviso de Prueba Gratuita Sin Compromiso -->
+            <div class="p-4 sm:p-5 rounded-lg bg-amber-50/90 border border-amber-300 text-amber-950 flex items-start gap-3.5 shadow-xs">
+                <div class="w-9 h-9 rounded-md bg-amber-200/70 border border-amber-300 text-amber-900 flex items-center justify-center font-bold text-base shrink-0">
+                    🧪
+                </div>
+                <div class="text-xs leading-relaxed">
+                    <div class="font-bold uppercase tracking-wider text-amber-900">
+                        Prueba Gratuita Habilitada &bull; Sin Compromiso de Contratación
+                    </div>
+                    <p class="text-amber-800 mt-0.5">
+                        Al completar este formulario se habilitará tu <strong>Modo Demo Gratuito</strong> para que pruebes el panel, la ruleta y el registro de visitantes. <strong>La elección de un plan aquí no implica compromiso de pago ni contratación obligatoria del servicio</strong>; sirve únicamente para activar las funciones que deseas evaluar. Solo abonarás si decides activar tu stand oficialmente para la feria.
+                    </p>
+                </div>
             </div>
 
             @if(session('success'))
@@ -44,8 +59,8 @@
                 <!-- SECCIÓN 1: SELECCIÓN DE PLAN -->
                 <div>
                     <div class="mb-3">
-                        <h2 class="text-base font-bold text-slate-900">1. Elige tu Plan de Servicio</h2>
-                        <p class="text-xs text-slate-500">Puedes cambiar o mejorar tu plan en cualquier momento comunicándote con Soteweb.</p>
+                        <h2 class="text-base font-bold text-slate-900">1. Elige qué Plan deseas probar (Sin compromiso de pago)</h2>
+                        <p class="text-xs text-slate-500">Selecciona el paquete cuyas funciones quieres habilitar en tu prueba gratuita. Puedes cambiar de plan en cualquier momento.</p>
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -94,7 +109,7 @@
                                                :checked="selectedPlan === {{ $plan->id }}"
                                                class="w-4 h-4 text-emerald-600 focus:ring-emerald-500 border-slate-300">
                                         <span class="text-xs font-semibold" :class="selectedPlan === {{ $plan->id }} ? 'text-emerald-700' : 'text-slate-500'">
-                                            Seleccionar Plan
+                                            Probar este Plan (Sin compromiso)
                                         </span>
                                     </div>
                                 </div>
