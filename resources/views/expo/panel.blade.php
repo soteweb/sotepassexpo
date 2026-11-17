@@ -853,20 +853,33 @@
                     </button>
                 </div>
 
-                <div class="space-y-4 text-xs">
-                    <!-- Resumen del Plan -->
-                    <div class="p-3.5 rounded-md bg-slate-50 border border-slate-200 flex items-center justify-between">
-                        <div>
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Plan Seleccionado</div>
-                            <div class="text-sm font-bold text-slate-900">{{ $stand->plan?->name ?? 'Plan B2B' }}</div>
-                            <div class="text-[11px] text-slate-500">{{ $stand->event_name ?? 'Expo Paraguay' }}</div>
-                        </div>
-                        <div class="text-right">
-                            <div class="text-[10px] font-bold uppercase tracking-wider text-slate-400">Inversión</div>
-                            <div class="text-base font-extrabold text-emerald-700">
-                                {{ number_format($stand->plan?->price_pyg ?? 890000, 0, ',', '.') }} Gs.
-                            </div>
-                            <div class="text-[10px] text-slate-500">IVA incluido</div>
+                <form action="{{ route('expo.stand.notify-payment', $stand->slug) }}" method="POST" enctype="multipart/form-data"
+                      class="space-y-4 text-xs"
+                      x-data="{ chosenPlanId: {{ $stand->plan_id ?? ($plans->first()?->id ?? 'null') }} }">
+                    @csrf
+
+                    <!-- Selección / Resumen del Plan Oficial -->
+                    <div>
+                        <label class="block text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">
+                            Plan a Activar para {{ $stand->event_name ?? 'Expo Paraguay' }} (Puedes cambiarlo aquí):
+                        </label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            @foreach($plans as $planItem)
+                                <label @click="chosenPlanId = {{ $planItem->id }}"
+                                       :class="chosenPlanId === {{ $planItem->id }} ? 'ring-2 ring-emerald-600 border-emerald-600 bg-emerald-50/40' : 'border-slate-200 bg-slate-50 hover:bg-white'"
+                                       class="p-3 rounded-md border cursor-pointer transition flex flex-col justify-between">
+                                    <div class="flex items-center justify-between gap-1">
+                                        <span class="font-bold text-slate-900 text-[11px] leading-tight">{{ $planItem->name }}</span>
+                                        <input type="radio" name="plan_id" value="{{ $planItem->id }}"
+                                               :checked="chosenPlanId === {{ $planItem->id }}"
+                                               class="w-3.5 h-3.5 text-emerald-600 focus:ring-emerald-500 border-slate-300">
+                                    </div>
+                                    <div class="mt-2 pt-1.5 border-t border-slate-200/70 flex items-baseline justify-between">
+                                        <span class="text-sm font-extrabold text-emerald-700">{{ $planItem->formatted_price }}</span>
+                                        <span class="text-[9px] text-slate-400">IVA incl.</span>
+                                    </div>
+                                </label>
+                            @endforeach
                         </div>
                     </div>
 
@@ -901,9 +914,8 @@
                         </div>
                     </div>
 
-                    <!-- Formulario de Notificación de Pago -->
-                    <form action="{{ route('expo.stand.notify-payment', $stand->slug) }}" method="POST" enctype="multipart/form-data" class="space-y-3 pt-1">
-                        @csrf
+                    <!-- Campos de Comprobante -->
+                    <div class="space-y-3 pt-1">
                         <div>
                             <label class="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1">
                                 N° de Comprobante / Referencia SIPAP (Opcional si subes archivo)
@@ -938,8 +950,8 @@
                                 </button>
                             </div>
                         </div>
-                    </form>
-                </div>
+                    </div>
+                </form>
             </div>
         </div>
 
