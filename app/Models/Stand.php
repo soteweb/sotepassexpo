@@ -122,7 +122,8 @@ class Stand extends Model
      */
     public function getThemeMode(): string
     {
-        $mode = $this->custom_questions['theme_mode'] ?? 'light';
+        $custom = is_array($this->custom_questions) ? $this->custom_questions : [];
+        $mode = $custom['theme_mode'] ?? 'light';
 
         return in_array($mode, ['light', 'dark'], true) ? $mode : 'light';
     }
