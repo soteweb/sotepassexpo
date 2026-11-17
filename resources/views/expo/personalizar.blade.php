@@ -10,6 +10,8 @@
              previewSector: '{{ addslashes($stand->sector) }}', 
              previewNumber: '{{ addslashes($stand->stand_number) }}', 
              previewLogo: '{{ $stand->logo_url ? asset($stand->logo_url) : '' }}',
+             previewTheme: '{{ $stand->getThemeMode() }}',
+             previewTab: 'form',
              handleLogoUpload(e) {
                  const file = e.target.files[0];
                  if (file) {
@@ -34,13 +36,17 @@
                         Visual Studio
                     </span>
                 </div>
-                <p class="text-xs text-slate-500 mt-1">Configura el logo, colores corporativos y eslogan que verán los visitantes al escanear tu QR en la expo.</p>
+                <p class="text-xs text-slate-500 mt-1">Configura el logo, modo claro/oscuro, colores corporativos y eslogan que verán los visitantes al escanear tu QR en la expo.</p>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex flex-wrap items-center gap-2">
                 <a href="{{ route('expo.panel', $stand->slug) }}"
                    class="inline-flex items-center gap-1.5 px-3 py-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold text-xs rounded-md transition shadow-xs">
                     <span>&larr; Volver al Panel</span>
+                </a>
+                <a href="{{ route('expo.stand.simulador-ruleta', $stand->slug) }}" target="_blank"
+                   class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-md bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-300 font-semibold text-xs shadow-xs transition-all cursor-pointer">
+                    <span>🎡 Probar Ruleta &rarr;</span>
                 </a>
                 <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
                    class="inline-flex items-center gap-2 px-3.5 py-2 rounded-md bg-slate-900 hover:bg-slate-800 text-white font-semibold text-xs uppercase tracking-wider shadow-xs transition-all cursor-pointer">
@@ -90,11 +96,44 @@
                         </div>
                     </div>
 
-                    <!-- 2. Paleta de Colores de la Marca -->
-                    <div class="bg-slate-50/70 rounded-md p-4 sm:p-5 border border-slate-200 space-y-3.5">
+                    <!-- 2. Paleta de Colores y Tema de la Marca -->
+                    <div class="bg-slate-50/70 rounded-md p-4 sm:p-5 border border-slate-200 space-y-4">
                         <div>
-                            <label class="block text-xs font-semibold text-slate-800">Colores Corporativos</label>
-                            <p class="text-[11px] text-slate-500 mt-0.5">Se aplican a los degradados de la cabecera, botones de registro y acentos del stand.</p>
+                            <label class="block text-xs font-semibold text-slate-800">Colores Corporativos y Tema Visual</label>
+                            <p class="text-[11px] text-slate-500 mt-0.5">Se aplican a los degradados de la cabecera, botones de registro, modo claro/oscuro y acentos del stand.</p>
+                        </div>
+
+                        <!-- Selector de Modo Claro / Oscuro del Formulario -->
+                        <div class="pb-3 border-b border-slate-200/80">
+                            <input type="hidden" name="theme_mode" :value="previewTheme">
+                            <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">Estilo del Formulario de Visitantes:</span>
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                <button type="button" @click="previewTheme = 'light'; previewTab = 'form'"
+                                        :class="previewTheme === 'light' ? 'ring-2 ring-emerald-600 border-emerald-600 bg-white' : 'border-slate-200 bg-white/70 hover:bg-white'"
+                                        class="p-3 rounded-md border text-left flex items-center justify-between transition cursor-pointer shadow-2xs">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-8 h-8 rounded-md bg-amber-50 border border-amber-200 flex items-center justify-center text-base">☀️</span>
+                                        <div>
+                                            <div class="text-xs font-bold text-slate-900">Modo Claro (Institucional)</div>
+                                            <div class="text-[10px] text-slate-500">Fondo limpio, tarjeta blanca y alto contraste</div>
+                                        </div>
+                                    </div>
+                                    <span x-show="previewTheme === 'light'" class="w-4 h-4 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                                </button>
+
+                                <button type="button" @click="previewTheme = 'dark'; previewTab = 'form'"
+                                        :class="previewTheme === 'dark' ? 'ring-2 ring-emerald-500 border-emerald-500 bg-slate-900 text-white' : 'border-slate-300 bg-slate-900/90 text-slate-200 hover:bg-slate-900'"
+                                        class="p-3 rounded-md border text-left flex items-center justify-between transition cursor-pointer shadow-2xs">
+                                    <div class="flex items-center gap-2.5">
+                                        <span class="w-8 h-8 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-base">🌙</span>
+                                        <div>
+                                            <div class="text-xs font-bold text-white">Modo Oscuro (Tech & VIP)</div>
+                                            <div class="text-[10px] text-slate-400">Estética nocturna con acentos corporativos</div>
+                                        </div>
+                                    </div>
+                                    <span x-show="previewTheme === 'dark'" class="w-4 h-4 rounded-full bg-emerald-500 text-white flex items-center justify-center text-[10px] font-bold">✓</span>
+                                </button>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -255,18 +294,32 @@
                 </form>
 
                 <!-- PREVISUALIZADOR SMARTPHONE EN VIVO (4 Columnas en Desktop) -->
-                <div class="lg:col-span-4 flex flex-col items-center">
-                    <div class="text-center mb-2">
-                        <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400">Vista Previa Móvil en Vivo</span>
+                <div class="lg:col-span-4 flex flex-col items-center space-y-3">
+                    <div class="text-center">
+                        <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-2">Vista Previa Móvil en Vivo</span>
+                        <!-- Selector de Vista Previa: Formulario vs Ruleta -->
+                        <div class="inline-flex p-0.5 rounded-md bg-slate-100 border border-slate-200 text-[11px] font-semibold">
+                            <button type="button" @click="previewTab = 'form'"
+                                    :class="previewTab === 'form' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'"
+                                    class="px-3 py-1 rounded-[4px] transition cursor-pointer flex items-center gap-1">
+                                <span>📋 Formulario</span>
+                            </button>
+                            <button type="button" @click="previewTab = 'ruleta'"
+                                    :class="previewTab === 'ruleta' ? 'bg-white text-slate-900 shadow-2xs' : 'text-slate-500 hover:text-slate-800'"
+                                    class="px-3 py-1 rounded-[4px] transition cursor-pointer flex items-center gap-1">
+                                <span>🎡 Ruleta</span>
+                            </button>
+                        </div>
                     </div>
 
                     <!-- Marco Celular Estilo Moderno Rectangular -->
-                    <div class="w-64 rounded-xl border-4 border-slate-800 bg-white shadow-lg overflow-hidden relative">
+                    <div class="w-64 rounded-xl border-4 border-slate-800 shadow-lg overflow-hidden relative transition-colors duration-200"
+                         :class="previewTab === 'form' && previewTheme === 'dark' ? 'bg-slate-900' : 'bg-white'">
                         <!-- Barra superior simulada -->
                         <div class="h-3.5 bg-slate-800 w-20 mx-auto rounded-b-md mb-1"></div>
 
-                        <!-- Pantalla simulada -->
-                        <div class="text-center overflow-hidden">
+                        <!-- TAB 1: PANTALLA SIMULADA DE FORMULARIO -->
+                        <div x-show="previewTab === 'form'" class="text-center overflow-hidden">
                             <!-- Cabecera simulada -->
                             <div class="py-5 px-3 relative text-white"
                                  :style="'background: linear-gradient(135deg, ' + previewPrimary + ', ' + previewSecondary + ')'">
@@ -292,16 +345,20 @@
 
                             <!-- Mini Formulario simulado -->
                             <div class="p-3 pt-0 space-y-1.5 text-left">
-                                <div class="text-[9px] font-bold text-center text-slate-800">
+                                <div class="text-[9px] font-bold text-center"
+                                     :class="previewTheme === 'dark' ? 'text-white' : 'text-slate-800'">
                                     {{ $stand->allow_spins ? '🎡 Ruleta de Premios' : '🎟️ Gran Sorteo Oficial' }}
                                 </div>
-                                <div class="h-5 rounded-md bg-slate-100 border border-slate-200 px-2 flex items-center text-[8px] text-slate-400">
+                                <div class="h-5 rounded-md border px-2 flex items-center text-[8px]"
+                                     :class="previewTheme === 'dark' ? 'bg-slate-950 border-slate-700 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-400'">
                                     Nombre y Apellido
                                 </div>
-                                <div class="h-5 rounded-md bg-slate-100 border border-slate-200 px-2 flex items-center text-[8px] text-slate-400 font-mono">
+                                <div class="h-5 rounded-md border px-2 flex items-center text-[8px] font-mono"
+                                     :class="previewTheme === 'dark' ? 'bg-slate-950 border-slate-700 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-400'">
                                     +595 981 ...
                                 </div>
-                                <div class="h-5 rounded-md bg-slate-100 border border-slate-200 px-2 flex items-center text-[8px] text-slate-400">
+                                <div class="h-5 rounded-md border px-2 flex items-center text-[8px]"
+                                     :class="previewTheme === 'dark' ? 'bg-slate-950 border-slate-700 text-slate-400' : 'bg-slate-100 border-slate-200 text-slate-400'">
                                     Ciudad / Región
                                 </div>
                                 <div class="h-6 rounded-md text-white font-semibold text-[9px] flex items-center justify-center shadow-xs"
@@ -310,14 +367,52 @@
                                 </div>
                             </div>
 
-                            <div class="py-2 text-[7px] text-slate-400">
-                                SotePass Expo
+                            <div class="py-2 text-[7px]" :class="previewTheme === 'dark' ? 'text-slate-500' : 'text-slate-400'">
+                                SotePass Expo &bull; <span x-text="previewTheme === 'dark' ? 'Modo Oscuro' : 'Modo Claro'"></span>
                             </div>
+                        </div>
+
+                        <!-- TAB 2: PANTALLA SIMULADA DE RULETA -->
+                        <div x-show="previewTab === 'ruleta'" x-cloak class="p-3 text-center space-y-2.5 bg-white">
+                            <div class="text-[9px] font-bold text-slate-900 truncate" x-text="previewName"></div>
+                            <!-- Rueda Simulada con Conic Gradient -->
+                            <div class="relative w-36 h-36 mx-auto flex items-center justify-center">
+                                <!-- Puntero superior -->
+                                <div class="absolute -top-1.5 z-20 w-3 h-4 bg-amber-400 border border-amber-700" style="clip-path: polygon(50% 100%, 0 0, 100% 0);"></div>
+                                <!-- Rueda -->
+                                <div class="w-full h-full rounded-full border-4 border-slate-900 shadow-md"
+                                     :style="'background: conic-gradient(' + previewPrimary + ' 0deg 60deg, ' + previewSecondary + ' 60deg 120deg, #d97706 120deg 180deg, ' + previewPrimary + ' 180deg 240deg, #2563eb 240deg 300deg, ' + previewSecondary + ' 300deg 360deg)'">
+                                </div>
+                                <!-- Centro con Logo -->
+                                <div class="absolute w-9 h-9 rounded-full bg-white shadow-md border-2 flex items-center justify-center overflow-hidden p-1"
+                                     :style="'border-color: ' + previewPrimary">
+                                    <template x-if="previewLogo">
+                                        <img :src="previewLogo" class="max-w-full max-h-full object-contain">
+                                    </template>
+                                    <template x-if="!previewLogo">
+                                        <span class="font-bold text-[8px] text-slate-900">SP</span>
+                                    </template>
+                                </div>
+                            </div>
+                            <div class="text-[8px] text-slate-500">
+                                {{ $stand->prizes()->count() }} segmentos configurados
+                            </div>
+                            <a href="{{ route('expo.stand.simulador-ruleta', $stand->slug) }}" target="_blank"
+                               class="block w-full py-1.5 px-2 rounded-md text-white font-bold text-[9px] uppercase tracking-wider shadow-xs transition hover:brightness-105"
+                               :style="'background-color: ' + previewPrimary">
+                                🎡 Abrir Simulador Real &rarr;
+                            </a>
                         </div>
 
                         <!-- Barra inferior simulada -->
                         <div class="h-1 bg-slate-300 w-16 mx-auto rounded-full mb-1"></div>
                     </div>
+
+                    <a href="{{ route('expo.stand.simulador-ruleta', $stand->slug) }}" target="_blank"
+                       class="w-64 py-2 px-3 rounded-md bg-amber-50 hover:bg-amber-100 border border-amber-300 text-amber-900 font-semibold text-[11px] flex items-center justify-center gap-1.5 transition shadow-2xs">
+                        <span>🎡</span>
+                        <span>Probar Giro de Ruleta en Vivo</span>
+                    </a>
                 </div>
 
             </div>

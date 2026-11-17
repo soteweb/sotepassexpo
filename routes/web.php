@@ -77,6 +77,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/panel/{slug}', [ExpoController::class, 'panel'])->name('expo.panel');
     Route::post('/panel/{slug}/notificar-pago', [ExpoController::class, 'notifyPayment'])->name('expo.stand.notify-payment');
     Route::get('/panel/{slug}/personalizar', [ExpoController::class, 'personalizarLanding'])->name('expo.stand.personalizar');
+    Route::get('/panel/{slug}/qr-poster', [ExpoController::class, 'qrPoster'])->name('expo.stand.qr-poster');
+    Route::get('/panel/{slug}/simulador-ruleta', [ExpoController::class, 'simuladorRuleta'])->name('expo.stand.simulador-ruleta');
     Route::post('/panel/{slug}/canjear-cupon', [ExpoController::class, 'redeemCoupon'])->name('expo.redeem');
     Route::post('/panel/{slug}/premios', [ExpoController::class, 'storePrize'])->name('expo.prize.store');
     Route::post('/panel/{slug}/premios/{prizeId}', [ExpoController::class, 'updatePrize'])->name('expo.prize.update');

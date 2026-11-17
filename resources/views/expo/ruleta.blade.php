@@ -60,17 +60,42 @@
         }
     </style>
 
+    @php
+        $isPreview = $isPreview ?? false;
+    @endphp
+
     <div class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 antialiased select-none overflow-x-hidden">
+
+        @if($isPreview)
+            <!-- Banner Superior de Modo Simulador / Vista Previa del Expositor -->
+            <div class="w-full max-w-3xl mb-2 p-2.5 sm:px-4 rounded-md bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xs shrink-0">
+                <div class="flex items-center gap-2 text-xs">
+                    <span class="text-sm">🧪</span>
+                    <div>
+                        <strong class="font-bold uppercase tracking-wider text-[11px] text-amber-900">Modo Vista Previa / Simulador:</strong>
+                        <span class="text-amber-800 text-[11px]">Girá todas las veces que quieras. No descuenta stock ni registra visitas reales.</span>
+                    </div>
+                </div>
+                <div class="flex items-center gap-1.5 shrink-0">
+                    <a href="{{ route('expo.stand.personalizar', $stand->slug) }}" class="px-2.5 py-1 rounded-sm bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-[11px] transition">
+                        🎨 Colores
+                    </a>
+                    <a href="{{ route('expo.panel', $stand->slug) }}" class="px-2.5 py-1 rounded-sm bg-amber-800 hover:bg-amber-900 text-white font-semibold text-[11px] transition">
+                        &larr; Panel
+                    </a>
+                </div>
+            </div>
+        @endif
 
         <!-- Top Header con Identidad Corporativa y Atajos Rápidos -->
         <header class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center py-2 relative flex items-center justify-between gap-3 shrink-0">
             
             <!-- Botón Volver al Formulario de Registro (Flujo Rápido de Promotor) -->
-            <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}"
-               title="Volver al Formulario de Registro"
+            <a href="{{ $isPreview ? route('expo.panel', $stand->slug) : route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}"
+               title="{{ $isPreview ? 'Volver al Panel del Stand' : 'Volver al Formulario de Registro' }}"
                class="p-2 sm:px-3 sm:py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
                 <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
-                <span class="hidden sm:inline font-semibold text-[11px]">Registro</span>
+                <span class="hidden sm:inline font-semibold text-[11px]">{{ $isPreview ? 'Panel' : 'Registro' }}</span>
             </a>
 
             <!-- Identidad de la Empresa: Logo + Nombre (100% Nítido y Visible) -->
@@ -99,7 +124,7 @@
 
             <!-- Acciones Superiores: Tótem & FullScreen -->
             <div class="flex items-center gap-1.5 shrink-0">
-                <a href="{{ route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
+                <a href="{{ $isPreview ? route('expo.stand.simulador-ruleta', ['slug' => $stand->slug, 'totem' => $isTotem ? null : 1]) : route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
                    title="Alternar Modo Tótem / TV Touch Vertical"
                    class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }} hover:text-slate-900 transition text-xs flex items-center gap-1 shadow-xs">
                     <span class="text-xs">📺</span>
@@ -224,38 +249,45 @@
 
                 <!-- ACCIONES Y FLUJO HÍBRIDO DE PROMOTOR (OPCIÓN C) -->
                 <div class="space-y-2 mt-4">
-                    
-                    <!-- Botón Principal: Volver Inmediatamente al Registro para el Siguiente Cliente -->
-                    <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" 
-                       id="btnSiguienteRegistro"
-                       class="w-full py-3 px-4 rounded-md bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider shadow-xs border border-emerald-500 transition-all flex items-center justify-between gap-3 cursor-pointer">
-                        <div class="flex items-center gap-2">
-                            <span>🚀</span>
-                            <span>¡Siguiente Visitante!</span>
+                    @if($isPreview)
+                        <button type="button" onclick="cerrarModal()"
+                                class="w-full py-3 px-4 rounded-md bg-amber-500 hover:bg-amber-400 active:scale-[0.99] text-slate-950 font-bold text-xs sm:text-sm uppercase tracking-wider shadow-xs transition-all flex items-center justify-center gap-2 cursor-pointer">
+                            <span>🎡</span>
+                            <span>¡Volver a Girar (Modo Prueba)!</span>
+                        </button>
+                    @else
+                        <!-- Botón Principal: Volver Inmediatamente al Registro para el Siguiente Cliente -->
+                        <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" 
+                           id="btnSiguienteRegistro"
+                           class="w-full py-3 px-4 rounded-md bg-emerald-600 hover:bg-emerald-500 active:scale-[0.99] text-white font-semibold text-xs sm:text-sm uppercase tracking-wider shadow-xs border border-emerald-500 transition-all flex items-center justify-between gap-3 cursor-pointer">
+                            <div class="flex items-center gap-2">
+                                <span>🚀</span>
+                                <span>¡Siguiente Visitante!</span>
+                            </div>
+                            <span id="registroCountDown" class="text-xs font-mono font-bold bg-black/20 text-white px-2 py-0.5 rounded-md">
+                                15s
+                            </span>
+                        </a>
+
+                        <!-- Botones Secundarios: Pausar y Cerrar -->
+                        <div class="grid grid-cols-2 gap-2">
+                            <button type="button" onclick="pausarAutoRedireccion()" 
+                                    id="btnPausarTimer"
+                                    class="py-2.5 px-3 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
+                                <span>📸 Pausar Foto</span>
+                            </button>
+
+                            <button type="button" onclick="cerrarModal()" 
+                                    id="btnCerrarModal"
+                                    class="py-2.5 px-3 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1 cursor-pointer">
+                                <span>✕ Cerrar Pase</span>
+                            </button>
                         </div>
-                        <span id="registroCountDown" class="text-xs font-mono font-bold bg-black/20 text-white px-2 py-0.5 rounded-md">
-                            15s
-                        </span>
-                    </a>
-
-                    <!-- Botones Secundarios: Pausar y Cerrar -->
-                    <div class="grid grid-cols-2 gap-2">
-                        <button type="button" onclick="pausarAutoRedireccion()" 
-                                id="btnPausarTimer"
-                                class="py-2.5 px-3 rounded-md bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1.5 cursor-pointer">
-                            <span>📸 Pausar Foto</span>
-                        </button>
-
-                        <button type="button" onclick="cerrarModal()" 
-                                id="btnCerrarModal"
-                                class="py-2.5 px-3 rounded-md bg-slate-800/80 hover:bg-slate-700 text-slate-400 hover:text-white text-xs font-semibold border border-slate-700 transition flex items-center justify-center gap-1 cursor-pointer">
-                            <span>✕ Cerrar Pase</span>
-                        </button>
-                    </div>
+                    @endif
                 </div>
 
                 <div class="mt-4 pt-3 border-t border-slate-800/80 text-[10px] text-slate-500">
-                    Verificado por SotePass Expo &bull; Uso único e intransferible
+                    {{ $isPreview ? 'Modo Simulador • No consume stock real' : 'Verificado por SotePass Expo • Uso único e intransferible' }}
                 </div>
 
             </div>
@@ -265,6 +297,7 @@
 
     <!-- Script de Ruleta con Físicas Realistas, Luces y Web Audio API -->
     <script>
+        const isPreviewMode = {{ $isPreview ? 'true' : 'false' }};
         const isTotemMode = {{ $isTotem ? 'true' : 'false' }};
         const prizes = @json($prizes);
         const standSlug = '{{ $stand->slug }}';
@@ -518,6 +551,23 @@
             isSpinning = true;
             if (btnGirar) btnGirar.disabled = true;
 
+            if (isPreviewMode) {
+                let pool = [];
+                prizes.forEach((p, idx) => {
+                    const weight = Math.max(1, parseInt(p.probability_weight || 10));
+                    for (let w = 0; w < weight; w++) pool.push(idx);
+                });
+                const chosenIdx = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : 0;
+                const chosenPrize = prizes[chosenIdx] || { name: 'Premio Demo', is_real_prize: true };
+                const demoCode = 'DEMO-' + Math.floor(1000 + Math.random() * 9000);
+                animarGiro(chosenIdx, {
+                    prize_name: chosenPrize.name,
+                    coupon_code: demoCode,
+                    is_real_prize: Boolean(chosenPrize.is_real_prize)
+                });
+                return;
+            }
+
             try {
                 const res = await fetch(spinApiUrl, {
                     method: 'POST',
@@ -616,7 +666,9 @@
                 card.classList.add('scale-100');
             }, 50);
 
-            iniciarAutoRedireccion();
+            if (!isPreviewMode) {
+                iniciarAutoRedireccion();
+            }
         }
 
         function iniciarAutoRedireccion() {
@@ -655,6 +707,10 @@
             if (autoRedirectTimer) clearInterval(autoRedirectTimer);
             const modal = document.getElementById('modalPremio');
             modal.classList.add('hidden');
+            if (isPreviewMode) {
+                if (btnGirar) btnGirar.disabled = false;
+                return;
+            }
             window.location.reload();
         }
 

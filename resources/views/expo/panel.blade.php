@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }} - SotePass Expo</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false, showQrModal: false, copiedUrl: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -61,25 +61,27 @@
                     </button>
                 </form>
 
-                <!-- QR Mostrador -->
-                <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
-                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md text-xs font-semibold transition-colors shadow-xs">
+                <!-- QR Mostrador (Generador QR, Descarga PNG e Impresión Cartel A4) -->
+                <button type="button" @click="showQrModal = true; $nextTick(() => renderPanelQr())"
+                        class="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md text-xs font-semibold transition-colors shadow-xs cursor-pointer">
                     <span>📱 QR Mostrador</span>
-                </a>
+                </button>
 
-                <!-- Personalizar Landing del Visitante -->
+                <!-- Personalizar Landing del Visitante (Colores + Modo Claro/Oscuro) -->
                 <a href="{{ route('expo.stand.personalizar', $stand->slug) }}"
                    class="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md text-xs font-semibold transition-colors shadow-xs">
                     <span>🎨 Personalizar Landing</span>
+                    <span class="text-[10px] px-1.5 py-0.5 rounded-sm bg-slate-100 text-slate-600 border border-slate-200">
+                        {{ $stand->isDarkMode() ? '🌙 Oscuro' : '☀️ Claro' }}
+                    </span>
                 </a>
 
-                <!-- Ruleta Móvil/Tótem -->
-                @if($stand->allow_spins)
-                    <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'totem' => 1]) }}" target="_blank"
-                       class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs font-semibold transition-colors shadow-xs">
-                        <span>🎡 Tótem Ruleta</span>
-                    </a>
-                @endif
+                <!-- Vista Previa / Simulador de Ruleta -->
+                <a href="{{ route('expo.stand.simulador-ruleta', $stand->slug) }}" target="_blank"
+                   class="inline-flex items-center gap-2 px-3.5 py-2 bg-indigo-50 border border-indigo-200 text-indigo-700 hover:bg-indigo-100 rounded-md text-xs font-semibold transition-colors shadow-xs"
+                   title="Probar y simular giros de tu ruleta sin descontar stock">
+                    <span>🎡 Vista Previa Ruleta</span>
+                </a>
 
                 <!-- Pantalla TV 4K -->
                 @if($stand->plan?->has_tv_draw ?? true)
@@ -945,5 +947,134 @@
             </div>
         </div>
 
+        <!-- MODAL: CÓDIGO QR DE MOSTRADOR, DESCARGA PNG E IMPRESIÓN A4 -->
+        <div x-show="showQrModal"
+             x-cloak
+             class="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+            <div class="bg-white rounded-lg max-w-md w-full p-6 shadow-2xl border border-slate-200 relative my-8"
+                 @click.away="showQrModal = false">
+
+                <div class="flex items-center justify-between pb-3 border-b border-slate-100 mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-md bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center justify-center font-bold text-sm">
+                            📱
+                        </div>
+                        <div>
+                            <h3 class="text-base font-bold text-slate-900">Código QR del Mostrador</h3>
+                            <p class="text-[11px] text-slate-500">Para que los visitantes escaneen y entren al stand</p>
+                        </div>
+                    </div>
+                    <button type="button" @click="showQrModal = false" class="text-slate-400 hover:text-slate-600 p-1 cursor-pointer">
+                        ✕
+                    </button>
+                </div>
+
+                <!-- Tarjeta Central con el QR Generado -->
+                <div class="p-5 rounded-lg bg-slate-50 border border-slate-200 text-center space-y-3"
+                     style="border-top: 4px solid {{ $stand->primary_color }};">
+                    <div>
+                        <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-sm bg-white border border-slate-200 text-slate-600">
+                            {{ $stand->event_name ?? 'Expo Paraguay' }} &bull; {{ $stand->stand_number }}
+                        </span>
+                        <h4 class="text-sm font-bold text-slate-900 mt-1.5">{{ $stand->name }}</h4>
+                    </div>
+
+                    <div class="p-3 bg-white rounded-md border border-slate-200 inline-flex items-center justify-center shadow-2xs">
+                        <div id="panelQrContainer" class="flex items-center justify-center"></div>
+                    </div>
+
+                    <!-- Enlace Directo + Copiar -->
+                    <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-md border border-slate-200">
+                        <input type="text" readonly value="{{ route('expo.stand', $stand->slug) }}"
+                               class="flex-1 text-[11px] font-mono text-slate-600 bg-transparent border-0 focus:ring-0 px-2 py-0.5 truncate">
+                        <button type="button"
+                                @click="navigator.clipboard.writeText('{{ route('expo.stand', $stand->slug) }}'); copiedUrl = true; setTimeout(() => copiedUrl = false, 2000)"
+                                class="px-2.5 py-1 rounded-sm bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] transition cursor-pointer shrink-0">
+                            <span x-show="!copiedUrl">📋 Copiar</span>
+                            <span x-show="copiedUrl" x-cloak class="text-emerald-300">✓ Copiado</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Acciones de Impresión y Descarga -->
+                <div class="mt-4 space-y-2 text-xs">
+                    <a href="{{ route('expo.stand.qr-poster', $stand->slug) }}" target="_blank"
+                       class="w-full py-2.5 px-4 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-bold flex items-center justify-center gap-2 shadow-xs transition">
+                        <span>🖨️ Imprimir Cartel A4 para Mostrador</span>
+                    </a>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <button type="button" onclick="downloadPanelQrPng()"
+                                class="py-2 px-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 flex items-center justify-center gap-1.5 transition cursor-pointer">
+                            <span>⬇️ Descargar PNG</span>
+                        </button>
+                        <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
+                           class="py-2 px-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 flex items-center justify-center gap-1.5 transition">
+                            <span>🔗 Abrir Enlace &rarr;</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script>
+        let panelQrRendered = false;
+        const panelStandUrl = @json(route('expo.stand', $stand->slug));
+        const panelStandSlug = @json($stand->slug);
+
+        function renderPanelQr() {
+            const container = document.getElementById('panelQrContainer');
+            if (!container || typeof QRCode === 'undefined') return;
+            if (!panelQrRendered) {
+                container.innerHTML = '';
+                new QRCode(container, {
+                    text: panelStandUrl,
+                    width: 200,
+                    height: 200,
+                    colorDark: '#0f172a',
+                    colorLight: '#ffffff',
+                    correctLevel: QRCode.CorrectLevel.H
+                });
+                panelQrRendered = true;
+            }
+        }
+
+        function downloadPanelQrPng() {
+            if (typeof QRCode === 'undefined') return;
+            const tempDiv = document.createElement('div');
+            tempDiv.style.display = 'none';
+            document.body.appendChild(tempDiv);
+
+            new QRCode(tempDiv, {
+                text: panelStandUrl,
+                width: 900,
+                height: 900,
+                colorDark: '#0f172a',
+                colorLight: '#ffffff',
+                correctLevel: QRCode.CorrectLevel.H
+            });
+
+            setTimeout(() => {
+                const sourceCanvas = tempDiv.querySelector('canvas');
+                if (sourceCanvas) {
+                    const finalCanvas = document.createElement('canvas');
+                    finalCanvas.width = 1000;
+                    finalCanvas.height = 1000;
+                    const ctx = finalCanvas.getContext('2d');
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillRect(0, 0, 1000, 1000);
+                    ctx.drawImage(sourceCanvas, 50, 50, 900, 900);
+
+                    const link = document.createElement('a');
+                    link.download = 'qr-stand-' + panelStandSlug + '.png';
+                    link.href = finalCanvas.toDataURL('image/png');
+                    link.click();
+                }
+                document.body.removeChild(tempDiv);
+            }, 150);
+        }
+    </script>
 </x-app-layout>

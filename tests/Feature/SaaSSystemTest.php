@@ -933,4 +933,80 @@ class SaaSSystemTest extends TestCase
         $sitemap->assertSee(url('/'), false);
         $sitemap->assertSee(route('register'), false);
     }
+
+    public function test_qr_poster_ruleta_simulator_and_dark_light_theme_mode(): void
+    {
+        $user = User::create([
+            'name' => 'Premium Stand Owner',
+            'email' => 'premium_'.uniqid().'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $slug = 'stand-premium-'.uniqid();
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Premium VIP',
+            'slug' => $slug,
+            'stand_number' => 'VIP-10',
+            'sector' => 'Maquinarias',
+            'primary_color' => '#059669',
+            'secondary_color' => '#064e3b',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'is_active' => true,
+            'is_trial' => false,
+            'payment_status' => 'paid',
+            'event_name' => 'Expo Paraguay 2026',
+        ]);
+
+        $stand->prizes()->create([
+            'name' => 'Termo Inox',
+            'color' => '#059669',
+            'remaining_stock' => 5,
+            'total_stock' => 5,
+            'probability_weight' => 50,
+            'is_real_prize' => true,
+        ]);
+
+        // 1. Cartel QR A4 imprimible accesible desde el panel del expositor
+        $posterResponse = $this->actingAs($user)->get(route('expo.stand.qr-poster', $slug));
+        $posterResponse->assertOk();
+        $posterResponse->assertSee('Imprimir Cartel A4');
+        $posterResponse->assertSee(route('expo.stand', $slug));
+
+        // 2. Simulador de Ruleta en vivo accesible sin crear leads ni descontar stock
+        $simulatorResponse = $this->actingAs($user)->get(route('expo.stand.simulador-ruleta', $slug));
+        $simulatorResponse->assertOk();
+        $simulatorResponse->assertSee('Modo Vista Previa / Simulador');
+        $simulatorResponse->assertSee('const isPreviewMode = true;', false);
+        $this->assertEquals(5, $stand->prizes()->first()->remaining_stock);
+
+        // 3. Por defecto el formulario está en Modo Claro (light)
+        $this->assertEquals('light', $stand->getThemeMode());
+        $this->assertFalse($stand->isDarkMode());
+        $lightForm = $this->get(route('expo.stand', $slug));
+        $lightForm->assertOk();
+        $lightForm->assertSee('bg-[#f8f9fa]', false);
+
+        // 4. Expositor cambia a Modo Oscuro (dark) desde Personalizar Landing
+        $this->actingAs($user)->post(route('expo.stand.branding', $slug), [
+            'name' => 'Stand Premium VIP',
+            'stand_number' => 'VIP-10',
+            'sector' => 'Maquinarias',
+            'primary_color' => '#059669',
+            'secondary_color' => '#064e3b',
+            'theme_mode' => 'dark',
+        ])->assertRedirect();
+
+        $stand->refresh();
+        $this->assertEquals('dark', $stand->getThemeMode());
+        $this->assertTrue($stand->isDarkMode());
+
+        // El formulario de visitantes ahora se renderiza en Modo Oscuro
+        $darkForm = $this->get(route('expo.stand', $slug));
+        $darkForm->assertOk();
+        $darkForm->assertSee('bg-[#090d16]', false);
+        $darkForm->assertSee('bg-slate-900', false);
+    }
 }

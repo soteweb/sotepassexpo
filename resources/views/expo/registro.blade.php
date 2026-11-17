@@ -2,43 +2,49 @@
     <x-slot:title>{{ $stand->name }} | Registro y Acreditación de Visitantes - {{ $stand->event_name ?? 'Expo Paraguay' }}</x-slot>
     <x-slot:description>Acreditación digital de visitantes para el stand de {{ $stand->name }} ({{ $stand->stand_number }}). Registrate en segundos, validá tu WhatsApp y participá por premios exclusivos en {{ $stand->event_name ?? 'la expo' }}.</x-slot>
 
-    <div class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 bg-[#f8f9fa] antialiased font-sans text-slate-800">
+    @php
+        $isDark = in_array(request('theme'), ['light', 'dark'], true)
+            ? request('theme') === 'dark'
+            : $stand->isDarkMode();
+    @endphp
+
+    <div class="min-h-screen flex flex-col justify-center items-center p-4 sm:p-6 antialiased font-sans transition-colors duration-200 {{ $isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#f8f9fa] text-slate-800' }}">
 
         <!-- Contenedor Maestro Corporativo: Rectangular con micro-radio de 8px -->
-        <div class="w-full max-w-md bg-white rounded-lg border border-slate-200 shadow-sm overflow-hidden">
+        <div class="w-full max-w-md rounded-lg border overflow-hidden transition-colors duration-200 {{ $isDark ? 'bg-slate-900 border-slate-800 shadow-2xl' : 'bg-white border-slate-200 shadow-sm' }}">
             
             <!-- Cabecera Institucional Sobria -->
-            <div class="p-6 border-b border-slate-200 bg-white" 
+            <div class="p-6 border-b {{ $isDark ? 'bg-slate-900 border-slate-800' : 'bg-white border-slate-200' }}" 
                  style="border-top: 4px solid {{ $stand->primary_color }};">
                 
                 <div class="flex items-start justify-between gap-4">
                     <div class="min-w-0">
                         <!-- Badge de Ubicación: Micro-radio rectangular -->
-                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] bg-slate-100 text-[10px] font-semibold text-slate-600 uppercase tracking-wider mb-2 border border-slate-200">
+                        <div class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-wider mb-2 border {{ $isDark ? 'bg-slate-800 text-slate-300 border-slate-700' : 'bg-slate-100 text-slate-600 border-slate-200' }}">
                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                             <span>{{ $stand->stand_number }} &bull; {{ $stand->sector }}</span>
                             @if($isTotem)
-                                <span class="font-bold text-slate-900">&bull; TÓTEM</span>
+                                <span class="font-bold {{ $isDark ? 'text-white' : 'text-slate-900' }}">&bull; TÓTEM</span>
                             @endif
                         </div>
 
-                        <h1 class="text-xl font-bold text-slate-900 tracking-tight leading-snug">
+                        <h1 class="text-xl font-bold tracking-tight leading-snug {{ $isDark ? 'text-white' : 'text-slate-900' }}">
                             {{ $stand->name }}
                         </h1>
 
                         @if($stand->tagline)
-                            <p class="text-xs text-slate-500 font-normal mt-0.5">
+                            <p class="text-xs font-normal mt-0.5 {{ $isDark ? 'text-slate-400' : 'text-slate-500' }}">
                                 {{ $stand->tagline }}
                             </p>
                         @endif
 
                         <div class="mt-2">
                             @if($stand->allow_spins)
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-wider bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-wider border {{ $isDark ? 'bg-emerald-950/80 text-emerald-300 border-emerald-800/80' : 'bg-emerald-50 text-emerald-700 border-emerald-200' }}">
                                     <span>Ruleta de Premios Activa</span>
                                 </span>
                             @else
-                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-wider bg-purple-50 text-purple-700 border border-purple-200">
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-[4px] text-[10px] font-semibold uppercase tracking-wider border {{ $isDark ? 'bg-purple-950/80 text-purple-300 border-purple-800/80' : 'bg-purple-50 text-purple-700 border-purple-200' }}">
                                     <span>Gran Sorteo en TV 4K</span>
                                 </span>
                             @endif
@@ -47,7 +53,7 @@
 
                     <!-- Logo Corporativo en Marco Cuadrado Limpio -->
                     @if($stand->logo_url)
-                        <div class="w-14 h-14 rounded-md bg-white p-1.5 border border-slate-200 shrink-0 flex items-center justify-center">
+                        <div class="w-14 h-14 rounded-md bg-white p-1.5 border {{ $isDark ? 'border-slate-700' : 'border-slate-200' }} shrink-0 flex items-center justify-center">
                             <img src="{{ $stand->logo_url }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
                         </div>
                     @else
@@ -60,21 +66,21 @@
             </div>
 
             <!-- Cuerpo del Formulario -->
-            <div class="p-6 space-y-5 bg-white"
+            <div class="p-6 space-y-5 {{ $isDark ? 'bg-slate-900' : 'bg-white' }}"
                  x-data="{ 
                      isPromotor: {{ request()->has('promotor') ? 'true' : 'false' }} || !!localStorage.getItem('promoter_name'), 
                      promoterName: localStorage.getItem('promoter_name') || '' 
                  }">
                 
                 <!-- Título de Acción -->
-                <div class="pb-1 border-b border-slate-100">
+                <div class="pb-1 border-b {{ $isDark ? 'border-slate-800' : 'border-slate-100' }}">
                     <div class="flex items-center justify-between">
-                        <span class="text-xs font-semibold uppercase tracking-wider text-slate-900">
+                        <span class="text-xs font-semibold uppercase tracking-wider {{ $isDark ? 'text-slate-100' : 'text-slate-900' }}">
                             {{ $stand->allow_spins ? 'Registro & Acceso a Ruleta' : 'Acreditación Oficial de Stand' }}
                         </span>
-                        <span class="text-[10px] text-slate-400 font-medium">Paso 1 de 2</span>
+                        <span class="text-[10px] font-medium {{ $isDark ? 'text-slate-500' : 'text-slate-400' }}">Paso 1 de 2</span>
                     </div>
-                    <p class="text-xs text-slate-500 mt-0.5">
+                    <p class="text-xs mt-0.5 {{ $isDark ? 'text-slate-400' : 'text-slate-500' }}">
                         Complete sus datos para emitir su pase digital certificado.
                     </p>
                 </div>
@@ -83,67 +89,67 @@
                     @csrf
 
                     <!-- Toggle de Promotor: Estilo Píldora Técnica Rectangular -->
-                    <div class="flex items-center justify-between py-1 border-b border-slate-100">
+                    <div class="flex items-center justify-between py-1 border-b {{ $isDark ? 'border-slate-800' : 'border-slate-100' }}">
                         <button type="button" @click="isPromotor = !isPromotor" 
-                                class="inline-flex items-center gap-2 text-xs font-medium text-slate-600 hover:text-slate-900 transition cursor-pointer">
-                            <span class="w-3.5 h-3.5 rounded-[3px] border border-slate-300 flex items-center justify-center text-[9px] font-bold"
-                                  :class="isPromotor ? 'bg-slate-900 text-white border-slate-900' : 'bg-white'">
+                                class="inline-flex items-center gap-2 text-xs font-medium transition cursor-pointer {{ $isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900' }}">
+                            <span class="w-3.5 h-3.5 rounded-[3px] border flex items-center justify-center text-[9px] font-bold {{ $isDark ? 'border-slate-600' : 'border-slate-300' }}"
+                                  :class="isPromotor ? '{{ $isDark ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-900 text-white border-slate-900' }}' : '{{ $isDark ? 'bg-slate-950' : 'bg-white' }}'">
                                 <template x-if="isPromotor">✓</template>
                             </span>
                             <span>Cargado por Promotor/a</span>
                         </button>
 
                         <template x-if="isPromotor && promoterName">
-                            <span class="text-[10px] font-mono font-medium text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded-[4px]" x-text="promoterName"></span>
+                            <span class="text-[10px] font-mono font-medium border px-2 py-0.5 rounded-[4px] {{ $isDark ? 'text-slate-300 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-100 border-slate-200' }}" x-text="promoterName"></span>
                         </template>
                     </div>
 
                     <!-- Input Promotor (Si está activo) -->
-                    <div x-show="isPromotor" x-cloak class="p-3 rounded-md bg-slate-50 border border-slate-200 space-y-1">
-                        <label class="block text-[11px] font-semibold text-slate-700">Nombre del Promotor/a</label>
+                    <div x-show="isPromotor" x-cloak class="p-3 rounded-md border space-y-1 {{ $isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200' }}">
+                        <label class="block text-[11px] font-semibold {{ $isDark ? 'text-slate-300' : 'text-slate-700' }}">Nombre del Promotor/a</label>
                         <input type="text" name="promoter_name" x-model="promoterName"
                                @input="localStorage.setItem('promoter_name', $event.target.value)"
                                placeholder="Ej. Camila"
-                               class="w-full px-3 py-1.5 bg-white text-xs font-medium text-slate-900 border border-slate-300 rounded-[4px] focus:ring-1 focus:ring-slate-900 focus:border-slate-900">
+                               class="w-full px-3 py-1.5 text-xs font-medium border rounded-[4px] transition {{ $isDark ? 'bg-slate-900 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                     </div>
 
                     <!-- Nombre Completo -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Nombre y Apellido *</label>
+                        <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">Nombre y Apellido *</label>
                         <input type="text" name="full_name" required value="{{ old('full_name') }}" 
                                placeholder="Ej. Carlos Ferreira" 
-                               class="w-full px-3 py-2 bg-white text-xs font-medium text-slate-900 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
+                               class="w-full px-3 py-2 text-xs font-medium border rounded-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                         <x-input-error :messages="$errors->get('full_name')" class="mt-1" />
                     </div>
 
                     <!-- WhatsApp / Teléfono -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">WhatsApp / Celular *</label>
+                        <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">WhatsApp / Celular *</label>
                         <div class="flex rounded-md shadow-2xs">
-                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 border-slate-300 bg-slate-50 text-slate-500 font-mono text-xs font-medium">
+                            <span class="inline-flex items-center px-3 rounded-l-md border border-r-0 font-mono text-xs font-medium {{ $isDark ? 'border-slate-700 bg-slate-800/90 text-slate-300' : 'border-slate-300 bg-slate-50 text-slate-500' }}">
                                 +595
                             </span>
                             <input type="tel" name="phone" required value="{{ old('phone') }}" 
                                    placeholder="981 123 456"
-                                   class="flex-1 px-3 py-2 bg-white text-xs font-mono font-medium text-slate-900 border border-slate-300 rounded-none rounded-r-md focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
+                                   class="flex-1 px-3 py-2 text-xs font-mono font-medium border rounded-none rounded-r-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                         </div>
                         <x-input-error :messages="$errors->get('phone')" class="mt-1" />
                     </div>
 
                     <!-- Ciudad o Región -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Ciudad / Región *</label>
+                        <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">Ciudad / Región *</label>
                         <input type="text" name="city" required value="{{ old('city') }}" 
                                placeholder="Ej. Naranjal, Alto Paraná" 
-                               class="w-full px-3 py-2 bg-white text-xs font-medium text-slate-900 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
+                               class="w-full px-3 py-2 text-xs font-medium border rounded-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                         <x-input-error :messages="$errors->get('city')" class="mt-1" />
                     </div>
 
                     <!-- Actividad / Perfil -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Actividad / Perfil *</label>
+                        <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">Actividad / Perfil *</label>
                         <select name="profile" required 
-                                class="w-full px-3 py-2 bg-white text-xs font-medium text-slate-900 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
+                                class="w-full px-3 py-2 text-xs font-medium border rounded-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                             @foreach($stand->getProfileOptions() as $pOption)
                                 <option value="{{ $pOption }}" {{ old('profile') === $pOption ? 'selected' : '' }}>
                                     {{ $pOption }}
@@ -155,10 +161,10 @@
 
                     <!-- Observación -->
                     <div>
-                        <label class="block text-xs font-semibold text-slate-700 mb-1">Observación <span class="font-normal text-slate-400">(Opcional)</span></label>
+                        <label class="block text-xs font-semibold mb-1 {{ $isDark ? 'text-slate-200' : 'text-slate-700' }}">Observación <span class="font-normal {{ $isDark ? 'text-slate-500' : 'text-slate-400' }}">(Opcional)</span></label>
                         <input type="text" name="observation" value="{{ old('observation') }}" 
                                placeholder="Ej. Interés en cotización, maquinaria..." 
-                               class="w-full px-3 py-2 bg-white text-xs font-medium text-slate-900 border border-slate-300 rounded-md focus:ring-1 focus:ring-slate-900 focus:border-slate-900 transition">
+                               class="w-full px-3 py-2 text-xs font-medium border rounded-md transition {{ $isDark ? 'bg-slate-950 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
                     </div>
 
                     <!-- Botón de Acción Principal (CTA Ejecutivo Rectangular) -->
@@ -174,7 +180,7 @@
                         </button>
                     </div>
 
-                    <p class="text-[10px] text-center text-slate-400 font-normal pt-1">
+                    <p class="text-[10px] text-center font-normal pt-1 {{ $isDark ? 'text-slate-500' : 'text-slate-400' }}">
                         🔒 Protección de datos certificada por SotePass Expo para {{ $stand->name }}.
                     </p>
                 </form>
@@ -184,7 +190,7 @@
         </div>
 
         <div class="mt-4 text-center">
-            <span class="text-[11px] text-slate-400 font-normal">
+            <span class="text-[11px] font-normal {{ $isDark ? 'text-slate-500' : 'text-slate-400' }}">
                 SotePass&reg; Expo &bull; Infraestructura B2B para Ferias y Eventos
             </span>
         </div>

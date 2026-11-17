@@ -1014,7 +1014,50 @@ class ExpoController extends Controller
     }
 
     /**
-     * Actualizar Personalización e Identidad Visual del Stand (Logo, Colores, Eslogan)
+     * Vista Imprimible A4 del Cartel con Código QR para Mostrador
+     */
+    public function qrPoster(string $slug): View
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        return view('expo.qr-poster', compact('stand'));
+    }
+
+    /**
+     * Vista Previa / Simulador Interactivo de Ruleta desde el Panel (Sin consumo de stock)
+     */
+    public function simuladorRuleta(Request $request, string $slug): View
+    {
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+        $this->authorizeStandOwner($stand);
+
+        $prizes = $stand->prizes()->orderBy('id')->get();
+        if ($prizes->isEmpty()) {
+            $prizes = collect([
+                (object) ['id' => 1, 'name' => 'Gorra Oficial', 'color' => $stand->primary_color, 'probability_weight' => 25, 'is_real_prize' => true],
+                (object) ['id' => 2, 'name' => '15% Descuento', 'color' => '#2563eb', 'probability_weight' => 30, 'is_real_prize' => true],
+                (object) ['id' => 3, 'name' => 'Kit Corporativo', 'color' => '#d97706', 'probability_weight' => 15, 'is_real_prize' => true],
+                (object) ['id' => 4, 'name' => 'Sigue Participando', 'color' => '#475569', 'probability_weight' => 30, 'is_real_prize' => false],
+            ]);
+        }
+
+        $lead = new Lead([
+            'full_name' => 'Visitante Demo (Simulador)',
+            'phone' => '0981 000 000',
+            'city' => $stand->event_name ?? 'Expo Paraguay',
+        ]);
+        $lead->id = 0;
+
+        $existingSpin = null;
+        $isTotem = $request->boolean('totem');
+        $isPreview = true;
+
+        return view('expo.ruleta', compact('stand', 'lead', 'prizes', 'existingSpin', 'isTotem', 'isPreview'));
+    }
+
+    /**
+     * Actualizar Personalización e Identidad Visual del Stand (Logo, Colores, Modo Claro/Oscuro, Eslogan)
      */
     public function updateBranding(Request $request, string $slug): RedirectResponse
     {
@@ -1028,6 +1071,7 @@ class ExpoController extends Controller
             'sector' => 'required|string|max:100',
             'primary_color' => 'required|string|max:20',
             'secondary_color' => 'required|string|max:20',
+            'theme_mode' => 'nullable|in:light,dark',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:4096',
             'logo_url' => 'nullable|string|max:255',
         ]);
@@ -1052,6 +1096,9 @@ class ExpoController extends Controller
             $rawProfiles = explode(',', (string) $request->input('profiles_list'));
             $cleaned = array_values(array_filter(array_map('trim', $rawProfiles)));
             $customQuestions['profiles'] = ! empty($cleaned) ? $cleaned : null;
+        }
+        if ($request->filled('theme_mode')) {
+            $customQuestions['theme_mode'] = $validated['theme_mode'];
         }
 
         $stand->update([

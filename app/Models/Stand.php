@@ -116,4 +116,22 @@ class Stand extends Model
             'Visitante General',
         ];
     }
+
+    /**
+     * Retorna el modo de tema visual ('light' o 'dark') configurado para el formulario del stand.
+     */
+    public function getThemeMode(): string
+    {
+        $mode = $this->custom_questions['theme_mode'] ?? 'light';
+
+        return in_array($mode, ['light', 'dark'], true) ? $mode : 'light';
+    }
+
+    /**
+     * Indica si el formulario del stand está configurado en modo oscuro.
+     */
+    public function isDarkMode(): bool
+    {
+        return $this->getThemeMode() === 'dark';
+    }
 }
