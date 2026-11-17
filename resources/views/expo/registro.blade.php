@@ -68,8 +68,28 @@
             <!-- Cuerpo del Formulario -->
             <div class="p-6 space-y-5 {{ $isDark ? 'bg-slate-900' : 'bg-white' }}"
                  x-data="{ 
-                     isPromotor: {{ request()->has('promotor') ? 'true' : 'false' }} || !!localStorage.getItem('promoter_name'), 
-                     promoterName: localStorage.getItem('promoter_name') || '' 
+                     isPromotor: false, 
+                     promoterName: localStorage.getItem('promoter_name') || '',
+                     init() {
+                         const urlParams = new URLSearchParams(window.location.search);
+                         if (urlParams.get('promotor') === '0') {
+                             localStorage.removeItem('promoter_mode_{{ $stand->slug }}');
+                             localStorage.removeItem('promoter_name');
+                             this.isPromotor = false;
+                             this.promoterName = '';
+                         } else if (urlParams.has('promotor') && urlParams.get('promotor') !== '0') {
+                             localStorage.setItem('promoter_mode_{{ $stand->slug }}', '1');
+                             this.isPromotor = true;
+                         } else if (localStorage.getItem('promoter_mode_{{ $stand->slug }}') === '1') {
+                             this.isPromotor = true;
+                         }
+                     },
+                     disablePromoter() {
+                         localStorage.removeItem('promoter_mode_{{ $stand->slug }}');
+                         localStorage.removeItem('promoter_name');
+                         this.isPromotor = false;
+                         this.promoterName = '';
+                     }
                  }">
                 
                 <!-- Título de Acción -->
@@ -88,29 +108,24 @@
                 <form action="{{ route('expo.register', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}" method="POST" class="space-y-4">
                     @csrf
 
-                    <!-- Toggle de Promotor: Estilo Píldora Técnica Rectangular -->
-                    <div class="flex items-center justify-between py-1 border-b {{ $isDark ? 'border-slate-800' : 'border-slate-100' }}">
-                        <button type="button" @click="isPromotor = !isPromotor" 
-                                class="inline-flex items-center gap-2 text-xs font-medium transition cursor-pointer {{ $isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900' }}">
-                            <span class="w-3.5 h-3.5 rounded-[3px] border flex items-center justify-center text-[9px] font-bold {{ $isDark ? 'border-slate-600' : 'border-slate-300' }}"
-                                  :class="isPromotor ? '{{ $isDark ? 'bg-emerald-600 text-white border-emerald-500' : 'bg-slate-900 text-white border-slate-900' }}' : '{{ $isDark ? 'bg-slate-950' : 'bg-white' }}'">
-                                <template x-if="isPromotor">✓</template>
-                            </span>
-                            <span>Cargado por Promotor/a</span>
-                        </button>
-
-                        <template x-if="isPromotor && promoterName">
-                            <span class="text-[10px] font-mono font-medium border px-2 py-0.5 rounded-[4px] {{ $isDark ? 'text-slate-300 bg-slate-800 border-slate-700' : 'text-slate-600 bg-slate-100 border-slate-200' }}" x-text="promoterName"></span>
-                        </template>
-                    </div>
-
-                    <!-- Input Promotor (Si está activo) -->
-                    <div x-show="isPromotor" x-cloak class="p-3 rounded-md border space-y-1 {{ $isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-slate-50 border-slate-200' }}">
-                        <label class="block text-[11px] font-semibold {{ $isDark ? 'text-slate-300' : 'text-slate-700' }}">Nombre del Promotor/a</label>
-                        <input type="text" name="promoter_name" x-model="promoterName"
+                    <!-- Bloque Exclusivo de Promotor (100% Oculto en Autoregistro de Visitantes; Activo solo con ?promotor=1) -->
+                    <div x-show="isPromotor" x-cloak class="p-3 rounded-md border space-y-1.5 {{ $isDark ? 'bg-slate-950/70 border-slate-800' : 'bg-emerald-50/60 border-emerald-200' }}">
+                        <div class="flex items-center justify-between">
+                            <label class="block text-[11px] font-bold {{ $isDark ? 'text-emerald-400' : 'text-emerald-900' }}">
+                                👤 Modo Promotor/a Activo
+                            </label>
+                            <button type="button" @click="disablePromoter()"
+                                    class="text-[10px] font-semibold underline cursor-pointer {{ $isDark ? 'text-slate-400 hover:text-rose-400' : 'text-slate-500 hover:text-rose-600' }}">
+                                Salir de modo promotor
+                            </button>
+                        </div>
+                        <input type="text" name="promoter_name" x-model="promoterName" :disabled="!isPromotor"
                                @input="localStorage.setItem('promoter_name', $event.target.value)"
-                               placeholder="Ej. Camila"
-                               class="w-full px-3 py-1.5 text-xs font-medium border rounded-[4px] transition {{ $isDark ? 'bg-slate-900 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-slate-400 focus:border-slate-400' : 'bg-white text-slate-900 border-slate-300 focus:ring-1 focus:ring-slate-900 focus:border-slate-900' }}">
+                               placeholder="Ingresa tu nombre de Promotor/a (Ej. Camila)"
+                               class="w-full px-3 py-1.5 text-xs font-medium border rounded-[4px] transition {{ $isDark ? 'bg-slate-900 text-white border-slate-700 placeholder-slate-500 focus:ring-1 focus:ring-emerald-500 focus:border-emerald-500' : 'bg-white text-slate-900 border-emerald-300 focus:ring-1 focus:ring-emerald-600 focus:border-emerald-600' }}">
+                        <p class="text-[10px] {{ $isDark ? 'text-slate-400' : 'text-emerald-800/80' }}">
+                            Tu nombre queda guardado en este dispositivo para agilizar los siguientes registros.
+                        </p>
                     </div>
 
                     <!-- Nombre Completo -->

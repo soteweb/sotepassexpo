@@ -145,10 +145,16 @@
                 <div class="flex items-center gap-2 sm:gap-2.5">
                     @if(isset($stand))
                         <!-- Botones rápidos del Stand -->
+                        <a href="{{ route('expo.stand.qr-poster', $stand->slug) }}" target="_blank"
+                            class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md bg-emerald-50 border border-emerald-200 text-xs font-semibold text-emerald-800 hover:bg-emerald-100 transition-colors"
+                            title="Generar e Imprimir Código QR del Stand">
+                            <span>🖨️ Código QR</span>
+                        </a>
+
                         <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
                             class="hidden md:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-md border border-slate-200 text-xs font-semibold text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-colors"
-                            title="Abrir QR / Landing de Registro">
-                            <span>📱 Landing QR</span>
+                            title="Abrir Formulario de Visitante">
+                            <span>📱 Formulario</span>
                             <svg class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>
 

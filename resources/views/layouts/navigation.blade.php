@@ -121,30 +121,55 @@
                         <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Personalizar Landing</span>
                     </a>
 
-                    <!-- Landing QR -->
-                    <a href="{{ route('expo.stand', $currentStand->slug) }}" 
+                    <!-- Código QR e Impresión A4 -->
+                    <a href="{{ route('expo.stand.qr-poster', $currentStand->slug) }}" 
                        target="_blank"
-                       title="Página de Captación / QR Mostrador"
+                       title="Generar Código QR e Imprimir Cartel A4"
                        class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
                        :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                         <div class="flex items-center gap-2.5 min-w-0">
-                            <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">📱</span>
-                            <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Landing QR Visitante</span>
+                            <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">🖨️</span>
+                            <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Código QR e Impresión</span>
                         </div>
                         <svg x-show="!sidebarCollapsed" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                     </a>
 
-                    <!-- Ruleta Interactiva (Si el plan lo incluye o tiene spins) -->
+                    <!-- Formulario Público de Visitantes -->
+                    <a href="{{ route('expo.stand', $currentStand->slug) }}" 
+                       target="_blank"
+                       title="Formulario de Autoregistro del Visitante"
+                       class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">📱</span>
+                            <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Formulario Visitante</span>
+                        </div>
+                        <svg x-show="!sidebarCollapsed" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+
+                    <!-- Modo Promotor / Tablet -->
+                    <a href="{{ route('expo.stand', ['slug' => $currentStand->slug, 'promotor' => 1]) }}" 
+                       target="_blank"
+                       title="Formulario con Campo de Promotor/a Habilitado"
+                       class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
+                       :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
+                        <div class="flex items-center gap-2.5 min-w-0">
+                            <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">👤</span>
+                            <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Modo Promotor/a</span>
+                        </div>
+                        <svg x-show="!sidebarCollapsed" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+                    </a>
+
+                    <!-- Ruleta Interactiva (Simulador / Vista Previa) -->
                     @if($currentStand->allow_spins)
-                        @php $firstLead = $currentStand->leads()->first(); @endphp
-                        <a href="{{ $firstLead ? route('expo.ruleta', ['slug' => $currentStand->slug, 'leadId' => $firstLead->id]) : route('expo.stand', $currentStand->slug) }}" 
+                        <a href="{{ route('expo.stand.simulador-ruleta', $currentStand->slug) }}" 
                            target="_blank"
-                           title="Ruleta de Premios (Pantalla Completa / Tótem)"
+                           title="Simulador y Vista Previa de Ruleta"
                            class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors"
                            :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
                             <div class="flex items-center gap-2.5 min-w-0">
                                 <span class="w-4 h-4 shrink-0 flex items-center justify-center text-sm">🎡</span>
-                                <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Ruleta en Vivo</span>
+                                <span x-show="!sidebarCollapsed" class="truncate whitespace-nowrap">Simulador Ruleta</span>
                             </div>
                             <svg x-show="!sidebarCollapsed" class="w-3.5 h-3.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                         </a>

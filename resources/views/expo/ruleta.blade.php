@@ -62,25 +62,32 @@
 
     @php
         $isPreview = $isPreview ?? false;
+        $isDark = in_array(request('theme'), ['light', 'dark'], true)
+            ? request('theme') === 'dark'
+            : $stand->isDarkMode();
     @endphp
 
-    <div class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 antialiased select-none overflow-x-hidden">
+    <div class="min-h-screen flex flex-col items-center justify-between p-2 sm:p-4 md:p-6 antialiased select-none overflow-x-hidden transition-colors duration-200 {{ $isDark ? 'bg-[#090d16] text-slate-100' : 'bg-[#f8f7f5] text-slate-800' }}">
 
         @if($isPreview)
             <!-- Banner Superior de Modo Simulador / Vista Previa del Expositor -->
-            <div class="w-full max-w-3xl mb-2 p-2.5 sm:px-4 rounded-md bg-amber-50 border border-amber-300 text-amber-950 flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xs shrink-0">
+            <div class="w-full max-w-3xl mb-2 p-2.5 sm:px-4 rounded-md border flex flex-col sm:flex-row items-center justify-between gap-2 shadow-xs shrink-0 {{ $isDark ? 'bg-slate-900 border-slate-700 text-slate-200' : 'bg-amber-50 border-amber-300 text-amber-950' }}">
                 <div class="flex items-center gap-2 text-xs">
                     <span class="text-sm">🧪</span>
                     <div>
-                        <strong class="font-bold uppercase tracking-wider text-[11px] text-amber-900">Modo Vista Previa / Simulador:</strong>
-                        <span class="text-amber-800 text-[11px]">Girá todas las veces que quieras. No descuenta stock ni registra visitas reales.</span>
+                        <strong class="font-bold uppercase tracking-wider text-[11px] {{ $isDark ? 'text-amber-400' : 'text-amber-900' }}">Modo Vista Previa / Simulador:</strong>
+                        <span class="{{ $isDark ? 'text-slate-300' : 'text-amber-800' }} text-[11px]">Girá todas las veces que quieras. No descuenta stock ni registra visitas reales.</span>
                     </div>
                 </div>
                 <div class="flex items-center gap-1.5 shrink-0">
-                    <a href="{{ route('expo.stand.personalizar', $stand->slug) }}" class="px-2.5 py-1 rounded-sm bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-[11px] transition">
-                        🎨 Colores
+                    <a href="{{ route('expo.stand.simulador-ruleta', ['slug' => $stand->slug, 'theme' => $isDark ? 'light' : 'dark', 'totem' => $isTotem ? 1 : null]) }}"
+                       class="px-2.5 py-1 rounded-sm border font-semibold text-[11px] transition {{ $isDark ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-white border-amber-300 text-amber-900 hover:bg-amber-100' }}">
+                        {{ $isDark ? '☀️ Ver en Claro' : '🌙 Ver en Oscuro' }}
                     </a>
-                    <a href="{{ route('expo.panel', $stand->slug) }}" class="px-2.5 py-1 rounded-sm bg-amber-800 hover:bg-amber-900 text-white font-semibold text-[11px] transition">
+                    <a href="{{ route('expo.stand.personalizar', $stand->slug) }}" class="px-2.5 py-1 rounded-sm border font-semibold text-[11px] transition {{ $isDark ? 'bg-slate-800 border-slate-700 text-slate-200 hover:bg-slate-700' : 'bg-white border-amber-300 text-amber-900 hover:bg-amber-100' }}">
+                        🎨 Personalizar
+                    </a>
+                    <a href="{{ route('expo.panel', $stand->slug) }}" class="px-2.5 py-1 rounded-sm bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-[11px] transition">
                         &larr; Panel
                     </a>
                 </div>
@@ -93,24 +100,24 @@
             <!-- Botón Volver al Formulario de Registro (Flujo Rápido de Promotor) -->
             <a href="{{ $isPreview ? route('expo.panel', $stand->slug) : route('expo.stand', ['slug' => $stand->slug, 'totem' => $isTotem ? 1 : null]) }}"
                title="{{ $isPreview ? 'Volver al Panel del Stand' : 'Volver al Formulario de Registro' }}"
-               class="p-2 sm:px-3 sm:py-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer">
-                <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
+               class="p-2 sm:px-3 sm:py-2 rounded-md border transition text-xs flex items-center gap-1.5 shadow-xs shrink-0 cursor-pointer {{ $isDark ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800 hover:text-white' : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50' }}">
+                <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7"/></svg>
                 <span class="hidden sm:inline font-semibold text-[11px]">{{ $isPreview ? 'Panel' : 'Registro' }}</span>
             </a>
 
             <!-- Identidad de la Empresa: Logo + Nombre (100% Nítido y Visible) -->
             <div class="flex items-center justify-center gap-2.5 sm:gap-3 flex-1 min-w-0">
                 @if($stand->logo_url)
-                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-md bg-white p-1 shadow-xs border border-slate-200 flex items-center justify-center overflow-hidden shrink-0">
+                    <div class="w-9 h-9 sm:w-11 sm:h-11 rounded-md bg-white p-1 shadow-xs border {{ $isDark ? 'border-slate-700' : 'border-slate-200' }} flex items-center justify-center overflow-hidden shrink-0">
                         <img src="{{ asset($stand->logo_url) }}" alt="{{ $stand->name }}" class="max-w-full max-h-full object-contain">
                     </div>
                 @endif
                 <div class="text-left truncate">
-                    <h1 class="{{ $isTotem ? 'text-lg sm:text-2xl' : 'text-base sm:text-xl' }} font-bold text-slate-900 tracking-tight truncate">
+                    <h1 class="{{ $isTotem ? 'text-lg sm:text-2xl' : 'text-base sm:text-xl' }} font-bold {{ $isDark ? 'text-white' : 'text-slate-900' }} tracking-tight truncate">
                         {{ $stand->name }}
                     </h1>
                     <div class="flex items-center gap-2 mt-0.5">
-                        <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-slate-100 border border-slate-200 text-slate-700">
+                        <span class="text-[9px] sm:text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md border {{ $isDark ? 'bg-slate-800 border-slate-700 text-slate-300' : 'bg-slate-100 border-slate-200 text-slate-700' }}">
                             {{ $stand->stand_number }} &bull; {{ $stand->sector }}
                         </span>
                         @if($isTotem)
@@ -126,12 +133,12 @@
             <div class="flex items-center gap-1.5 shrink-0">
                 <a href="{{ $isPreview ? route('expo.stand.simulador-ruleta', ['slug' => $stand->slug, 'totem' => $isTotem ? null : 1]) : route('expo.ruleta', ['slug' => $stand->slug, 'leadId' => $lead->id, 'totem' => $isTotem ? null : 1]) }}" 
                    title="Alternar Modo Tótem / TV Touch Vertical"
-                   class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-50 text-amber-800 border-amber-300' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50' }} hover:text-slate-900 transition text-xs flex items-center gap-1 shadow-xs">
+                   class="p-2 rounded-md border {{ $isTotem ? 'bg-amber-50 text-amber-800 border-amber-300' : ($isDark ? 'bg-slate-900 text-slate-200 border-slate-800 hover:bg-slate-800' : 'bg-white text-slate-700 border-slate-200 hover:bg-slate-50') }} transition text-xs flex items-center gap-1 shadow-xs">
                     <span class="text-xs">📺</span>
                     <span class="hidden sm:inline font-semibold text-[10px]">{{ $isTotem ? 'Tótem TV' : 'Modo TV' }}</span>
                 </a>
                 <button onclick="toggleFullScreen()" title="Pantalla Completa (F11)"
-                        class="p-2 rounded-md bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 transition text-xs cursor-pointer shadow-xs">
+                        class="p-2 rounded-md border transition text-xs cursor-pointer shadow-xs {{ $isDark ? 'bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-800' : 'bg-white border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50' }}">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
                 </button>
             </div>
@@ -139,8 +146,8 @@
 
         <!-- Barra Informativa del Participante -->
         <div class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} text-center my-0.5 shrink-0">
-            <span class="text-xs sm:text-sm text-slate-600 font-medium">
-                Participante: <strong class="text-slate-900 font-bold">{{ $lead->full_name }}</strong> <span class="text-slate-400 font-normal">({{ $lead->city }})</span>
+            <span class="text-xs sm:text-sm font-medium {{ $isDark ? 'text-slate-400' : 'text-slate-600' }}">
+                Participante: <strong class="{{ $isDark ? 'text-white' : 'text-slate-900' }} font-bold">{{ $lead->full_name }}</strong> <span class="{{ $isDark ? 'text-slate-500' : 'text-slate-400' }} font-normal">({{ $lead->city }})</span>
             </span>
         </div>
 
@@ -204,14 +211,14 @@
                         <span class="text-base sm:text-lg">🎯</span>
                         <span>¡TOCÁ AQUÍ PARA GIRAR!</span>
                     </button>
-                    <p id="spinNotice" class="text-center text-[11px] sm:text-xs text-slate-500 mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
+                    <p id="spinNotice" class="text-center text-[11px] sm:text-xs {{ $isDark ? 'text-slate-400' : 'text-slate-500' }} mt-2">Toca el botón o el centro de la ruleta para probar tu suerte.</p>
                 @endif
             </div>
 
         </main>
 
         <!-- Footer -->
-        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-[11px] text-slate-400 border-t border-slate-200">
+        <footer class="w-full {{ $isTotem ? 'max-w-3xl' : 'max-w-xl sm:max-w-2xl' }} py-2.5 text-center text-[11px] border-t {{ $isDark ? 'text-slate-500 border-slate-800' : 'text-slate-400 border-slate-200' }}">
             SotePass Expo &bull; Certificación de Ruletas y Sorteos en Tiempo Real
         </footer>
 

@@ -1,7 +1,7 @@
 <x-app-layout :stand="$stand">
     <x-slot:title>Panel de Expositor | {{ $stand->name }} - SotePass Expo</x-slot>
 
-    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false, showQrModal: false, copiedUrl: false }">
+    <div class="space-y-8" x-data="{ editingPrize: null, showNewPrizeModal: false, editingDraw: null, showNewDrawModal: false, showResetModal: false, showPaymentModal: false, showQrModal: false, copiedUrl: false, copiedPromoterUrl: false }">
 
         <!-- SUBHEADER DEL STAND CON ACCIONES RÁPIDAS -->
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -63,8 +63,8 @@
 
                 <!-- QR Mostrador (Generador QR, Descarga PNG e Impresión Cartel A4) -->
                 <button type="button" @click="showQrModal = true; $nextTick(() => renderPanelQr())"
-                        class="inline-flex items-center gap-2 px-3.5 py-2 bg-white border border-slate-200 text-slate-700 hover:text-slate-900 hover:bg-slate-50 rounded-md text-xs font-semibold transition-colors shadow-xs cursor-pointer">
-                    <span>📱 QR Mostrador</span>
+                        class="inline-flex items-center gap-2 px-3.5 py-2 bg-emerald-50 border border-emerald-200 text-emerald-800 hover:bg-emerald-100 rounded-md text-xs font-semibold transition-colors shadow-xs cursor-pointer">
+                    <span>🖨️ Descargar / Imprimir QR</span>
                 </button>
 
                 <!-- Personalizar Landing del Visitante (Colores + Modo Claro/Oscuro) -->
@@ -983,16 +983,35 @@
                         <div id="panelQrContainer" class="flex items-center justify-center"></div>
                     </div>
 
-                    <!-- Enlace Directo + Copiar -->
-                    <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-md border border-slate-200">
-                        <input type="text" readonly value="{{ route('expo.stand', $stand->slug) }}"
-                               class="flex-1 text-[11px] font-mono text-slate-600 bg-transparent border-0 focus:ring-0 px-2 py-0.5 truncate">
-                        <button type="button"
-                                @click="navigator.clipboard.writeText('{{ route('expo.stand', $stand->slug) }}'); copiedUrl = true; setTimeout(() => copiedUrl = false, 2000)"
-                                class="px-2.5 py-1 rounded-sm bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] transition cursor-pointer shrink-0">
-                            <span x-show="!copiedUrl">📋 Copiar</span>
-                            <span x-show="copiedUrl" x-cloak class="text-emerald-300">✓ Copiado</span>
-                        </button>
+                    <!-- Enlace Directo de Autoregistro (Visitante) -->
+                    <div class="text-left">
+                        <span class="text-[10px] font-semibold uppercase tracking-wider text-slate-400 block mb-1">Enlace Público para Visitantes (Sin campo promotor):</span>
+                        <div class="flex items-center gap-1.5 bg-white p-1.5 rounded-md border border-slate-200">
+                            <input type="text" readonly value="{{ route('expo.stand', $stand->slug) }}"
+                                   class="flex-1 text-[11px] font-mono text-slate-600 bg-transparent border-0 focus:ring-0 px-2 py-0.5 truncate">
+                            <button type="button"
+                                    @click="navigator.clipboard.writeText('{{ route('expo.stand', $stand->slug) }}'); copiedUrl = true; setTimeout(() => copiedUrl = false, 2000)"
+                                    class="px-2.5 py-1 rounded-sm bg-slate-900 hover:bg-slate-800 text-white font-semibold text-[10px] transition cursor-pointer shrink-0">
+                                <span x-show="!copiedUrl">📋 Copiar</span>
+                                <span x-show="copiedUrl" x-cloak class="text-emerald-300">✓ Copiado</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Enlace Exclusivo para Promotoras / Tablet -->
+                    <div class="text-left pt-1">
+                        <span class="text-[10px] font-semibold uppercase tracking-wider text-emerald-700 block mb-1">👤 Enlace para Celular / Tablet de Promotoras:</span>
+                        <div class="flex items-center gap-1.5 bg-emerald-50/60 p-1.5 rounded-md border border-emerald-200">
+                            <input type="text" readonly value="{{ route('expo.stand', ['slug' => $stand->slug, 'promotor' => 1]) }}"
+                                   class="flex-1 text-[11px] font-mono text-emerald-900 bg-transparent border-0 focus:ring-0 px-2 py-0.5 truncate">
+                            <button type="button"
+                                    @click="navigator.clipboard.writeText('{{ route('expo.stand', ['slug' => $stand->slug, 'promotor' => 1]) }}'); copiedPromoterUrl = true; setTimeout(() => copiedPromoterUrl = false, 2000)"
+                                    class="px-2.5 py-1 rounded-sm bg-emerald-700 hover:bg-emerald-800 text-white font-semibold text-[10px] transition cursor-pointer shrink-0">
+                                <span x-show="!copiedPromoterUrl">📋 Copiar</span>
+                                <span x-show="copiedPromoterUrl" x-cloak class="text-white">✓ Copiado</span>
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-slate-400 mt-1">Abre este enlace en los teléfonos de tu equipo para activar el campo "Nombre de Promotor/a".</p>
                     </div>
                 </div>
 
@@ -1006,11 +1025,11 @@
                     <div class="grid grid-cols-2 gap-2">
                         <button type="button" onclick="downloadPanelQrPng()"
                                 class="py-2 px-3 rounded-md bg-slate-100 hover:bg-slate-200 text-slate-800 font-semibold border border-slate-200 flex items-center justify-center gap-1.5 transition cursor-pointer">
-                            <span>⬇️ Descargar PNG</span>
+                            <span>⬇️ Descargar QR (PNG)</span>
                         </button>
-                        <a href="{{ route('expo.stand', $stand->slug) }}" target="_blank"
+                        <a href="{{ route('expo.stand', ['slug' => $stand->slug, 'promotor' => 1]) }}" target="_blank"
                            class="py-2 px-3 rounded-md bg-white hover:bg-slate-50 text-slate-700 font-semibold border border-slate-200 flex items-center justify-center gap-1.5 transition">
-                            <span>🔗 Abrir Enlace &rarr;</span>
+                            <span>👤 Abrir Modo Promotor</span>
                         </a>
                     </div>
                 </div>
