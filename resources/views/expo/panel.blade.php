@@ -157,7 +157,7 @@
                         <span>💳</span>
                         <span>{{ $stand->payment_status === 'submitted' ? 'Ver Datos de Pago' : 'Activar Stand Oficial' }}</span>
                     </button>
-                    <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}?text={{ urlencode('Hola Soteweb, tengo una consulta sobre la activación de mi stand: ' . $stand->name . ' (Slug: ' . $stand->slug . ')') }}" 
+                    <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981762444' }}?text={{ urlencode('Hola Soteweb, tengo una consulta sobre la activación de mi stand: ' . $stand->name . ' (Slug: ' . $stand->slug . ')') }}" 
                        target="_blank" 
                        class="px-3.5 py-2 rounded-md bg-white border border-amber-300 text-amber-900 hover:bg-amber-100 font-semibold text-xs shadow-xs transition-all flex items-center gap-1">
                         <span>💬 WhatsApp</span>
@@ -179,7 +179,7 @@
                         </div>
                     </div>
                 </div>
-                <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}" target="_blank" class="shrink-0 px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all">
+                <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981762444' }}" target="_blank" class="shrink-0 px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs transition-all">
                     WhatsApp Soporte &rarr;
                 </a>
             </div>
@@ -874,33 +874,29 @@
                     <div class="p-4 rounded-md bg-indigo-50/60 border border-indigo-200 space-y-2.5">
                         <div class="flex items-center justify-between">
                             <span class="text-[11px] font-bold text-indigo-950 uppercase tracking-wider flex items-center gap-1.5">
-                                🏦 Cuentas Oficiales para Transferencia (SIPAP)
+                                🏦 Transferencia o Depósito Bancario (SIPAP)
                             </span>
                             <span class="text-[10px] font-semibold text-indigo-700 bg-white px-2 py-0.5 rounded-sm border border-indigo-200">
-                                Paraguay
+                                {{ $bankConfig['account_type'] ?? 'Cta. Cte. Guaraníes' }}
                             </span>
                         </div>
                         
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-[11px] text-slate-700 pt-1">
                             <div>
                                 <span class="text-slate-400 block text-[10px] uppercase">Banco:</span>
-                                <span class="font-bold text-slate-900">{{ $bankConfig['bank_name'] ?? 'Banco Itaú Paraguay' }}</span>
+                                <span class="font-bold text-slate-900">{{ $bankConfig['bank_name'] ?? 'Banco Sudameris' }}</span>
                             </div>
                             <div>
                                 <span class="text-slate-400 block text-[10px] uppercase">Titular de la Cuenta:</span>
-                                <span class="font-bold text-slate-900">{{ $bankConfig['account_holder'] ?? $bankConfig['beneficiary'] ?? 'Soteweb Tecnología' }}</span>
+                                <span class="font-bold text-slate-900">{{ $bankConfig['account_holder'] ?? $bankConfig['beneficiary'] ?? 'Gabriel Sotelo' }}</span>
                             </div>
                             <div>
-                                <span class="text-slate-400 block text-[10px] uppercase">RUC:</span>
-                                <span class="font-bold text-slate-900">{{ $bankConfig['ruc'] ?? '80098765-4' }}</span>
+                                <span class="text-slate-400 block text-[10px] uppercase">CI / Alias SIPAP:</span>
+                                <span class="font-mono font-bold text-indigo-900 bg-white px-2 py-0.5 rounded-sm border border-indigo-200 inline-block">{{ $bankConfig['ruc'] ?? '1592463' }}</span>
                             </div>
                             <div>
-                                <span class="text-slate-400 block text-[10px] uppercase">N° de Cuenta:</span>
-                                <span class="font-mono font-bold text-indigo-900">{{ $bankConfig['account_number'] ?? '720012345' }}</span>
-                            </div>
-                            <div class="sm:col-span-2">
-                                <span class="text-slate-400 block text-[10px] uppercase">Alias SIPAP:</span>
-                                <span class="font-mono font-bold text-indigo-900 bg-white px-2 py-0.5 rounded-sm border border-indigo-200">{{ $bankConfig['sipap_alias'] ?? 'soteweb.expo' }}</span>
+                                <span class="text-slate-400 block text-[10px] uppercase">N° de Cuenta Cte. Gs.:</span>
+                                <span class="font-mono font-bold text-indigo-900">{{ $bankConfig['account_number'] ?? '8010540 (SIPAP: 0001000008010540)' }}</span>
                             </div>
                         </div>
                     </div>
@@ -913,7 +909,7 @@
                                 N° de Comprobante / Referencia SIPAP (Opcional si subes archivo)
                             </label>
                             <input type="text" name="payment_reference" value="{{ old('payment_reference', $stand->payment_reference) }}"
-                                   placeholder="Ej: TRF-902184 / Comprobante Itaú"
+                                   placeholder="Ej: TRF-902184 / Comprobante Sudameris"
                                    class="w-full text-xs rounded-md border-slate-300 focus:border-indigo-600 focus:ring-1 focus:ring-indigo-600 py-2 px-3">
                         </div>
 
@@ -927,7 +923,7 @@
                         </div>
 
                         <div class="pt-3 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3">
-                            <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981123456' }}?text={{ urlencode('Hola Soteweb, acabo de transferir para activar el stand: ' . $stand->name . ' (Plan: ' . ($stand->plan?->name ?? 'Oficial') . '). Adjunto mi comprobante.') }}" 
+                            <a href="https://wa.me/{{ $bankConfig['whatsapp_support'] ?? '595981762444' }}?text={{ urlencode('Hola Soteweb, acabo de transferir para activar el stand: ' . $stand->name . ' (Plan: ' . ($stand->plan?->name ?? 'Oficial') . '). Adjunto mi comprobante.') }}" 
                                target="_blank"
                                class="w-full sm:w-auto px-3.5 py-2 rounded-md bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs flex items-center justify-center gap-1.5 transition">
                                 <span>💬 Enviar Comprobante por WhatsApp</span>

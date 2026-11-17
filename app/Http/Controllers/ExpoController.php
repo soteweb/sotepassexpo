@@ -751,14 +751,14 @@ class ExpoController extends Controller
         $latestDraw = $draws->last();
         $plans = Plan::where('is_active', true)->orderBy('sort_order')->get();
         $bankConfig = config('expo.bank') ?: [
-            'beneficiary' => 'Soteweb Tecnología',
-            'account_holder' => 'Soteweb Tecnología',
-            'ruc' => '80098765-4',
-            'bank_name' => 'Banco Itaú Paraguay',
-            'account_type' => 'Cuenta Corriente',
-            'account_number' => '720012345',
-            'sipap_alias' => 'soteweb.expo',
-            'whatsapp_support' => '595981123456',
+            'beneficiary' => 'Gabriel Sotelo',
+            'account_holder' => 'Gabriel Sotelo',
+            'ruc' => '1592463',
+            'bank_name' => 'Banco Sudameris',
+            'account_type' => 'Cta. Cte. Guaraníes',
+            'account_number' => '8010540 (SIPAP: 0001000008010540)',
+            'sipap_alias' => '1592463 (CI)',
+            'whatsapp_support' => '595981762444',
         ];
         $maxTrialLeads = (int) (config('expo.trial.max_test_leads') ?: 10);
 

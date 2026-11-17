@@ -447,7 +447,7 @@
                         <span>Registrar Mi Empresa Ahora</span>
                         <svg class="w-4 h-4 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 7l5 5m0 0l-5 5m5-5H6"/></svg>
                     </a>
-                    <a href="https://wa.me/{{ config('expo.bank.whatsapp_support', '595981123456') }}?text={{ urlencode('Hola Soteweb, me interesa conocer más sobre SotePass Expo para el stand de mi empresa.') }}" target="_blank" class="px-5 py-3.5 bg-white/15 hover:bg-white/25 text-white font-semibold text-xs uppercase tracking-wider rounded-md transition-all border border-white/20">
+                    <a href="https://wa.me/{{ config('expo.bank.whatsapp_support', '595981762444') }}?text={{ urlencode('Hola Soteweb, me interesa conocer más sobre SotePass Expo para el stand de mi empresa.') }}" target="_blank" class="px-5 py-3.5 bg-white/15 hover:bg-white/25 text-white font-semibold text-xs uppercase tracking-wider rounded-md transition-all border border-white/20">
                         Hablar con un Asesor &rarr;
                     </a>
                 </div>

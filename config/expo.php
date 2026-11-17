@@ -9,14 +9,14 @@ return [
     | activar sus planes en SotePass Expo.
     */
     'bank' => [
-        'beneficiary' => env('EXPO_BANK_BENEFICIARY', 'Soteweb Tecnología'),
-        'account_holder' => env('EXPO_BANK_ACCOUNT_HOLDER', env('EXPO_BANK_BENEFICIARY', 'Soteweb Tecnología')),
-        'ruc' => env('EXPO_BANK_RUC', '80098765-4'),
-        'bank_name' => env('EXPO_BANK_NAME', 'Banco Itaú Paraguay'),
-        'account_type' => env('EXPO_BANK_ACCOUNT_TYPE', 'Cuenta Corriente'),
-        'account_number' => env('EXPO_BANK_ACCOUNT_NUMBER', '720012345'),
-        'sipap_alias' => env('EXPO_BANK_SIPAP_ALIAS', 'soteweb.expo'),
-        'whatsapp_support' => env('EXPO_WHATSAPP_SUPPORT', '595981123456'),
+        'beneficiary' => env('EXPO_BANK_BENEFICIARY', 'Gabriel Sotelo'),
+        'account_holder' => env('EXPO_BANK_ACCOUNT_HOLDER', env('EXPO_BANK_BENEFICIARY', 'Gabriel Sotelo')),
+        'ruc' => env('EXPO_BANK_RUC', '1592463'),
+        'bank_name' => env('EXPO_BANK_NAME', 'Banco Sudameris'),
+        'account_type' => env('EXPO_BANK_ACCOUNT_TYPE', 'Cta. Cte. Guaraníes'),
+        'account_number' => env('EXPO_BANK_ACCOUNT_NUMBER', '8010540 (SIPAP: 0001000008010540)'),
+        'sipap_alias' => env('EXPO_BANK_SIPAP_ALIAS', '1592463 (CI)'),
+        'whatsapp_support' => env('EXPO_WHATSAPP_SUPPORT', '595981762444'),
     ],
 
     /*

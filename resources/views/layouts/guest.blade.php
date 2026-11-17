@@ -49,7 +49,7 @@
                 ],
                 'contactPoint' => [
                     '@type' => 'ContactPoint',
-                    'telephone' => '+' . ltrim((string) config('expo.bank.whatsapp_support', '595981123456'), '+'),
+                    'telephone' => '+' . ltrim((string) config('expo.bank.whatsapp_support', '595981762444'), '+'),
                     'contactType' => 'customer service',
                     'areaServed' => 'PY',
                     'availableLanguage' => 'es',
