@@ -249,7 +249,7 @@
             <div class="pt-2 border-t border-[#f0eee9] space-y-1">
                 <p x-show="!sidebarCollapsed" class="px-3 text-[10px] font-semibold uppercase tracking-wider text-slate-400 mb-1">Soporte Técnico</p>
 
-                <a href="https://wa.me/595981123456?text={{ urlencode('Hola Soteweb, solicito asistencia técnica para SotePass Expo.') }}" target="_blank"
+                <a href="https://wa.me/{{ config('expo.bank.whatsapp_support', '595981123456') }}?text={{ urlencode('Hola Soteweb, solicito asistencia técnica para SotePass Expo.') }}" target="_blank"
                    title="Mesa de Ayuda WhatsApp"
                    class="flex items-center rounded-md text-[13px] text-slate-700 hover:bg-[#f4f2ee] font-medium transition-colors group"
                    :class="sidebarCollapsed ? 'lg:justify-center lg:w-10 lg:h-10 lg:mx-auto px-0' : 'justify-between px-3 py-2'">
