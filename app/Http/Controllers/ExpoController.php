@@ -401,7 +401,24 @@ class ExpoController extends Controller
      */
     public function ruleta(Request $request, string $slug, int $leadId): View|RedirectResponse
     {
-        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+
+        // 1. Control de Evento Finalizado por Fecha
+        if ($stand->isExpired()) {
+            return view('expo.closed', compact('stand'));
+        }
+
+        // 2. Control de Stand Inactivo o Modo Prueba (Trial)
+        if (! $stand->is_active) {
+            $isOwner = Auth::check() && ($stand->user_id === Auth::id() || Auth::user()->isAdmin());
+            $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
+            $leadsCount = $stand->leads()->count();
+
+            // Si no es el dueño y se superó el límite de prueba, mostrar pantalla de preparación
+            if (! $isOwner && $leadsCount > $maxTrialLeads) {
+                return view('expo.inactive', compact('stand'));
+            }
+        }
 
         // Si el stand tiene la ruleta desactivada, mostrar su confirmación de sorteo
         if (! $stand->allow_spins) {
@@ -438,7 +455,20 @@ class ExpoController extends Controller
      */
     public function spin(Request $request, string $slug): JsonResponse
     {
-        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+
+        if ($stand->isExpired()) {
+            return response()->json(['success' => false, 'error' => 'La participación de este stand en la feria ha finalizado.'], 403);
+        }
+
+        if (! $stand->is_active) {
+            $isOwner = Auth::check() && ($stand->user_id === Auth::id() || Auth::user()->isAdmin());
+            $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
+            if (! $isOwner && $stand->leads()->count() > $maxTrialLeads) {
+                return response()->json(['success' => false, 'error' => 'Este stand se encuentra en proceso de habilitación oficial.'], 403);
+            }
+        }
+
         $leadId = (int) $request->input('lead_id');
 
         // Protección IDOR en API
@@ -1315,7 +1345,20 @@ class ExpoController extends Controller
      */
     public function gracias(Request $request, string $slug, int $leadId): View
     {
-        $stand = Stand::where('slug', $slug)->where('is_active', true)->firstOrFail();
+        $stand = Stand::where('slug', $slug)->firstOrFail();
+
+        if ($stand->isExpired()) {
+            return view('expo.closed', compact('stand'));
+        }
+
+        if (! $stand->is_active) {
+            $isOwner = Auth::check() && ($stand->user_id === Auth::id() || Auth::user()->isAdmin());
+            $maxTrialLeads = (int) config('expo.trial.max_test_leads', 10);
+            if (! $isOwner && $stand->leads()->count() > $maxTrialLeads) {
+                return view('expo.inactive', compact('stand'));
+            }
+        }
+
         $lead = $stand->leads()->findOrFail($leadId);
         $draw = $stand->draws()->where('status', 'pending')->latest()->first()
             ?? $stand->draws()->latest()->first();

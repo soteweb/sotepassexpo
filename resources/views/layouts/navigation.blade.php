@@ -2,7 +2,7 @@
     $authUser = auth()->user();
     $currentStand = $stand ?? $authUser?->stand;
     $allStands = ($authUser && $authUser->isAdmin()) 
-        ? \App\Models\Stand::with('plan')->where('is_active', true)->orderBy('name')->get() 
+        ? \App\Models\Stand::with('plan')->orderBy('name')->get() 
         : collect();
 @endphp
 

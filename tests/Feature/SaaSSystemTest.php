@@ -267,7 +267,7 @@ class SaaSSystemTest extends TestCase
     {
         $user = User::create([
             'name' => 'Owner Custom',
-            'email' => 'owner_custom_'.rand(100, 999).'@test.com',
+            'email' => 'owner_custom_'.uniqid().'@test.com',
             'role' => 'expositor',
             'password' => Hash::make('secret123'),
         ]);
@@ -1008,5 +1008,109 @@ class SaaSSystemTest extends TestCase
         $darkForm->assertOk();
         $darkForm->assertSee('bg-[#090d16]', false);
         $darkForm->assertSee('bg-slate-900', false);
+    }
+
+    public function test_trial_pending_stand_allows_registration_ruleta_and_spin_without_404(): void
+    {
+        $user = User::create([
+            'name' => 'Expositor Demo',
+            'company_name' => 'Demo Corp',
+            'email' => 'demo_stand_'.rand(1000, 9999).'@test.com',
+            'role' => 'expositor',
+            'password' => Hash::make('secret123'),
+        ]);
+
+        $plan = Plan::where('has_ruleta', true)->firstOrFail();
+        $slug = 'demo-pending-'.uniqid();
+
+        // Stand en modo demo/prueba recién creado (is_active = false, is_trial = true)
+        $stand = Stand::create([
+            'user_id' => $user->id,
+            'plan_id' => $plan->id,
+            'name' => 'Demo Stand Trial',
+            'slug' => $slug,
+            'stand_number' => 'D-01',
+            'sector' => 'Tecnología',
+            'primary_color' => '#2563eb',
+            'secondary_color' => '#0f172a',
+            'access_pin' => '1234',
+            'allow_spins' => true,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'is_trial' => true,
+            'is_active' => false,
+        ]);
+
+        $stand->prizes()->create([
+            'name' => 'Gorra Demo',
+            'color' => '#2563eb',
+            'total_stock' => 10,
+            'remaining_stock' => 10,
+            'probability_weight' => 100,
+            'is_real_prize' => true,
+        ]);
+
+        // 1. Visitante accede a la landing en modo visitante y promotor
+        $this->get(route('expo.stand', $slug))->assertOk();
+        $this->get(route('expo.stand', ['slug' => $slug, 'promotor' => 1]))->assertOk();
+
+        // 2. Visitante completa el registro
+        $phone = '0981'.rand(100000, 999999);
+        $regResponse = $this->post(route('expo.register', $slug), [
+            'full_name' => 'Visitante Prueba Demo',
+            'phone' => $phone,
+            'city' => 'Asunción',
+            'profile' => 'Productor Agrícola',
+        ]);
+
+        $lead = $stand->leads()->where('clean_phone', preg_replace('/[^0-9]/', '', $phone))->firstOrFail();
+        $regResponse->assertRedirect(route('expo.ruleta', ['slug' => $slug, 'leadId' => $lead->id]));
+
+        // 3. Ruleta no debe dar 404 Not Found
+        $ruletaResponse = $this->withSession(['allowed_lead_id_'.$stand->id => $lead->id])
+            ->get(route('expo.ruleta', ['slug' => $slug, 'leadId' => $lead->id]));
+        $ruletaResponse->assertOk();
+        $ruletaResponse->assertSee('Visitante Prueba Demo');
+        $ruletaResponse->assertSee('Gorra Demo');
+
+        // 4. Giro de ruleta vía API no debe dar 404
+        $spinResponse = $this->withSession(['allowed_lead_id_'.$stand->id => $lead->id])
+            ->postJson(route('expo.api.spin', $slug), [
+                'lead_id' => $lead->id,
+            ]);
+        $spinResponse->assertOk();
+        $spinResponse->assertJson(['success' => true]);
+
+        // 5. Stand sin ruleta en modo trial redirige a gracias y no da 404
+        $slugSinRuleta = 'demo-sin-ruleta-'.uniqid();
+        $standSinRuleta = Stand::create([
+            'user_id' => $user->id,
+            'name' => 'Stand Sin Ruleta Demo',
+            'slug' => $slugSinRuleta,
+            'stand_number' => 'D-02',
+            'sector' => 'Agro',
+            'primary_color' => '#16a34a',
+            'access_pin' => '1234',
+            'allow_spins' => false,
+            'status' => 'pending',
+            'payment_status' => 'pending',
+            'is_trial' => true,
+            'is_active' => false,
+        ]);
+
+        $phone2 = '0982'.rand(100000, 999999);
+        $reg2Response = $this->post(route('expo.register', $slugSinRuleta), [
+            'full_name' => 'Visitante Sorteo Demo',
+            'phone' => $phone2,
+            'city' => 'Encarnación',
+            'profile' => 'Comercial',
+        ]);
+
+        $lead2 = $standSinRuleta->leads()->where('clean_phone', preg_replace('/[^0-9]/', '', $phone2))->firstOrFail();
+        $reg2Response->assertRedirect(route('expo.gracias', ['slug' => $slugSinRuleta, 'leadId' => $lead2->id]));
+
+        $graciasResponse = $this->get(route('expo.gracias', ['slug' => $slugSinRuleta, 'leadId' => $lead2->id]));
+        $graciasResponse->assertOk();
+        $graciasResponse->assertSee('Visitante Sorteo Demo');
     }
 }
